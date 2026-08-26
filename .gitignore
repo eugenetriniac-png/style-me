@@ -16,3 +16,7 @@ node_modules/
 Thumbs.db
 desktop.ini
 .DS_Store
+
+# Documents de rendu generes (regenerables via docs/make-submission.ps1)
+docs/SUBMISSION.html
+*.pdf
