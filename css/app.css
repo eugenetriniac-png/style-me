@@ -1364,9 +1364,16 @@ input[type=range]::-moz-range-thumb {
 }
 .foot-mark { font-family: var(--display); font-weight: 800; font-size: 1rem; margin: 0 0 6px; color: var(--bone); }
 .foot-line { margin: 0 0 12px; color: var(--ash); font-size: .9rem; max-width: 52ch; }
-.foot-links { margin: 0 0 10px; display: flex; gap: 18px; flex-wrap: wrap; }
-.foot-links a { color: var(--bone-2); text-decoration: none; border-bottom: 1px solid var(--line-2); padding-bottom: 1px; }
-.foot-links a:hover { color: var(--bone); border-bottom-color: var(--bone); }
+.foot-links { margin: 0 0 4px; display: flex; gap: 10px; flex-wrap: wrap; }
+/* 44px tall: these are the smallest tap targets in the product, and they
+   measured 26px before testing. The border sits on the text, not the box. */
+.foot-links a {
+  display: inline-flex; align-items: center; min-height: 44px; padding: 0 8px;
+  color: var(--bone-2); text-decoration: none;
+}
+.foot-links a span { border-bottom: 1px solid var(--line-2); padding-bottom: 1px; }
+.foot-links a:hover { color: var(--bone); }
+.foot-links a:hover span { border-bottom-color: var(--bone); }
 .foot-note { margin: 0; color: var(--ash-2); }
 
 /* The welcome screen centres its column, so its footer follows suit. */

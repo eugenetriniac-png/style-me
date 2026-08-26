@@ -1377,9 +1377,16 @@ input[type=range]::-moz-range-thumb {
 }
 .foot-mark { font-family: var(--display); font-weight: 800; font-size: 1rem; margin: 0 0 6px; color: var(--bone); }
 .foot-line { margin: 0 0 12px; color: var(--ash); font-size: .9rem; max-width: 52ch; }
-.foot-links { margin: 0 0 10px; display: flex; gap: 18px; flex-wrap: wrap; }
-.foot-links a { color: var(--bone-2); text-decoration: none; border-bottom: 1px solid var(--line-2); padding-bottom: 1px; }
-.foot-links a:hover { color: var(--bone); border-bottom-color: var(--bone); }
+.foot-links { margin: 0 0 4px; display: flex; gap: 10px; flex-wrap: wrap; }
+/* 44px tall: these are the smallest tap targets in the product, and they
+   measured 26px before testing. The border sits on the text, not the box. */
+.foot-links a {
+  display: inline-flex; align-items: center; min-height: 44px; padding: 0 8px;
+  color: var(--bone-2); text-decoration: none;
+}
+.foot-links a span { border-bottom: 1px solid var(--line-2); padding-bottom: 1px; }
+.foot-links a:hover { color: var(--bone); }
+.foot-links a:hover span { border-bottom-color: var(--bone); }
 .foot-note { margin: 0; color: var(--ash-2); }
 
 /* The welcome screen centres its column, so its footer follows suit. */
@@ -6641,6 +6648,9 @@ window.SM = window.SM || {};
           '<a class="menu-row" href="#/messages">' + ui.icon('chat') + '<span>Messages</span><em class="mono">' +
             (SM.store.unreadTotal() || '') + '</em></a>' +
           '<a class="menu-row" href="#/quiz">' + ui.icon('sparkle') + '<span>Retake the style test</span><em></em></a>' +
+          /* Docs lives here because the welcome screen — the only other way in —
+             stops being reachable the moment you finish the test. */
+          '<a class="menu-row" href="#/docs">' + ui.icon('sparkle') + '<span>Docs — how this works</span><em></em></a>' +
           '<button class="menu-row" data-act="reset">' + ui.icon('trash') + '<span>Erase my data</span><em></em></button>' +
         '</div>' +
         (s.myPosts.length ? '<div class="pad"><h2 class="sec-title">My posts</h2><div class="grid-3">' +
@@ -6648,7 +6658,7 @@ window.SM = window.SM || {};
             return '<a class="grid-cell" href="#/post/' + p2.id + '">' +
               SM.fit.render(outfitFromId(p2.outfitId), SM.store.myLook()) + '</a>';
           }).join('') + '</div></div>' : '') +
-        '</div>';
+        footerHTML() + '</div>';
     },
     mount: function (root) {
       root.addEventListener('click', function (e) {
@@ -6933,9 +6943,9 @@ window.SM = window.SM || {};
       '<p class="foot-mark">Style Me</p>' +
       '<p class="foot-line">Built by Eugène Triniac. Every model and garment drawn in SVG in your browser.</p>' +
       '<p class="foot-links">' +
-      '<a href="https://github.com/eugenetriniac-png/style-me" target="_blank" rel="noopener">Source</a>' +
-      '<a href="#/docs">Docs</a>' +
-      '<a href="#/feed">Feed</a></p>' +
+      '<a href="https://github.com/eugenetriniac-png/style-me" target="_blank" rel="noopener"><span>Source</span></a>' +
+      '<a href="#/docs"><span>Docs</span></a>' +
+      '<a href="#/feed"><span>Feed</span></a></p>' +
       '<p class="foot-note mono">Demo catalogue — invented prices, no payment taken.</p>' +
       '</footer>';
   }

@@ -1048,6 +1048,9 @@ window.SM = window.SM || {};
           '<a class="menu-row" href="#/messages">' + ui.icon('chat') + '<span>Messages</span><em class="mono">' +
             (SM.store.unreadTotal() || '') + '</em></a>' +
           '<a class="menu-row" href="#/quiz">' + ui.icon('sparkle') + '<span>Retake the style test</span><em></em></a>' +
+          /* Docs lives here because the welcome screen — the only other way in —
+             stops being reachable the moment you finish the test. */
+          '<a class="menu-row" href="#/docs">' + ui.icon('sparkle') + '<span>Docs — how this works</span><em></em></a>' +
           '<button class="menu-row" data-act="reset">' + ui.icon('trash') + '<span>Erase my data</span><em></em></button>' +
         '</div>' +
         (s.myPosts.length ? '<div class="pad"><h2 class="sec-title">My posts</h2><div class="grid-3">' +
@@ -1055,7 +1058,7 @@ window.SM = window.SM || {};
             return '<a class="grid-cell" href="#/post/' + p2.id + '">' +
               SM.fit.render(outfitFromId(p2.outfitId), SM.store.myLook()) + '</a>';
           }).join('') + '</div></div>' : '') +
-        '</div>';
+        footerHTML() + '</div>';
     },
     mount: function (root) {
       root.addEventListener('click', function (e) {
@@ -1340,9 +1343,9 @@ window.SM = window.SM || {};
       '<p class="foot-mark">Style Me</p>' +
       '<p class="foot-line">Built by Eugène Triniac. Every model and garment drawn in SVG in your browser.</p>' +
       '<p class="foot-links">' +
-      '<a href="https://github.com/eugenetriniac-png/style-me" target="_blank" rel="noopener">Source</a>' +
-      '<a href="#/docs">Docs</a>' +
-      '<a href="#/feed">Feed</a></p>' +
+      '<a href="https://github.com/eugenetriniac-png/style-me" target="_blank" rel="noopener"><span>Source</span></a>' +
+      '<a href="#/docs"><span>Docs</span></a>' +
+      '<a href="#/feed"><span>Feed</span></a></p>' +
       '<p class="foot-note mono">Demo catalogue — invented prices, no payment taken.</p>' +
       '</footer>';
   }
