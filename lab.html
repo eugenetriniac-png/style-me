@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Style Me — render lab</title>
+<style>
+  body { margin:0; background:#0E0F12; color:#F2EFE9; font:13px/1.5 system-ui, sans-serif; padding:20px; }
+  #log { white-space:pre-wrap; font-family:ui-monospace, monospace; color:#8E909B; }
+  .sheet { margin-bottom:20px; }
+</style>
+</head>
+<body>
+<div id="log">rendering…</div>
+<div id="sheets"></div>
+
+<script src="js/materials.js"></script>
+<script src="js/figure.js"></script>
+<script src="js/garment.js"></script>
+<script src="js/data.js"></script>
+<script>window.LAB_OUTFITS=[['knit-crew','jeans-straight','sneaker-court','bag-shoulder'],['tee-black-boxy','cargo-canvas','sneaker-canvas','cap-six-panel'],['dress-slip','jacket-leather','heel-slim'],['shirt-oxford','trouser-pleated','loafer-penny','coat-wool-long'],['hoodie-heavy','joggers-fleece','sneaker-trail','beanie-rib']];window.LAB_FLATS=['coat-wool-long','jacket-denim','tee-heavy','jeans-straight','sneaker-court','knit-cable','shirt-oxford','dress-slip','puffer-black','boot-chelsea','trouser-pleated','bag-tote','hoodie-heavy','cap-six-panel','skirt-pleated','sunglasses-rect','blazer-wool','sneaker-trail'];</script>
+<script src="js/fit.js"></script>
+<script>
+/* ------------------------------------------------------------
+   The render lab. It composes contact sheets, rasterises them and
+   POSTs the PNGs to the dev server so rendering can be reviewed
+   without relying on a live preview pane.
+   ------------------------------------------------------------ */
+(function () {
+  var log = document.getElementById('log');
+  var lines = [];
+  function say(s) { lines.push(s); log.textContent = lines.join('\n'); }
+
+  function place(svg, x, y, w, h) {
+    return svg.replace('<svg ', '<svg x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" ');
+  }
+
+  function sheet(w, h, body, bg) {
+    return '<svg xmlns="http://www.w3.org/2000/svg" width="' + w + '" height="' + h +
+      '" viewBox="0 0 ' + w + ' ' + h + '">' +
+      '<rect width="' + w + '" height="' + h + '" fill="' + (bg || '#15171D') + '"/>' +
+      body + '</svg>';
+  }
+
+  function label(x, y, text, colour) {
+    return '<text x="' + x + '" y="' + y + '" fill="' + (colour || '#8E909B') +
+      '" font-family="system-ui, sans-serif" font-size="13">' +
+      String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;') + '</text>';
+  }
+
+  function rasterise(markup, name, scale) {
+    return new Promise(function (resolve) {
+      var img = new Image();
+      img.onload = function () {
+        var c = document.createElement('canvas');
+        c.width = img.width * (scale || 1.4);
+        c.height = img.height * (scale || 1.4);
+        var ctx = c.getContext('2d');
+        ctx.drawImage(img, 0, 0, c.width, c.height);
+        c.toBlob(function (blob) {
+          fetch('/snap?name=' + name, { method: 'POST', body: blob })
+            .then(function () { say('saved .lab/' + name + '.png  (' + c.width + '×' + c.height + ')'); resolve(); })
+            .catch(function (e) { say('POST failed: ' + e.message); resolve(); });
+        }, 'image/png');
+      };
+      img.onerror = function () { say('rasterise failed for ' + name); resolve(); };
+      img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(markup);
+      var host = document.createElement('div');
+      host.className = 'sheet';
+      host.innerHTML = markup;
+      document.getElementById('sheets').appendChild(host);
+    });
+  }
+
+  var jobs = [];
+
+  /* ---------- figures ---------- */
+  var looks = [
+    { skin:'#F6DFCB', hairColour:'#B98B4E', hairStyle:'long',  build:0.28, height:0.66, frame:0.22 },
+    { skin:'#E3B48D', hairColour:'#2E1F16', hairStyle:'short', build:0.45, height:0.50, frame:0.82 },
+    { skin:'#B27B50', hairColour:'#171310', hairStyle:'curly', build:0.60, height:0.44, frame:0.52 },
+    { skin:'#6A3F24', hairColour:'#171310', hairStyle:'bun',   build:0.36, height:0.72, frame:0.28 },
+    { skin:'#CE9A6E', hairColour:'#4E3220', hairStyle:'bob',   build:0.78, height:0.34, frame:0.62 }
+  ];
+  jobs.push(function () {
+    var W = 5 * 250 + 40, H = 600;
+    var body = looks.map(function (l, i) {
+      return place(SM.figure.render(l), 20 + i * 250, 20, 240, 540) +
+        label(24 + i * 250, 585, 'build ' + l.build + ' · frame ' + l.frame);
+    }).join('');
+    return rasterise(sheet(W, H, body, '#2A2F3C'), 'figures', 1.5);
+  });
+
+  /* ---------- materials ---------- */
+  jobs.push(function () {
+    SM.materials.init();
+    var keys = SM.materials.keys;
+    var cols = 8, cell = 150;
+    var W = cols * cell + 30, H = Math.ceil(keys.length / cols) * (cell + 34) + 20;
+    var body = keys.map(function (k, i) {
+      var x = 15 + (i % cols) * cell, y = 15 + Math.floor(i / cols) * (cell + 34);
+      return '<g><rect x="' + x + '" y="' + y + '" width="' + (cell - 12) + '" height="' + (cell - 12) +
+        '" rx="8" fill="#7A4E32"/>' +
+        '<rect x="' + x + '" y="' + y + '" width="' + (cell - 12) + '" height="' + (cell - 12) +
+        '" rx="8" fill="' + SM.materials.fill(k) + '" style="mix-blend-mode:overlay"/></g>' +
+        label(x + 2, y + cell + 10, k);
+    }).join('');
+    return rasterise(sheet(W, H, body + '<defs>' + SM.materials.defs() + '</defs>', '#15171D'), 'materials', 1.4);
+  });
+
+  /* ---------- product shots ---------- */
+  jobs.push(function () {
+    if (!window.SM.garment || !window.SM.CATALOG) { say('garment.js / data.js not ready'); return Promise.resolve(); }
+    var picks = (window.LAB_FLATS || []).length ? window.LAB_FLATS : SM.CATALOG.items.slice(0, 16).map(function (i) { return i.id; });
+    var cols = 6, cw = 230, ch = 300;
+    var W = cols * cw + 30, H = Math.ceil(picks.length / cols) * (ch + 30) + 20;
+    var body = picks.map(function (id, i) {
+      var it = SM.CATALOG.byId[id];
+      if (!it) return '';
+      var x = 15 + (i % cols) * cw, y = 15 + Math.floor(i / cols) * (ch + 30);
+      return '<rect x="' + x + '" y="' + y + '" width="' + (cw - 14) + '" height="' + ch + '" rx="10" fill="#EFEBE3"/>' +
+        place(SM.garment.productShot(it), x + 8, y + 8, cw - 30, ch - 16) +
+        label(x + 4, y + ch + 18, it.name, '#B9BCC4');
+    }).join('');
+    return rasterise(sheet(W, H, body, '#15171D'), 'flats', 1.35);
+  });
+
+  /* ---------- dressed figures ---------- */
+  jobs.push(function () {
+    if (!window.SM.fit || !window.SM.CATALOG) { say('fit.js not ready'); return Promise.resolve(); }
+    var outfits = window.LAB_OUTFITS || [];
+    if (!outfits.length) return Promise.resolve();
+    var W = outfits.length * 260 + 40, H = 620;
+    var body = outfits.map(function (ids, i) {
+      var items = ids.map(function (id) { return SM.CATALOG.byId[id]; }).filter(Boolean);
+      return place(SM.fit.render({ items: items }, looks[i % looks.length]), 20 + i * 260, 20, 250, 560) +
+        label(24 + i * 260, 600, ids.join(' + ').slice(0, 40));
+    }).join('');
+    return rasterise(sheet(W, H, body, '#2A2F3C'), 'outfits', 1.5);
+  });
+
+  (function run(i) {
+    if (i >= jobs.length) { say('done'); return; }
+    Promise.resolve(jobs[i]()).then(function () { run(i + 1); });
+  })(0);
+})();
+</script>
+</body>
+</html>
