@@ -1,0 +1,18 @@
+# Sorties du render lab (images regenerables)
+.lab/
+
+# Secrets - ne doivent JAMAIS partir sur GitHub
+.env
+.env.local
+*.env
+!.env.example
+
+# Dependances et caches
+node_modules/
+.vercel/
+.wrangler/
+
+# Systeme
+Thumbs.db
+desktop.ini
+.DS_Store

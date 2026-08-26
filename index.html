@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0E0F12">
+<title>Style Me</title>
+<meta name="description" content="Find your style: a personality test, a feed of outfits built for you, and every piece swappable without touching the rest.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Familjen+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@300;400;500&display=swap">
+<link rel="stylesheet" href="css/app.css">
+
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%233A34E8'/><text x='16' y='23' font-family='Futura,sans-serif' font-size='20' font-weight='800' fill='%23F2EFE9' text-anchor='middle'>S</text></svg>">
+</head>
+<body class="booting">
+
+<div class="app" id="app"></div>
+
+<div id="sheet"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<noscript>
+  <p style="padding:40px;font-family:sans-serif">Style Me needs JavaScript: every garment and every model is drawn in the browser.</p>
+</noscript>
+
+<!-- Load order matters: each file adds to the single global SM. -->
+<script src="js/materials.js"></script>
+<script src="js/figure.js"></script>
+<script src="js/garment.js"></script>
+<script src="js/data.js"></script>
+<script src="js/fit.js"></script>
+<script src="js/profile.js"></script>
+<script src="js/stylist.js"></script>
+<script src="js/store.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/views.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
