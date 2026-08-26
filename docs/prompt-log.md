@@ -96,7 +96,8 @@ with a screenshot that looks right.
 codebase, and flagged the three that require my own judgement rather than
 inventing answers for them: the problem statement, the user definition, and the
 UX mockup.
-**Human decision pending:** those three sections.
+**Human decision:** I confirmed the problem statement and the user definition as
+drafted, and produced the mockup myself — see the next entry.
 
 ---
 
