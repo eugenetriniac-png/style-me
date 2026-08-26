@@ -1337,6 +1337,58 @@ input[type=range]::-moz-range-thumb {
   }
 }
 
+/* ============================================================
+   Docs, roadmap and footer
+
+   The docs screen is the one place in the product that is plain
+   reading: a measure narrow enough to read, and no imagery.
+   ============================================================ */
+.docs { padding: 0 20px 40px; }
+.docs-sec { max-width: 62ch; margin: 30px 0; }
+.docs-sec h2 {
+  font-family: var(--display); font-size: 1.15rem; font-weight: 700;
+  margin: 0 0 10px; color: var(--bone);
+}
+.docs-sec p { margin: 0 0 12px; color: var(--bone-2); line-height: 1.65; }
+.docs-list { margin: 0 0 12px; padding-left: 18px; color: var(--bone-2); line-height: 1.65; }
+.docs-list li { margin-bottom: 8px; }
+.docs-list strong, .docs-sec p strong { color: var(--bone); }
+
+.roadmap { list-style: none; margin: 0; padding: 0; max-width: 62ch; }
+.road-row {
+  display: flex; gap: 14px; align-items: baseline;
+  padding: 12px 0; border-top: 1px solid var(--line);
+}
+.road-row:last-child { border-bottom: 1px solid var(--line); }
+.road-tag {
+  flex: none; width: 52px; text-transform: uppercase; letter-spacing: .06em;
+  font-size: .68rem; color: var(--ash-2);
+}
+.road-done .road-tag { color: var(--klein-2); }
+.road-now  .road-tag { color: var(--flame); }
+.road-txt { display: block; min-width: 0; }
+.road-txt strong { display: block; color: var(--bone); font-weight: 600; }
+.road-txt em { display: block; font-style: normal; color: var(--ash); font-size: .92rem; margin-top: 2px; }
+.road-done .road-txt strong { color: var(--bone-2); }
+
+.foot {
+  margin-top: 48px; padding: 26px 0 8px;
+  border-top: 1px solid var(--line); text-align: left;
+}
+.foot-mark { font-family: var(--display); font-weight: 800; font-size: 1rem; margin: 0 0 6px; color: var(--bone); }
+.foot-line { margin: 0 0 12px; color: var(--ash); font-size: .9rem; max-width: 52ch; }
+.foot-links { margin: 0 0 10px; display: flex; gap: 18px; flex-wrap: wrap; }
+.foot-links a { color: var(--bone-2); text-decoration: none; border-bottom: 1px solid var(--line-2); padding-bottom: 1px; }
+.foot-links a:hover { color: var(--bone); border-bottom-color: var(--bone); }
+.foot-note { margin: 0; color: var(--ash-2); }
+
+/* The welcome screen centres its column, so its footer follows suit. */
+.welcome .foot { text-align: center; }
+.welcome .foot-line { margin-left: auto; margin-right: auto; }
+.welcome .foot-links { justify-content: center; }
+
+.welcome-meta { margin: 0 0 14px; color: var(--ash); letter-spacing: .04em; }
+
 </style>
 
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%233A34E8'/><text x='16' y='23' font-family='Futura,sans-serif' font-size='20' font-weight='800' fill='%23F2EFE9' text-anchor='middle'>S</text></svg>">
@@ -3472,8 +3524,9 @@ window.SM = window.SM || {};
        drawing is only a stand-in until one exists. */
     productShot: function (item, opts) {
       opts = opts || {};
-      if (item.images && item.images.length && !opts.forceDrawing) {
-        return '<img class="shot-photo" src="' + item.images[0] + '" alt="' + item.name + '">';
+      if (!opts.forceDrawing && SM.images) {
+        var photo = SM.images.get(item, opts.view || 'product');
+        if (photo) return SM.images.tag(photo, item, opts.view || 'product', 'shot-photo');
       }
       var def = SHAPES[item.shape] || SHAPES.tee;
       var paint = SM.newPaint();
@@ -3689,23 +3742,58 @@ window.SM = window.SM || {};
   add({ id: 'bag-shoulder', name: 'Leather Shoulder Bag', brand: 'A.P.C.', price: 310, colour: '#2E241E', colourName: 'Dark Brown', family: 'brown', material: 'leather', category: 'accessory', shape: 'bagShoulder', tags: ['classic', 'minimal'] });
   add({ id: 'bag-mini', name: 'Structured Mini Bag', brand: 'Jacquemus', price: 550, colour: '#8E2F33', colourName: 'Red', family: 'red', material: 'leather', category: 'accessory', shape: 'bagShoulder', tags: ['colour', 'avantGarde'] });
 
-  var byId = {};
-  items.forEach(function (i) { byId[i.id] = i; });
+  var DEMO_ITEMS = items;
+  var DEMO_BRANDS = SM.BRANDS;
+
+  function index(list) {
+    var by = {};
+    list.forEach(function (i) { by[i.id] = i; });
+    return by;
+  }
 
   SM.CATALOG = {
     items: items,
-    byId: byId,
+    byId: index(items),
+    demo: true,
+
     byCategory: function (cat) {
-      return items.filter(function (i) { return i.category === cat; });
+      return SM.CATALOG.items.filter(function (i) { return i.category === cat; });
     },
+
+    /* An imported product carries its own deep link; a demo one
+       only gets a search on the brand's site, because inventing a
+       product URL would be a lie. */
     searchLink: function (item) {
+      if (item.buyLink) return item.buyLink;
       var b = SM.BRANDS[item.brand];
       var q = encodeURIComponent(item.name);
       return b && b.search ? b.search + q
         : 'https://www.google.com/search?q=' + encodeURIComponent(item.brand + ' ' + item.name);
     },
+
     sizesFor: function (item) {
       return item.category === 'shoes' ? SM.SHOE_SIZES : SM.SIZES;
+    },
+
+    /* Swap in a catalogue imported from a merchant feed. */
+    replace: function (list, brandTiers) {
+      SM.CATALOG.items = list;
+      SM.CATALOG.byId = index(list);
+      SM.CATALOG.demo = false;
+      if (brandTiers) {
+        var brands = {};
+        Object.keys(brandTiers).forEach(function (name) {
+          brands[name] = { tier: brandTiers[name], search: null };
+        });
+        SM.BRANDS = brands;
+      }
+    },
+
+    restore: function () {
+      SM.CATALOG.items = DEMO_ITEMS;
+      SM.CATALOG.byId = index(DEMO_ITEMS);
+      SM.CATALOG.demo = true;
+      SM.BRANDS = DEMO_BRANDS;
     }
   };
 
@@ -4308,7 +4396,23 @@ window.SM = window.SM || {};
   SM.fit = {
     layers: LAYERS,
 
-    render: function (outfit, look) {
+    /* A stable name for whoever is wearing this, so a generated
+       try-on is cached against the right person. */
+    lookKey: function (look) {
+      return (look && look.photo) ? 'me' : 'model';
+    },
+
+    render: function (outfit, look, opts) {
+      opts = opts || {};
+      /* A generated or supplied photograph of this exact outfit on
+         this exact person always beats the drawing. */
+      if (!opts.forceDrawing && SM.images) {
+        var worn = SM.images.getWorn(outfit.id, SM.fit.lookKey(look));
+        if (worn) {
+          return '<img class="worn photo" src="' + worn + '" alt="Outfit worn by a model" ' +
+            'loading="lazy" decoding="async" onerror="SM.images.wornFallback(this,\'' + outfit.id + '\')">';
+        }
+      }
       limbPath = SM.figure.limbPath;
       look = look || {};
       var paint = SM.newPaint();
@@ -5546,9 +5650,10 @@ window.SM = window.SM || {};
           '<h1 class="wordmark">Style<span></span>Me</h1>' +
           '<p class="lede">Twelve questions that are barely about clothes. Then a feed of outfits built ' +
             'for you — and you can take any of them apart, piece by piece.</p>' +
+          '<p class="welcome-meta mono">12 questions · about 3 minutes</p>' +
           '<button class="btn btn-primary btn-lg" data-nav="#/quiz">Take the style test</button>' +
           '<button class="btn btn-ghost" data-nav="#/feed">Skip and browse</button>' +
-        '</div></div>';
+        '</div>' + footerHTML() + '</div>';
     }
   };
 
@@ -6766,6 +6871,76 @@ window.SM = window.SM || {};
     }
   };
 
+  /* ============================================================
+     Docs — what this is, what is real, and what comes next
+     ============================================================ */
+  var ROADMAP = [
+    ['done', 'Style test and scoring', 'Twelve questions, ten axes, a named archetype.'],
+    ['done', 'Outfit engine', 'Affinity, cohesion and colour harmony, recalculated as you like and skip.'],
+    ['done', 'Layered rendering', 'Five independent layers, so one piece can change without the rest moving.'],
+    ['done', 'Feed, shop, community, studio', 'The screens the product needs to be judged as a product.'],
+    ['now', 'Infrastructure', 'Public repo, automatic deployment, a database project standing by.'],
+    ['next', 'Saved outfits in Supabase', 'Today everything lives in localStorage and dies with the browser.'],
+    ['next', 'Real catalogue', 'Swap the demo data for a merchant feed. The item shape is already stable.'],
+    ['later', 'Accounts', 'Carry a wardrobe between devices, and make the community real.'],
+    ['later', 'Sizing', 'Cross the height and weight already collected with brand size charts.']
+  ];
+
+  V.docs = {
+    chrome: true,
+    render: function () {
+      var rows = ROADMAP.map(function (r) {
+        return '<li class="road-row road-' + r[0] + '">' +
+          '<span class="road-tag mono">' + r[0] + '</span>' +
+          '<span class="road-txt"><strong>' + esc(r[1]) + '</strong><em>' + esc(r[2]) + '</em></span></li>';
+      }).join('');
+
+      return '<div class="docs">' + ui.header('Docs', { kicker: 'How this works' }) +
+
+        '<section class="docs-sec"><h2>What Style Me is</h2>' +
+        '<p>Twelve questions that are barely about clothes, then a feed of outfits built for you. ' +
+        'Every outfit opens onto its credits, where any single piece can be swapped without the rest ' +
+        'of the silhouette moving.</p></section>' +
+
+        '<section class="docs-sec"><h2>Nothing here is a photograph</h2>' +
+        '<p>There is no image model and no photo library. Every garment and every model is drawn in ' +
+        'the browser, in SVG, at render time. Fabrics are generated pixel by pixel on a canvas once at ' +
+        'start-up and reused as patterns — denim twill, knit loops, corduroy wales, leather grain.</p>' +
+        '<p>That is what makes swapping one piece honest rather than a claim: changing a garment ' +
+        'rewrites exactly one of five layer groups and leaves the other four nodes untouched.</p></section>' +
+
+        '<section class="docs-sec"><h2>Real and simulated</h2>' +
+        '<ul class="docs-list">' +
+        '<li><strong>Real</strong> — the test and its scoring, the outfit engine, the layered rendering, ' +
+        'the filters, saved items, the bag, local persistence, photo import.</li>' +
+        '<li><strong>Simulated</strong> — the community profiles and their posts are generated at load, ' +
+        'as are the replies in Messages.</li>' +
+        '<li><strong>Demo catalogue</strong> — brands are real so the price tiers mean something, but ' +
+        'product names and prices are invented and labelled as such. Buy buttons open a search on the ' +
+        'brand’s own site, never a fabricated product page. The bag takes no payment.</li>' +
+        '</ul>' +
+        '<p class="muted">Nothing leaves the browser — not your answers, not your photos.</p></section>' +
+
+        '<section class="docs-sec"><h2>Roadmap</h2><ul class="roadmap">' + rows + '</ul></section>' +
+
+        footerHTML() + '</div>';
+    }
+  };
+
+  /* Shared footer. Deliberately absent from the feed, which is full-screen. */
+  function footerHTML() {
+    return '<footer class="foot">' +
+      '<p class="foot-mark">Style Me</p>' +
+      '<p class="foot-line">Built by Eugène Triniac. Every model and garment drawn in SVG in your browser.</p>' +
+      '<p class="foot-links">' +
+      '<a href="https://github.com/eugenetriniac-png/style-me" target="_blank" rel="noopener">Source</a>' +
+      '<a href="#/docs">Docs</a>' +
+      '<a href="#/feed">Feed</a></p>' +
+      '<p class="foot-note mono">Demo catalogue — invented prices, no payment taken.</p>' +
+      '</footer>';
+  }
+  SM.footerHTML = footerHTML;
+
   function only(root, selector, el) {
     root.querySelectorAll(selector).forEach(function (n) { n.classList.remove('on'); });
     el.classList.add('on');
@@ -6803,7 +6978,8 @@ window.SM = window.SM || {};
     { re: /^#\/me$/,                    name: 'me' },
     { re: /^#\/saved(?:\/(\w+))?$/,     name: 'saved', keys: ['tab'] },
     { re: /^#\/bag$/,                   name: 'bag' },
-    { re: /^#\/studio$/,                name: 'studio' }
+    { re: /^#\/studio$/,                name: 'studio' },
+    { re: /^#\/docs$/,                  name: 'docs' }
   ];
 
   function resolve() {
@@ -6841,7 +7017,8 @@ window.SM = window.SM || {};
     feed: 'Feed — Style Me', outfit: 'Outfit — Style Me', item: 'Product — Style Me',
     shop: 'Shop — Style Me', community: 'Community — Style Me', post: 'Post — Style Me',
     person: 'Profile — Style Me', messages: 'Messages — Style Me', thread: 'Chat — Style Me',
-    me: 'You — Style Me', saved: 'Saved — Style Me', bag: 'Bag — Style Me', studio: 'Studio — Style Me'
+    me: 'You — Style Me', saved: 'Saved — Style Me', bag: 'Bag — Style Me', studio: 'Studio — Style Me',
+    docs: 'Docs — Style Me'
   };
 
   SM.render = function () {
@@ -6850,7 +7027,7 @@ window.SM = window.SM || {};
 
     /* First visit goes to the welcome screen, except for the feed,
        which anyone can look at before answering anything. */
-    if (!s.onboarded && ['welcome', 'quiz', 'dna', 'feed'].indexOf(route.name) === -1) {
+    if (!s.onboarded && ['welcome', 'quiz', 'dna', 'feed', 'docs'].indexOf(route.name) === -1) {
       location.hash = '#/';
       return;
     }
@@ -6897,7 +7074,21 @@ window.SM = window.SM || {};
   window.addEventListener('hashchange', SM.render);
 
   /* ---------- start-up ------------------------------------------ */
+
+  /* Routing is hash-based, but /docs is a path anyone might type or
+     link to. vercel.json rewrites it onto index.html; this turns the
+     path back into the hash the router understands, without leaving
+     a dead entry in history. */
+  var PATH_ALIASES = { '/docs': '#/docs' };
+
+  function adoptPathAlias() {
+    var alias = PATH_ALIASES[location.pathname.replace(/\/+$/, '') || '/'];
+    if (!alias || location.hash) return;
+    history.replaceState(null, '', '/' + alias);
+  }
+
   function boot() {
+    adoptPathAlias();
     SM.materials.init();     // fabric tiles, generated once
     SM.store.get();
     SM.communityPosts();

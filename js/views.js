@@ -57,9 +57,10 @@ window.SM = window.SM || {};
           '<h1 class="wordmark">Style<span></span>Me</h1>' +
           '<p class="lede">Twelve questions that are barely about clothes. Then a feed of outfits built ' +
             'for you — and you can take any of them apart, piece by piece.</p>' +
+          '<p class="welcome-meta mono">12 questions · about 3 minutes</p>' +
           '<button class="btn btn-primary btn-lg" data-nav="#/quiz">Take the style test</button>' +
           '<button class="btn btn-ghost" data-nav="#/feed">Skip and browse</button>' +
-        '</div></div>';
+        '</div>' + footerHTML() + '</div>';
     }
   };
 
@@ -1276,6 +1277,76 @@ window.SM = window.SM || {};
       });
     }
   };
+
+  /* ============================================================
+     Docs — what this is, what is real, and what comes next
+     ============================================================ */
+  var ROADMAP = [
+    ['done', 'Style test and scoring', 'Twelve questions, ten axes, a named archetype.'],
+    ['done', 'Outfit engine', 'Affinity, cohesion and colour harmony, recalculated as you like and skip.'],
+    ['done', 'Layered rendering', 'Five independent layers, so one piece can change without the rest moving.'],
+    ['done', 'Feed, shop, community, studio', 'The screens the product needs to be judged as a product.'],
+    ['now', 'Infrastructure', 'Public repo, automatic deployment, a database project standing by.'],
+    ['next', 'Saved outfits in Supabase', 'Today everything lives in localStorage and dies with the browser.'],
+    ['next', 'Real catalogue', 'Swap the demo data for a merchant feed. The item shape is already stable.'],
+    ['later', 'Accounts', 'Carry a wardrobe between devices, and make the community real.'],
+    ['later', 'Sizing', 'Cross the height and weight already collected with brand size charts.']
+  ];
+
+  V.docs = {
+    chrome: true,
+    render: function () {
+      var rows = ROADMAP.map(function (r) {
+        return '<li class="road-row road-' + r[0] + '">' +
+          '<span class="road-tag mono">' + r[0] + '</span>' +
+          '<span class="road-txt"><strong>' + esc(r[1]) + '</strong><em>' + esc(r[2]) + '</em></span></li>';
+      }).join('');
+
+      return '<div class="docs">' + ui.header('Docs', { kicker: 'How this works' }) +
+
+        '<section class="docs-sec"><h2>What Style Me is</h2>' +
+        '<p>Twelve questions that are barely about clothes, then a feed of outfits built for you. ' +
+        'Every outfit opens onto its credits, where any single piece can be swapped without the rest ' +
+        'of the silhouette moving.</p></section>' +
+
+        '<section class="docs-sec"><h2>Nothing here is a photograph</h2>' +
+        '<p>There is no image model and no photo library. Every garment and every model is drawn in ' +
+        'the browser, in SVG, at render time. Fabrics are generated pixel by pixel on a canvas once at ' +
+        'start-up and reused as patterns — denim twill, knit loops, corduroy wales, leather grain.</p>' +
+        '<p>That is what makes swapping one piece honest rather than a claim: changing a garment ' +
+        'rewrites exactly one of five layer groups and leaves the other four nodes untouched.</p></section>' +
+
+        '<section class="docs-sec"><h2>Real and simulated</h2>' +
+        '<ul class="docs-list">' +
+        '<li><strong>Real</strong> — the test and its scoring, the outfit engine, the layered rendering, ' +
+        'the filters, saved items, the bag, local persistence, photo import.</li>' +
+        '<li><strong>Simulated</strong> — the community profiles and their posts are generated at load, ' +
+        'as are the replies in Messages.</li>' +
+        '<li><strong>Demo catalogue</strong> — brands are real so the price tiers mean something, but ' +
+        'product names and prices are invented and labelled as such. Buy buttons open a search on the ' +
+        'brand’s own site, never a fabricated product page. The bag takes no payment.</li>' +
+        '</ul>' +
+        '<p class="muted">Nothing leaves the browser — not your answers, not your photos.</p></section>' +
+
+        '<section class="docs-sec"><h2>Roadmap</h2><ul class="roadmap">' + rows + '</ul></section>' +
+
+        footerHTML() + '</div>';
+    }
+  };
+
+  /* Shared footer. Deliberately absent from the feed, which is full-screen. */
+  function footerHTML() {
+    return '<footer class="foot">' +
+      '<p class="foot-mark">Style Me</p>' +
+      '<p class="foot-line">Built by Eugène Triniac. Every model and garment drawn in SVG in your browser.</p>' +
+      '<p class="foot-links">' +
+      '<a href="https://github.com/eugenetriniac-png/style-me" target="_blank" rel="noopener">Source</a>' +
+      '<a href="#/docs">Docs</a>' +
+      '<a href="#/feed">Feed</a></p>' +
+      '<p class="foot-note mono">Demo catalogue — invented prices, no payment taken.</p>' +
+      '</footer>';
+  }
+  SM.footerHTML = footerHTML;
 
   function only(root, selector, el) {
     root.querySelectorAll(selector).forEach(function (n) { n.classList.remove('on'); });

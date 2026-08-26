@@ -27,7 +27,8 @@ window.SM = window.SM || {};
     { re: /^#\/me$/,                    name: 'me' },
     { re: /^#\/saved(?:\/(\w+))?$/,     name: 'saved', keys: ['tab'] },
     { re: /^#\/bag$/,                   name: 'bag' },
-    { re: /^#\/studio$/,                name: 'studio' }
+    { re: /^#\/studio$/,                name: 'studio' },
+    { re: /^#\/docs$/,                  name: 'docs' }
   ];
 
   function resolve() {
@@ -65,7 +66,8 @@ window.SM = window.SM || {};
     feed: 'Feed — Style Me', outfit: 'Outfit — Style Me', item: 'Product — Style Me',
     shop: 'Shop — Style Me', community: 'Community — Style Me', post: 'Post — Style Me',
     person: 'Profile — Style Me', messages: 'Messages — Style Me', thread: 'Chat — Style Me',
-    me: 'You — Style Me', saved: 'Saved — Style Me', bag: 'Bag — Style Me', studio: 'Studio — Style Me'
+    me: 'You — Style Me', saved: 'Saved — Style Me', bag: 'Bag — Style Me', studio: 'Studio — Style Me',
+    docs: 'Docs — Style Me'
   };
 
   SM.render = function () {
@@ -74,7 +76,7 @@ window.SM = window.SM || {};
 
     /* First visit goes to the welcome screen, except for the feed,
        which anyone can look at before answering anything. */
-    if (!s.onboarded && ['welcome', 'quiz', 'dna', 'feed'].indexOf(route.name) === -1) {
+    if (!s.onboarded && ['welcome', 'quiz', 'dna', 'feed', 'docs'].indexOf(route.name) === -1) {
       location.hash = '#/';
       return;
     }
@@ -121,7 +123,21 @@ window.SM = window.SM || {};
   window.addEventListener('hashchange', SM.render);
 
   /* ---------- start-up ------------------------------------------ */
+
+  /* Routing is hash-based, but /docs is a path anyone might type or
+     link to. vercel.json rewrites it onto index.html; this turns the
+     path back into the hash the router understands, without leaving
+     a dead entry in history. */
+  var PATH_ALIASES = { '/docs': '#/docs' };
+
+  function adoptPathAlias() {
+    var alias = PATH_ALIASES[location.pathname.replace(/\/+$/, '') || '/'];
+    if (!alias || location.hash) return;
+    history.replaceState(null, '', '/' + alias);
+  }
+
   function boot() {
+    adoptPathAlias();
     SM.materials.init();     // fabric tiles, generated once
     SM.store.get();
     SM.communityPosts();

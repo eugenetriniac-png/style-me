@@ -1323,3 +1323,55 @@ input[type=range]::-moz-range-thumb {
     scroll-behavior: auto !important;
   }
 }
+
+/* ============================================================
+   Docs, roadmap and footer
+
+   The docs screen is the one place in the product that is plain
+   reading: a measure narrow enough to read, and no imagery.
+   ============================================================ */
+.docs { padding: 0 20px 40px; }
+.docs-sec { max-width: 62ch; margin: 30px 0; }
+.docs-sec h2 {
+  font-family: var(--display); font-size: 1.15rem; font-weight: 700;
+  margin: 0 0 10px; color: var(--bone);
+}
+.docs-sec p { margin: 0 0 12px; color: var(--bone-2); line-height: 1.65; }
+.docs-list { margin: 0 0 12px; padding-left: 18px; color: var(--bone-2); line-height: 1.65; }
+.docs-list li { margin-bottom: 8px; }
+.docs-list strong, .docs-sec p strong { color: var(--bone); }
+
+.roadmap { list-style: none; margin: 0; padding: 0; max-width: 62ch; }
+.road-row {
+  display: flex; gap: 14px; align-items: baseline;
+  padding: 12px 0; border-top: 1px solid var(--line);
+}
+.road-row:last-child { border-bottom: 1px solid var(--line); }
+.road-tag {
+  flex: none; width: 52px; text-transform: uppercase; letter-spacing: .06em;
+  font-size: .68rem; color: var(--ash-2);
+}
+.road-done .road-tag { color: var(--klein-2); }
+.road-now  .road-tag { color: var(--flame); }
+.road-txt { display: block; min-width: 0; }
+.road-txt strong { display: block; color: var(--bone); font-weight: 600; }
+.road-txt em { display: block; font-style: normal; color: var(--ash); font-size: .92rem; margin-top: 2px; }
+.road-done .road-txt strong { color: var(--bone-2); }
+
+.foot {
+  margin-top: 48px; padding: 26px 0 8px;
+  border-top: 1px solid var(--line); text-align: left;
+}
+.foot-mark { font-family: var(--display); font-weight: 800; font-size: 1rem; margin: 0 0 6px; color: var(--bone); }
+.foot-line { margin: 0 0 12px; color: var(--ash); font-size: .9rem; max-width: 52ch; }
+.foot-links { margin: 0 0 10px; display: flex; gap: 18px; flex-wrap: wrap; }
+.foot-links a { color: var(--bone-2); text-decoration: none; border-bottom: 1px solid var(--line-2); padding-bottom: 1px; }
+.foot-links a:hover { color: var(--bone); border-bottom-color: var(--bone); }
+.foot-note { margin: 0; color: var(--ash-2); }
+
+/* The welcome screen centres its column, so its footer follows suit. */
+.welcome .foot { text-align: center; }
+.welcome .foot-line { margin-left: auto; margin-right: auto; }
+.welcome .foot-links { justify-content: center; }
+
+.welcome-meta { margin: 0 0 14px; color: var(--ash); letter-spacing: .04em; }
