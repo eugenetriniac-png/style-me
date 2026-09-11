@@ -192,46 +192,221 @@ window.SM = window.SM || {};
     return signals.sort(function (a, b) { return a.at - b.at; });
   }
 
-  /* The outfit builder treats a budget as a preference: when nothing
-     in a category is cheap enough, it falls back to the whole
-     category, price ignored. Found in testing — a €150 budget came
-     back at €340 while a complete outfit exists at €138. The Core
-     promises the budget, so it repairs the outfit afterwards:
-       1. drop what an outfit can live without, dearest first
-       2. bring each essential down until the total fits
-       3. spend what is left on the best-matching piece that fits */
+  /* ---------- dressing what was actually said --------------------
+     The outfit builder only knows axes. Found in live testing: a card
+     that said "left out, because you said so: colour" showed a green
+     cardigan and a blue shirt, and someone who wrote "a leather
+     jacket, heavy boots" got a beige trench and sneakers. So the Core
+     passes over the built outfit, in order of what matters most:
+       1. pieces the person named go in
+       2. what they refused comes out — colour included
+       3. the budget holds, whatever it costs 1 and 2
+     Whatever cannot survive the budget is said on the card. */
+
+  /* [pattern, label, category, which catalogue items count] */
+  function nameIs(re) { return function (i) { return re.test(i.name); }; }
+  var PIECES = [
+    [/\bleather jacket\b|\bbiker\b/, 'leather jacket', 'outer', function (i) { return i.material === 'leather'; }],
+    [/\btrench\b/, 'trench', 'outer', nameIs(/trench/i)],
+    [/\bblazers?\b/, 'blazer', 'outer', nameIs(/blazer/i)],
+    [/\bparkas?\b/, 'parka', 'outer', nameIs(/parka/i)],
+    [/\bpuffer\b/, 'puffer', 'outer', nameIs(/puffer/i)],
+    [/\bbombers?\b/, 'bomber', 'outer', nameIs(/bomber/i)],
+    [/\b(denim|jean) jacket\b/, 'denim jacket', 'outer', nameIs(/denim jacket|trucker/i)],
+    [/\bcardigans?\b/, 'cardigan', 'outer', nameIs(/cardigan/i)],
+    [/\bcoats?\b/, 'coat', 'outer', nameIs(/coat/i)],
+    [/\bhood(ie|ies|y)\b/, 'hoodie', 'top', nameIs(/hoodie/i)],
+    [/\b(jumpers?|sweaters?|knitwear)\b/, 'jumper', 'top', nameIs(/jumper|knit|crew neck|roll neck/i)],
+    [/\b(t-?shirts?|tees?)\b/, 't-shirt', 'top', nameIs(/\btee\b/i)],
+    [/\b(button[- ](up|down)|oxford)\b|(?<!t-)\bshirts?\b/, 'shirt', 'top', nameIs(/shirt$/i)],
+    [/\bcargos?\b/, 'cargo trousers', 'bottom', nameIs(/cargo/i)],
+    [/\bjeans\b/, 'jeans', 'bottom', nameIs(/jeans/i)],
+    [/\bcorduroy|\bcords\b/, 'corduroy', 'bottom', nameIs(/corduroy/i)],
+    [/\b(chinos?|trousers|pants)\b/, 'trousers', 'bottom', nameIs(/trousers/i)],
+    [/\bskirts?\b/, 'skirt', 'bottom', nameIs(/skirt/i)],
+    [/\bjoggers?\b/, 'joggers', 'bottom', nameIs(/jogger/i)],
+    [/\bshorts\b/, 'shorts', 'bottom', nameIs(/shorts/i)],
+    [/\b(dresses|(a|my|the|slip|summer|maxi|midi|long|wrap|black) dress)\b/, 'dress', 'dress', function () { return true; }],
+    [/\bdoc martens\b|\bdr\.? ?martens\b/, 'Doc Martens', 'shoes', function (i) { return /martens/i.test(i.brand); }],
+    [/\bboots?\b/, 'boots', 'shoes', nameIs(/boot/i)],
+    [/\bloafers?\b/, 'loafers', 'shoes', nameIs(/loafer/i)],
+    [/\b(derb(y|ies)|brogues?)\b/, 'derbies', 'shoes', nameIs(/derby/i)],
+    [/\b(sneakers?|trainers?|kicks)\b/, 'sneakers', 'shoes', nameIs(/sneaker|runner|trail shoe/i)],
+    [/\bheels?\b/, 'heels', 'shoes', nameIs(/heel/i)],
+    [/\bsandals?\b/, 'sandals', 'shoes', nameIs(/sandal/i)],
+    [/\bcaps?\b/, 'cap', 'accessory', nameIs(/\bcap\b/i)],
+    [/\bbeanies?\b/, 'beanie', 'accessory', nameIs(/beanie/i)],
+    [/\b(scarf|scarves)\b/, 'scarf', 'accessory', nameIs(/scarf/i)],
+    [/\bsunglasses\b/, 'sunglasses', 'accessory', nameIs(/sunglasses/i)]
+  ];
+
+  var NEUTRALS = ['black', 'white', 'grey', 'beige', 'brown'];
+  var DARK = ['black', 'grey', 'white'];
   var OPTIONAL = { outer: 1, accessory: 1 };
 
-  function fitBudget(outfit, axes, budget) {
-    if (!budget || outfit.total <= budget) return outfit;
-    var items = outfit.items.slice();
-    function sum() { return items.reduce(function (a, i) { return a + i.price; }, 0); }
-    function room(except) { return budget - (sum() - except.price); }
-    function best(category, maxPrice) {
-      return SM.CATALOG.byCategory(category)
-        .filter(function (i) { return i.price <= maxPrice; })
-        .sort(function (a, b) { return SM.affinity(b, axes) - SM.affinity(a, axes) || a.price - b.price; })[0];
-    }
-    function cheapest(category) {
-      return SM.CATALOG.byCategory(category).slice().sort(function (a, b) { return a.price - b.price; })[0];
-    }
+  /* Colour words, by the catalogue's colour families. "Nothing black"
+     bans a family the same way "never any colour" bans all of them. */
+  var FAMILY_WORDS = {
+    black: /\bblack\b/g, white: /\b(white|off[- ]white|cream|ecru)\b/g, grey: /\b(grey|gray)\b/g,
+    beige: /\bbeige\b/g, brown: /\bbrown\b/g, blue: /\b(blue|navy)\b/g, green: /\b(green|olive|khaki)\b/g,
+    red: /\b(red|burgundy)\b/g, pink: /\bpink\b/g, yellow: /\b(yellow|mustard)\b/g
+  };
+  var FAMILIES = Object.keys(FAMILY_WORDS);
 
-    items.filter(function (i) { return OPTIONAL[i.category]; })
-      .sort(function (a, b) { return b.price - a.price; })
-      .forEach(function (i) { if (sum() > budget) items.splice(items.indexOf(i), 1); });
-
-    items.slice().sort(function (a, b) { return b.price - a.price; }).forEach(function (i) {
-      if (sum() <= budget) return;
-      items[items.indexOf(i)] = best(i.category, room(i)) || cheapest(i.category);
+  function readConstraints(text, signals) {
+    var pins = [], refused = [], taken = {};
+    PIECES.map(function (p) {
+      var m = p[0].exec(text);
+      if (!m) return null;
+      var clause = clauseBefore(text, m.index);
+      return { label: p[1], category: p[2], test: p[3], at: m.index,
+        negated: NEGATOR.test(clause) && !UNNEGATED.test(clause) };
+    }).filter(Boolean).sort(function (a, b) { return a.at - b.at; }).forEach(function (p) {
+      if (p.negated) { refused.push(p); return; }
+      /* one named piece per slot, the first one mentioned; a dress and a
+         top or bottom cannot both be pinned */
+      if (taken[p.category] || (p.category === 'dress' && (taken.top || taken.bottom)) ||
+          ((p.category === 'top' || p.category === 'bottom') && taken.dress)) return;
+      if (p.category !== 'accessory') taken[p.category] = true;
+      pins.push(p);
     });
 
-    if (sum() <= budget) {
+    function said(cue, negated) {
+      return signals.some(function (s) { return s.cue === cue && s.negated === negated; });
+    }
+    var banned = FAMILIES.filter(function (f) {
+      var re = FAMILY_WORDS[f], m;
+      re.lastIndex = 0;
+      while ((m = re.exec(text))) {
+        var clause = clauseBefore(text, m.index);
+        if (NEGATOR.test(clause) && !UNNEGATED.test(clause)) return true;
+      }
+      return false;
+    });
+    var noColour = said('colour', true) || said('bright', true);
+    var dark = (said('black', false) || said('all black', false)) && banned.indexOf('black') === -1;
+    var mode = said('all black', false) ? 'dark' : noColour ? (dark ? 'dark' : 'neutral') : null;
+    var base = mode === 'dark' ? DARK : mode === 'neutral' ? NEUTRALS : FAMILIES;
+    var colours = mode || banned.length ? base.filter(function (f) { return banned.indexOf(f) === -1; }) : null;
+    return { pins: pins, refused: refused, colours: colours, mode: mode, banned: banned };
+  }
+
+  function dressFor(built, axes, c, budget) {
+    var items = built.items.slice();
+    function byMatch(a, b) { return SM.affinity(b, axes) - SM.affinity(a, axes) || a.price - b.price; }
+    function allowed(i) {
+      if (c.colours && c.colours.indexOf(i.family) === -1) return false;
+      return !c.refused.some(function (p) { return p.category === i.category && p.test(i); });
+    }
+    function pinFor(category) {
+      return category === 'accessory' ? null : c.pins.filter(function (p) { return p.category === category; })[0];
+    }
+    function honoursPin(i) { var p = pinFor(i.category); return !p || p.test(i); }
+    function named(i) { return c.pins.some(function (p) { return p.category === i.category && p.test(i); }); }
+    function sum() { return items.reduce(function (a, i) { return a + i.price; }, 0); }
+    function has(category) { return items.some(function (i) { return i.category === category; }); }
+
+    /* The best piece for a slot, loosening one rule at a time: the
+       named kind in an allowed colour, the named kind, any allowed
+       piece, anything. */
+    function choose(category, maxPrice, pin) {
+      var pool = SM.CATALOG.byCategory(category).filter(function (i) {
+        return (maxPrice === undefined || i.price <= maxPrice) && items.indexOf(i) === -1;
+      });
+      var tiers = [
+        pool.filter(function (i) { return (!pin || pin.test(i)) && allowed(i); }),
+        pin ? pool.filter(function (i) { return pin.test(i); }) : [],
+        pool.filter(allowed),
+        pool
+      ];
+      for (var t = 0; t < tiers.length; t++) if (tiers[t].length) return tiers[t].sort(byMatch)[0];
+      return null;
+    }
+
+    /* A dress nobody asked for, under a colour rule, becomes a top and a
+       bottom: the catalogue has two neutral dresses, at €650 and €790,
+       and dozens of neutral separates. */
+    if (c.colours && has('dress') && !c.pins.some(function (p) { return p.category === 'dress'; })) {
+      items = items.filter(function (i) { return i.category !== 'dress'; });
+      ['top', 'bottom'].forEach(function (k) { if (!has(k)) items.push(choose(k, undefined, pinFor(k))); });
+    }
+
+    /* 1. named pieces go in */
+    c.pins.forEach(function (p) {
+      if (items.some(function (i) { return i.category === p.category && p.test(i); })) return;
+      if (p.category === 'dress') items = items.filter(function (i) { return i.category !== 'top' && i.category !== 'bottom'; });
+      if ((p.category === 'top' || p.category === 'bottom') && has('dress')) {
+        items = items.filter(function (i) { return i.category !== 'dress'; });
+        var other = p.category === 'top' ? 'bottom' : 'top';
+        if (!has(other)) items.push(choose(other, undefined, pinFor(other)));
+      }
+      if (p.category !== 'accessory') items = items.filter(function (i) { return i.category !== p.category; });
+      var piece = choose(p.category, undefined, p);
+      if (piece) items.push(piece);
+    });
+
+    /* 2. refusals come out, colour included */
+    items = items.map(function (i) {
+      if (allowed(i) && honoursPin(i)) return i;
+      var keep = items.indexOf(i);
+      items[keep] = null;                       // free the slot so choose() can reuse the category
+      var next = choose(i.category, undefined, pinFor(i.category)) || i;
+      items[keep] = next;
+      return next;
+    });
+
+    /* 3. the budget holds */
+    if (budget && sum() > budget) {
+      items.filter(function (i) { return OPTIONAL[i.category]; })
+        .sort(function (a, b) { return (named(a) - named(b)) || b.price - a.price; })
+        .forEach(function (i) { if (sum() > budget) items.splice(items.indexOf(i), 1); });
+
+      /* Pieces nobody named are cut down first. When nothing fits the
+         room left, the cheapest piece that still respects what was
+         refused — each pass frees room for the next. Only if three
+         passes cannot make it fit does the budget overrule a refusal:
+         at €150 the cheapest shoe in the catalogue is a boot, but
+         someone who hates boots can still get €143 without one. */
+      function cheapest(category, strict) {
+        return SM.CATALOG.byCategory(category).filter(function (x) { return items.indexOf(x) === -1 && (!strict || allowed(x)); })
+          .sort(function (a, b) { return a.price - b.price; })[0];
+      }
+      for (var pass = 0; pass < 4 && sum() > budget; pass++) {
+        var strict = pass < 3;
+        items.slice().sort(function (a, b) { return (named(a) - named(b)) || b.price - a.price; }).forEach(function (i) {
+          if (sum() <= budget) return;
+          var at = items.indexOf(i);
+          var room = budget - (sum() - i.price);
+          items[at] = null;
+          var next = choose(i.category, room, pinFor(i.category));
+          if (next && strict && !allowed(next) && allowed(i)) next = null;
+          next = next || cheapest(i.category, strict) || cheapest(i.category, false);
+          items[at] = next && next.price < i.price ? next : i;
+        });
+      }
+
+      /* spend what is left on a better match, never breaking 1 or 2 */
       items.slice().sort(function (a, b) { return SM.affinity(a, axes) - SM.affinity(b, axes); }).forEach(function (i) {
-        var better = best(i.category, room(i));
-        if (better && SM.affinity(better, axes) > SM.affinity(i, axes)) items[items.indexOf(i)] = better;
+        var at = items.indexOf(i);
+        var room = budget - (sum() - i.price);
+        items[at] = null;
+        var better = choose(i.category, room, pinFor(i.category));
+        var ok = better && SM.affinity(better, axes) > SM.affinity(i, axes) &&
+          (!allowed(i) || allowed(better)) && (!named(i) || named(better));
+        items[at] = ok ? better : i;
       });
     }
-    return SM.stylist.wrap(items, { axes: axes });
+
+    var outfit = SM.stylist.wrap(items.filter(Boolean), { axes: axes });
+    outfit.named = c.pins.filter(function (p) {
+      return outfit.items.some(function (i) { return i.category === p.category && p.test(i); });
+    });
+    outfit.missed = c.pins.filter(function (p) { return outfit.named.indexOf(p) === -1; });
+    outfit.colours = c.colours;
+    outfit.mode = c.mode;
+    outfit.banned = c.banned;
+    outfit.offColour = c.colours ? outfit.items.filter(function (i) { return c.colours.indexOf(i.family) === -1; }) : [];
+    return outfit;
   }
 
   function hash(s) {
@@ -275,9 +450,11 @@ window.SM = window.SM || {};
     /* The outfit comes from the Week 0 engine, seeded by the input so
        the same words always dress the same way. */
     var seed = 'core:' + hash(lower + '|' + occasion + '|' + budget);
+    var constraints = readConstraints(lower, signals);
     var filters = SM.emptyFilters();
     filters.budgetTotal = budget;
-    var outfit = fitBudget(SM.stylist.build({ axes: axes, seed: seed }, filters, seed), axes, budget);
+    if (constraints.colours) filters.colours = constraints.colours.slice();
+    var outfit = dressFor(SM.stylist.build({ axes: axes, seed: seed }, filters, seed), axes, constraints, budget);
 
     var distinct = positives.length + (signals.length - positives.length) * 0.5;
     var confidence = distinct >= 6 ? 'high' : distinct >= 3 ? 'medium' : 'low';
@@ -302,12 +479,39 @@ window.SM = window.SM || {};
       A[top[0]].label + ' — ' + A[top[0]].note + ' — and ' + A[top[1]].label + ' — ' + A[top[1]].note + '.'];
 
     var refused = signals.filter(function (s) { return s.negated; }).map(function (s) { return s.word; });
+    /* Only claim the colour rule held if it did. */
     if (refused.length) parts.push('Left out, because you said so: ' + refused.join(', ') + '.');
+    /* A banned colour already reads as "left out"; it only needs its own
+       sentence when the budget forced an exception. */
+    if (outfit.colours && (outfit.mode || outfit.offColour.length)) {
+      var rule = outfit.mode
+        ? 'Kept to ' + (outfit.mode === 'dark' ? 'black, grey and white' : 'neutrals') +
+          (outfit.banned.length ? ', without ' + outfit.banned.join(' or ') : '')
+        : 'Nothing in ' + outfit.banned.join(' or ');
+      var off = outfit.offColour.map(function (i) { return i.name.toLowerCase(); });
+      parts.push(rule + (off.length
+        ? ' where the budget allows — the ' + off.join(' and ') + (off.length > 1 ? ' are' : ' is') + ' the exception'
+        : '') + '.');
+    }
 
-    var key = ['outer', 'dress', 'top'].map(function (c) {
-      return outfit.items.filter(function (i) { return i.category === c; })[0];
-    }).filter(Boolean)[0] || outfit.items[0];
-    if (key) parts.push('Start with the ' + key.name.toLowerCase() + ' from ' + key.brand + ' and build out from it.');
+    /* The piece to start from is one they named, if any survived. */
+    var namedItems = outfit.items.filter(function (i) {
+      return outfit.named.some(function (p) { return p.category === i.category && p.test(i); });
+    });
+    if (namedItems.length) {
+      parts.push('Built around what you named: ' + namedItems.map(function (i) {
+        return 'the ' + i.name.toLowerCase() + ' from ' + i.brand;
+      }).join(' and ') + '.');
+    } else {
+      var key = ['outer', 'dress', 'top'].map(function (c) {
+        return outfit.items.filter(function (i) { return i.category === c; })[0];
+      }).filter(Boolean)[0] || outfit.items[0];
+      if (key) parts.push('Start with the ' + key.name.toLowerCase() + ' from ' + key.brand + ' and build out from it.');
+    }
+    if (outfit.missed.length) {
+      parts.push('Not in the catalogue' + (budget ? ' within your budget' : '') + ': ' +
+        outfit.missed.map(function (p) { return p.label; }).join(', ') + '.');
+    }
     if (budget) {
       parts.push(outfit.total <= budget
         ? 'The whole outfit comes to ' + SM.ui.price(outfit.total) + ', inside your ' + SM.ui.price(budget) + '.'
@@ -358,7 +562,8 @@ window.SM = window.SM || {};
       '3. The occasion nudges and never decides: at most 3 points before normalising.',
       '4. No cue at all: return {"error": "nosignal"}. Every cue negated: return {"error": "onlynegative"}. Never fall back to a default archetype.',
       '5. Name the archetype from the two strongest axes, using the Style Me list.',
-      '6. The thesis is at most three sentences: what the core is built on, what was left out because the person said so, and where to start.'
+      '6. The thesis is at most three sentences: what the core is built on, what was left out because the person said so, and where to start.',
+      '7. List the pieces the person names ("a leather jacket", "my Doc Martens") and the colours they refuse. They are constraints on the outfit, not style signals only.'
     ].join('\n'),
     user: [
       'Description: {{text}}',
@@ -372,6 +577,8 @@ window.SM = window.SM || {};
       '  "archetype": "…",',
       '  "thesis": "…",',
       '  "explore": ["axis", "axis"],',
+      '  "named": ["…"],',
+      '  "refusedColours": ["…"],',
       '  "confidence": "low" | "medium" | "high"',
       '}'
     ].join('\n')

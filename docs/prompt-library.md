@@ -44,6 +44,7 @@ Rules:
 4. No cue at all: return {"error": "nosignal"}. Every cue negated: return {"error": "onlynegative"}. Never fall back to a default archetype.
 5. Name the archetype from the two strongest axes, using the Style Me list.
 6. The thesis is at most three sentences: what the core is built on, what was left out because the person said so, and where to start.
+7. List the pieces the person names ("a leather jacket", "my Doc Martens") and the colours they refuse. They are constraints on the outfit, not style signals only.
 ```
 
 ### User prompt
@@ -60,9 +61,17 @@ Return only JSON:
   "archetype": "…",
   "thesis": "…",
   "explore": ["axis", "axis"],
+  "named": ["…"],
+  "refusedColours": ["…"],
   "confidence": "low" | "medium" | "high"
 }
 ```
+
+**Changed in v1, after live testing:** rule 7 and the two fields that carry it.
+The first version treated *"a leather jacket, heavy boots"* and *"I never wear
+colour"* as style signals only, so the card could say "left out: colour" above
+a green cardigan. Named pieces and refused colours are now constraints on the
+outfit; what the budget forces through anyway is said on the card.
 
 ### Why it is written this way
 
@@ -76,6 +85,10 @@ Return only JSON:
   result. An explicit `nosignal` is honest and testable.
 - **The occasion is capped.** Otherwise choosing "Work" would turn everyone
   Classic, whatever they wrote.
+- **What someone names is a constraint.** A person who writes "my Doc Martens"
+  and gets canvas sneakers stops trusting everything else on the card.
+  Priority order in the rules version: named pieces go in, refusals come out,
+  and the budget holds whatever it costs the first two — out loud.
 
 ### Known limits of the rules version
 
