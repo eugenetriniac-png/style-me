@@ -67,7 +67,8 @@ function ConvertFrom-Md([string]$file) {
     if ($line -match '^>\s?(.*)') {
       if (-not $cur -or $cur.t -ne 'quote') { $cur = @{ t = 'quote'; text = '' }; [void]$blocks.Add($cur) }
       # numbered steps inside a quote keep their own line
-      $cur.text += $(if ($Matches[1] -match '^\d+\.\s') { "`n" } else { ' ' }) + $Matches[1]; continue
+      $quoted = $Matches[1]                                # before the next -match replaces $Matches
+      $cur.text += $(if ($quoted -match '^\d+\.\s') { "`n" } else { ' ' }) + $quoted; continue
     }
     # "**Label:** value" lines stay on their own line, as in the source
     if ($cur -and $cur.t -eq 'p' -and $line -match '^\*\*[^*]+:\*\*') { $cur.text += "`n" + $line.Trim(); continue }
@@ -115,21 +116,37 @@ $commitRows = ($commits | ForEach-Object {
   '<tr><td><code>' + $c[0] + '</code></td><td>' + $c[1] + '</td><td>' + (Esc $c[2]) + '</td></tr>'
 }) -join "`n"
 
-$deployRows = ''
-$deployCount = 0
+# The GitHub API allows 60 unauthenticated requests an hour. Every good read
+# is kept in evidence/deployments.json; if the API refuses, the PDF uses that
+# copy and says when it was read, rather than printing an error.
+$deployCache = Join-Path $here 'evidence\deployments.json'
+$deployNote = ''
+$deploys = @()
 try {
   $h = @{ 'User-Agent' = 'style-me-submission' }
   $deps = Invoke-RestMethod -Uri 'https://api.github.com/repos/eugenetriniac-png/style-me/deployments?per_page=30' -Headers $h -TimeoutSec 20
   $deps = @($deps | Where-Object { $_.created_at -ge $since } | Sort-Object created_at)
   foreach ($d in $deps) {
     $st = Invoke-RestMethod -Uri $d.statuses_url -Headers $h -TimeoutSec 20
-    $state = if ($st.Count) { $st[0].state } else { 'pending' }
-    $local = [DateTimeOffset]::Parse($d.created_at).ToLocalTime().ToString('dd MMM HH:mm', [Globalization.CultureInfo]::InvariantCulture)
-    $deployRows += '<tr><td><code>' + $d.sha.Substring(0, 7) + '</code></td><td>' + $local +
-      '</td><td>' + $d.environment + '</td><td>' + $state + '</td><td>' + $d.creator.login + '</td></tr>' + "`n"
-    $deployCount++
+    $deploys += [ordered]@{ sha = $d.sha.Substring(0, 7); createdAt = $d.created_at; environment = $d.environment
+      state = $(if ($st.Count) { $st[0].state } else { 'pending' }); by = $d.creator.login }
   }
-} catch { $deployRows = '<tr><td colspan="5">GitHub API unreachable when this PDF was built: ' + (Esc $_.Exception.Message) + '</td></tr>' }
+  [ordered]@{ readAt = (Get-Date).ToString('yyyy-MM-dd HH:mm'); deployments = $deploys } | ConvertTo-Json -Depth 5 |
+    Out-File -Encoding utf8 $deployCache
+} catch {
+  if (Test-Path $deployCache) {
+    $cached = Get-Content -Raw -Encoding UTF8 $deployCache | ConvertFrom-Json
+    $deploys = @($cached.deployments)
+    $deployNote = ' The GitHub API was rate-limited when this PDF was built; the table is the last successful read, at ' + $cached.readAt + '.'
+  } else {
+    $deployNote = ' The GitHub API was unreachable when this PDF was built: ' + (Esc $_.Exception.Message)
+  }
+}
+$deployRows = ($deploys | ForEach-Object {
+  $local = [DateTimeOffset]::Parse($_.createdAt).ToLocalTime().ToString('dd MMM HH:mm', [Globalization.CultureInfo]::InvariantCulture)
+  '<tr><td><code>' + $_.sha + '</code></td><td>' + $local + '</td><td>' + $_.environment + '</td><td>' + $_.state + '</td><td>' + $_.by + '</td></tr>'
+}) -join "`n"
+$deployCount = @($deploys).Count
 
 $commitCount = @($commits).Count
 
@@ -143,7 +160,7 @@ $sections = @(
   '<div class="brk"></div><h1>Build evidence — commits and deployments</h1>' +
     "<p>Read from <code>git log</code> and the GitHub deployments API when this PDF was built. $commitCount commits and $deployCount Vercel deployments since $since.</p>" +
     '<h2>Commits</h2><table><tr><th>Commit</th><th>Local time</th><th>Message</th></tr>' + $commitRows + '</table>' +
-    '<h2>Vercel deployments</h2><p>Recorded on GitHub by the Vercel integration; times are local, like the commits.</p>' +
+    '<h2>Vercel deployments</h2><p>Recorded on GitHub by the Vercel integration; times are local, like the commits.' + $deployNote + '</p>' +
     '<table><tr><th>Commit</th><th>Created</th><th>Environment</th><th>Status</th><th>By</th></tr>' + $deployRows + '</table>',
   '<div class="brk"></div>' + (ConvertFrom-Md 'supabase-evidence.md'),
   '<div class="brk"></div>' + (ConvertFrom-Md 'test-evidence.md'),
