@@ -26,7 +26,7 @@ $css  = Read-Utf8 (Join-Path $root 'css\app.css')
 $html = $html.Replace('<link rel="stylesheet" href="css/app.css">', "<style>`n$css`n</style>")
 
 # --- inline the scripts, in declared order ------------------------
-$scripts = @('materials','figure','garment','data','fit','profile','stylist','store','core','ui','views','app')
+$scripts = @('materials','figure','garment','data','fit','profile','stylist','store','core','config','db','ui','views','app')
 foreach ($name in $scripts) {
   $js = Read-Utf8 (Join-Path $root "js\$name.js")
   $tag = '<script src="js/' + $name + '.js"></script>'

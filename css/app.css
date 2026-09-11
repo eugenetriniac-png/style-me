@@ -1462,6 +1462,27 @@ input[type=range]::-moz-range-thumb {
 .core-fig svg { width: 100%; height: 100%; }
 .core-side-info { min-width: 0; }
 .core-meta { display: flex; justify-content: space-between; gap: 8px; margin: 10px 0 12px; color: var(--ash); }
+.core-card .btn:disabled { opacity: .72; cursor: default; transform: none; }
+.core-card .btn .ic { width: 18px; height: 18px; }
+.core-save-msg { margin-top: 8px; font-size: 13px; color: var(--ash); }
+.core-save-msg.err { color: var(--flame); }
+.core-save-msg:empty { display: none; }
+
+.core-dash { margin-top: 36px; }
+.core-dash-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.core-total { display: flex; align-items: baseline; gap: 8px; }
+.core-total strong { font-family: var(--display); font-size: 28px; font-weight: 800; }
+.core-dash-note { color: var(--ash); margin-bottom: 12px; }
+.core-mini-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(168px, 1fr)); gap: 12px; }
+.core-mini {
+  padding: 13px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  background: var(--ink-1);
+}
+.core-mini.is-new { border-color: var(--klein-2); box-shadow: inset 0 0 0 1px var(--klein-2); }
+.core-mini strong { display: block; margin: 5px 0 9px; font-size: 16px; line-height: 1.25; }
+.core-mini .core-sig { font-size: 11px; }
 
 @media (min-width: 900px) {
   .core-grid {

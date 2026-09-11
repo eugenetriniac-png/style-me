@@ -1293,7 +1293,7 @@ window.SM = window.SM || {};
     ['Trail and pockets', 'Trail running at weekends, a Gore-Tex shell, lots of pockets, nothing fussy. Comfort first, but it has to work in town too.', 'everyday', 600]
   ];
 
-  var coreState = { text: '', occasion: 'everyday', budget: 300, label: '', result: null, error: null };
+  var coreState = { text: '', occasion: 'everyday', budget: 300, label: '', result: null, error: null, savedId: null, saving: false };
 
   var CORE_ORDER = { outer: 0, dress: 1, top: 1, bottom: 2, shoes: 3, accessory: 4 };
 
@@ -1368,9 +1368,95 @@ window.SM = window.SM || {};
             '<p class="core-meta mono"><span>total ' + ui.price(core.outfit.total) +
               (core.input.budget ? ' / ' + ui.price(core.input.budget) : '') + '</span>' +
               '<span>' + esc(core.engine) + '</span></p>' +
+            coreSaveHTML() +
           '</div>' +
         '</div>' +
       '</div></article>';
+  }
+
+  /* Save is one row per result: the button locks the moment it is
+     pressed, and stays locked once the row exists. */
+  function coreSaveHTML() {
+    var id = coreState.savedId;
+    return '<button class="btn btn-primary full" id="coreSave" type="button"' + (id || coreState.saving ? ' disabled' : '') + '>' +
+        (id ? ui.icon('check') + 'Saved' : coreState.saving ? 'Saving…' : 'Save this core') + '</button>' +
+      '<p class="core-save-msg" id="coreSaveMsg">' + (id ? 'Saved to Supabase · row ' + esc(id.slice(0, 8)) : '') + '</p>';
+  }
+
+  function coreSave(root, onSaved) {
+    var c = coreState;
+    var btn = root.querySelector('#coreSave');
+    var note = root.querySelector('#coreSaveMsg');
+    if (!c.result || c.saving || c.savedId) return;
+    if (!SM.db.configured()) {
+      note.className = 'core-save-msg err';
+      note.textContent = 'Saving is off on this deployment: the database is not configured.';
+      return;
+    }
+    var result = c.result;
+    c.saving = true;
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+    note.textContent = '';
+
+    SM.db.insert('core_outputs', SM.core.toRow(result)).then(function (row) {
+      c.saving = false;
+      if (c.result !== result) return;         // a new core was generated meanwhile
+      c.savedId = row.id;
+      if (!btn.isConnected) return;
+      btn.innerHTML = ui.icon('check') + 'Saved';
+      note.className = 'core-save-msg';
+      note.textContent = 'Saved to Supabase · row ' + row.id.slice(0, 8);
+      ui.toast('Saved to Supabase');
+      if (onSaved) onSaved(row);
+    }).catch(function (err) {
+      c.saving = false;
+      if (c.result !== result || !btn.isConnected) return;
+      btn.disabled = false;
+      btn.textContent = 'Save this core';
+      note.className = 'core-save-msg err';
+      note.textContent = 'Could not save: ' + err.message + '. Your core is still here — try again.';
+    });
+  }
+
+  /* The dashboard reads Supabase, never local state: a core only
+     shows up here once the database has it. input_text is not in the
+     list — the public key is not allowed to read it back. */
+  var DASH_COLUMNS = 'id,created_at,label,archetype,top_axes,confidence';
+
+  function coreMiniHTML(r) {
+    var tops = (r.top_axes || []).slice(0, 2).map(function (t) {
+      return '<span class="core-sig">' + esc((SM.AXES[t.axis] || {}).label || t.axis) + '</span>';
+    }).join('');
+    return '<div class="core-mini' + (r.id === coreState.savedId ? ' is-new' : '') + '">' +
+      '<span class="kicker">' + esc(ui.timeAgo(Date.parse(r.created_at))) + ' · ' + esc(r.label || 'anonymous') + '</span>' +
+      '<strong>' + esc(r.archetype) + '</strong>' +
+      '<div class="core-signals">' + tops + '</div></div>';
+  }
+
+  function coreLoadDash(root) {
+    var el = root.querySelector('#coreDash');
+    if (!el) return;
+    var head = '<div class="core-dash-head"><h2 class="sec-title">Saved cores</h2>';
+    if (!SM.db.configured()) {
+      el.innerHTML = head + '</div><p class="core-dash-note">Saved cores will appear here once the database is connected.</p>';
+      return;
+    }
+    el.innerHTML = head + '</div><p class="core-dash-note">Loading from Supabase…</p>';
+    SM.db.list('core_outputs', { select: DASH_COLUMNS, limit: 5 }).then(function (res) {
+      if (!el.isConnected) return;
+      if (!res.rows.length) {
+        el.innerHTML = head + '</div><p class="core-dash-note">No core saved yet. Yours would be the first.</p>';
+        return;
+      }
+      el.innerHTML = head + '<p class="core-total"><strong>' + res.total + '</strong> <span class="kicker">in core_outputs</span></p></div>' +
+        '<div class="core-mini-row">' + res.rows.map(coreMiniHTML).join('') + '</div>' +
+        '<p class="disclaimer">The five most recent, read live from the Supabase table <code>core_outputs</code>.</p>';
+    }).catch(function (err) {
+      if (!el.isConnected) return;
+      el.innerHTML = head + '</div><p class="core-dash-note">Could not reach the database: ' + esc(err.message) + '</p>' +
+        '<button class="btn sm" type="button" data-dash-retry="1">Try again</button>';
+    });
   }
 
   V.core = {
@@ -1409,6 +1495,7 @@ window.SM = window.SM || {};
           '</form>' +
           '<section class="core-out" id="coreOut" aria-live="polite">' + coreOutHTML() + '</section>' +
         '</div>' +
+        '<section class="core-dash pad" id="coreDash" aria-live="polite"></section>' +
         footerHTML() + '</div>';
     },
     mount: function (root) {
@@ -1458,8 +1545,14 @@ window.SM = window.SM || {};
           syncText();
           msg.textContent = '';
           ta.focus();
+          return;
         }
+
+        if (e.target.closest('#coreSave')) { coreSave(root, function () { coreLoadDash(root); }); return; }
+        if (e.target.closest('[data-dash-retry]')) coreLoadDash(root);
       });
+
+      coreLoadDash(root);
 
       root.querySelector('#coreForm').addEventListener('submit', function (e) {
         e.preventDefault();
@@ -1477,6 +1570,7 @@ window.SM = window.SM || {};
         msg.textContent = '';
         c.result = res.error ? null : res;
         c.error = res.error ? res : null;
+        c.savedId = null;
         out.innerHTML = coreOutHTML();
         if (window.innerWidth < 900) out.scrollIntoView({ behavior: 'smooth', block: 'start' });
       });
