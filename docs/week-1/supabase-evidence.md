@@ -78,4 +78,4 @@ from the live page by test S1:
 
 The dashboard on `/core` reads the same table through the same key:
 
-![The dashboard on /core after Round 2, read live from core_outputs](evidence/test1-dashboard-after-reload.png)
+![The dashboard on /core, read live from core_outputs — captured right after test 1 of the last run, when the table held 8 rows; tests 2 and 3 then added the last two](evidence/test1-dashboard-after-reload.png)

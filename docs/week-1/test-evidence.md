@@ -133,8 +133,8 @@ exceptions the budget forces is named in the thesis.
 | 3 | Prompt lines unwrapped on `/docs` | Hard line breaks wrapped twice | `8af46a4` |
 | 4 | Outfit honours named pieces and refusals, colour included | Round 1 card: "left out: colour" above a green cardigan | `1cf3db5` |
 | 5 | Budget pass order and fallback | €650 dress on a €150 budget; "I hate boots" overruled | `1cf3db5` |
-| 6 | Test script checks the clothes, not only the axes | It passed while the card was wrong | this document's commit |
-| 7 | Screenshots wait for the "Saved" notification to leave | It covered a line of the thesis | this document's commit |
+| 6 | Test script checks the clothes, not only the axes | It passed while the card was wrong | `a7c1e73` |
+| 7 | Screenshots wait for the "Saved" notification to leave | It covered a line of the thesis | `a7c1e73` |
 
 ## What this round taught me
 

@@ -1,4 +1,4 @@
-# ============================================================
+﻿# ============================================================
 #  Style Me - Week 1 - scripted self-tests against the LIVE site
 #
 #    powershell -ExecutionPolicy Bypass -File docs\week-1\run-tests.ps1

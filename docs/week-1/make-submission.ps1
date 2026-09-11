@@ -1,4 +1,4 @@
-# Builds the Week 1 submission PDF, with no Word and no PDF library:
+﻿# Builds the Week 1 submission PDF, with no Word and no PDF library:
 #   1. the markdown documents of this folder -> one HTML file, images embedded
 #   2. headless Edge prints that file to PDF
 #
@@ -31,7 +31,7 @@ function Img([string]$file, [string]$caption) {
   $path = Join-Path $here $file
   if (-not (Test-Path $path)) { return '<p class="missing">Missing image: ' + (Esc $file) + '</p>' }
   $b64 = [Convert]::ToBase64String([IO.File]::ReadAllBytes($path))
-  return '<figure class="shot"><img src="data:image/png;base64,' + $b64 + '" alt="' + (Esc $caption) +
+  return '<figure class="shot"><img src="data:image/png;base64,' + $b64 + '" alt="' + ((Esc $caption) -replace '"', '&quot;') +
     '"><figcaption>' + (Inline $caption) + '</figcaption></figure>'
 }
 
@@ -60,13 +60,17 @@ function ConvertFrom-Md([string]$file) {
       [void]$cur.lines.Add($line); continue
     }
     if ($line -match '^\s*([-*]|\d+\.)\s+(.*)') {
-      $kind = if ($Matches[1] -match '\d') { 'ol' } else { 'ul' }
-      $cur = @{ t = 'li'; kind = $kind; text = $Matches[2] }; [void]$blocks.Add($cur); continue
+      $marker = $Matches[1]; $itemText = $Matches[2]      # read before any other -match overwrites $Matches
+      $kind = if ($marker -match '\d') { 'ol' } else { 'ul' }
+      $cur = @{ t = 'li'; kind = $kind; text = $itemText }; [void]$blocks.Add($cur); continue
     }
     if ($line -match '^>\s?(.*)') {
       if (-not $cur -or $cur.t -ne 'quote') { $cur = @{ t = 'quote'; text = '' }; [void]$blocks.Add($cur) }
-      $cur.text += ' ' + $Matches[1]; continue
+      # numbered steps inside a quote keep their own line
+      $cur.text += $(if ($Matches[1] -match '^\d+\.\s') { "`n" } else { ' ' }) + $Matches[1]; continue
     }
+    # "**Label:** value" lines stay on their own line, as in the source
+    if ($cur -and $cur.t -eq 'p' -and $line -match '^\*\*[^*]+:\*\*') { $cur.text += "`n" + $line.Trim(); continue }
     if ($cur -and ($cur.t -eq 'p' -or $cur.t -eq 'li')) { $cur.text += ' ' + $line.Trim(); continue }
     $cur = @{ t = 'p'; text = $line }; [void]$blocks.Add($cur)
   }
@@ -78,8 +82,8 @@ function ConvertFrom-Md([string]$file) {
     switch ($b.t) {
       'li'    { if (-not $openList) { $openList = $b.kind; [void]$out.AppendLine("<$openList>") }
                 [void]$out.AppendLine('<li>' + (Inline $b.text) + '</li>') }
-      'p'     { [void]$out.AppendLine('<p>' + (Inline $b.text) + '</p>') }
-      'quote' { [void]$out.AppendLine('<blockquote>' + (Inline $b.text.Trim()) + '</blockquote>') }
+      'p'     { [void]$out.AppendLine('<p>' + ((Inline $b.text) -replace "`n", '<br>') + '</p>') }
+      'quote' { [void]$out.AppendLine('<blockquote>' + ((Inline $b.text.Trim()) -replace "`n", '<br>') + '</blockquote>') }
       'hr'    { [void]$out.AppendLine('<hr>') }
       'img'   { [void]$out.AppendLine((Img $b.src $b.alt)) }
       'code'  { [void]$out.AppendLine('<pre>' + (($b.lines | ForEach-Object { Esc $_ }) -join "`n") + '</pre>') }
@@ -120,7 +124,7 @@ try {
   foreach ($d in $deps) {
     $st = Invoke-RestMethod -Uri $d.statuses_url -Headers $h -TimeoutSec 20
     $state = if ($st.Count) { $st[0].state } else { 'pending' }
-    $local = [DateTimeOffset]::Parse($d.created_at).ToLocalTime().ToString('dd MMM HH:mm')
+    $local = [DateTimeOffset]::Parse($d.created_at).ToLocalTime().ToString('dd MMM HH:mm', [Globalization.CultureInfo]::InvariantCulture)
     $deployRows += '<tr><td><code>' + $d.sha.Substring(0, 7) + '</code></td><td>' + $local +
       '</td><td>' + $d.environment + '</td><td>' + $state + '</td><td>' + $d.creator.login + '</td></tr>' + "`n"
     $deployCount++
@@ -181,7 +185,8 @@ $html = @"
 <title>Style Me — Week 1 Submission — Eugène Triniac</title>
 <style>
 @page { size: A4; margin: 16mm 15mm; }
-body{font-family:Calibri,'Segoe UI',Arial,sans-serif;font-size:10.5pt;line-height:1.5;color:#111;margin:0;}
+:root{color-scheme:light;} html{background:#fff;}
+body{font-family:Calibri,'Segoe UI',Arial,sans-serif;font-size:10.5pt;line-height:1.5;color:#111;background:#fff;margin:0 auto;max-width:180mm;}
 h1{font-size:19pt;margin:0 0 8pt;} h2{font-size:13.5pt;margin:16pt 0 6pt;border-bottom:1px solid #bbb;padding-bottom:3pt;page-break-after:avoid;}
 h3{font-size:11.5pt;margin:12pt 0 4pt;page-break-after:avoid;} h4{font-size:10.5pt;margin:10pt 0 4pt;}
 p{margin:0 0 7pt;} ul,ol{margin:0 0 8pt 16pt;padding:0;} li{margin-bottom:3pt;}
