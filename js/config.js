@@ -16,7 +16,7 @@ window.SM = window.SM || {};
 
 SM.config = {
   supabase: {
-    url: '',
-    key: ''
+    url: 'https://ssyqkfqwhpvahtefmxdy.supabase.co',
+    key: 'sb_publishable_oLwiCvRCogi_68jSX_qydg_CCLIyERj'
   }
 };
