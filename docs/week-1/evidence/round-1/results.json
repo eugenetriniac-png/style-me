@@ -1,0 +1,167 @@
+﻿{
+    "base":  "https://style-me-five.vercel.app",
+    "ranAt":  "2026-09-10 20:02:43 -06:00",
+    "tests":  [
+                  {
+                      "id":  "T1",
+                      "name":  "Full loop on the live site: /core loads, Generate, Save (double click), reload, row read back",
+                      "pass":  true,
+                      "details":  {
+                                      "landing":  {
+                                                      "url":  "https://style-me-five.vercel.app/#/core",
+                                                      "title":  "Style Core — Style Me",
+                                                      "form":  true
+                                                  },
+                                      "card":  {
+                                                   "arch":  "Black Minimalism",
+                                                   "kicker":  "Your Style Core · confidence medium",
+                                                   "top":  [
+                                                               "Edgy",
+                                                               "Minimal",
+                                                               "Classic"
+                                                           ],
+                                                   "signals":  [
+                                                                   "black → Edgy",
+                                                                   "oversized → Street",
+                                                                   "doc martens → Edgy",
+                                                                   "[neg] colour → −Colour",
+                                                                   "sharper → Classic",
+                                                                   "[neg] banker → −Classic"
+                                                               ],
+                                                   "meta":  "total €280 / €300rules-v1",
+                                                   "thesis":  "Black Minimalism for work: built on Edgy — black, leather, hard lines — and Minimal — clean lines, nothing spare. Left out, because you said so: colour, banker. Start with the fine knit cardigan from Uniqlo and build out from it. The whole outfit comes to €280, inside your €300.",
+                                                   "pieces":  [
+                                                                  "Fine Knit Cardigan",
+                                                                  "Oxford Shirt",
+                                                                  "Pleated Wool Trousers",
+                                                                  "High Top Canvas Sneaker",
+                                                                  "Canvas Tote Bag"
+                                                              ]
+                                               },
+                                      "saveMessage":  "Saved to Supabase · row 9b6adfbe",
+                                      "totalBefore":  1,
+                                      "totalAfter":  2,
+                                      "firstOnDashboard":  "JUST NOW · TEST 1 | Black Minimalism | Edgy | Minimal"
+                                  }
+                  },
+                  {
+                      "id":  "T2",
+                      "name":  "Negation and determinism: \"never wear colour\" lowers Colour; two runs identical",
+                      "pass":  true,
+                      "details":  {
+                                      "card":  {
+                                                   "arch":  "Black Minimalism",
+                                                   "kicker":  "Your Style Core · confidence medium",
+                                                   "top":  [
+                                                               "Edgy",
+                                                               "Minimal",
+                                                               "Classic"
+                                                           ],
+                                                   "signals":  [
+                                                                   "[neg] colour → −Colour",
+                                                                   "black → Edgy",
+                                                                   "grey → Minimal",
+                                                                   "leather → Edgy",
+                                                                   "boots → Edgy"
+                                                               ],
+                                                   "meta":  "total €757rules-v1",
+                                                   "thesis":  "Black Minimalism for every day: built on Edgy — black, leather, hard lines — and Minimal — clean lines, nothing spare. Left out, because you said so: colour. Start with the cotton trench coat from Massimo Dutti and build out from it.",
+                                                   "pieces":  [
+                                                                  "Cotton Trench Coat",
+                                                                  "Ribbed Tank Dress",
+                                                                  "Square Toe Leather Boot",
+                                                                  "Ribbed Wool Beanie"
+                                                              ]
+                                               },
+                                      "renderedTwiceIdentical":  true,
+                                      "engineTwiceIdentical":  "true",
+                                      "colourNegative":  true,
+                                      "saveMessage":  "Saved to Supabase · row c1910ff5"
+                                  }
+                  },
+                  {
+                      "id":  "T3",
+                      "name":  "Edges: under 20 characters, no recognisable cue, EUR 150 budget",
+                      "pass":  true,
+                      "details":  {
+                                      "tooShort":  {
+                                                       "msg":  "A little more, please — at least 20 characters. You have 9.",
+                                                       "arch":  "Black Minimalism"
+                                                   },
+                                      "archetypeKeptOnScreen":  "Black Minimalism",
+                                      "noSignal":  {
+                                                       "title":  "Not enough to go on.",
+                                                       "card":  false
+                                                   },
+                                      "budgetCard":  {
+                                                         "arch":  "Period Classic",
+                                                         "kicker":  "Your Style Core · confidence high",
+                                                         "top":  [
+                                                                     "Retro",
+                                                                     "Classic",
+                                                                     "Utility"
+                                                                 ],
+                                                         "signals":  [
+                                                                         "flea → Retro",
+                                                                         "corduroy → Retro",
+                                                                         "grandad → Retro",
+                                                                         "wool → Classic",
+                                                                         "seventies → Retro",
+                                                                         "colours → Colour"
+                                                                     ],
+                                                         "meta":  "total €148 / €150rules-v1",
+                                                         "thesis":  "Period Classic for the weekend: built on Retro — archive cuts and colours — and Classic — pieces that outlive seasons. Start with the ribbed tank from Monki and build out from it. The whole outfit comes to €148, inside your €150.",
+                                                         "pieces":  [
+                                                                        "Ribbed Tank",
+                                                                        "Denim Shorts",
+                                                                        "Suede Chelsea Boot"
+                                                                    ]
+                                                     },
+                                      "budgetTotal":  148,
+                                      "saveMessage":  "Saved to Supabase · row 2c0ec412"
+                                  }
+                  },
+                  {
+                      "id":  "S1",
+                      "name":  "Security: the public key cannot read input_text, select *, or delete",
+                      "pass":  true,
+                      "details":  {
+                                      "allowed":  200,
+                                      "latest":  [
+                                                     {
+                                                         "id":  "2c0ec412-d793-461c-9951-1c836fbad51d",
+                                                         "label":  "Test 3",
+                                                         "archetype":  "Period Classic"
+                                                     },
+                                                     {
+                                                         "id":  "c1910ff5-f53a-4e56-b32f-d73d2071387b",
+                                                         "label":  "Test 2",
+                                                         "archetype":  "Black Minimalism"
+                                                     },
+                                                     {
+                                                         "id":  "9b6adfbe-09ee-42b2-a2e8-9dae7c3e555c",
+                                                         "label":  "Test 1",
+                                                         "archetype":  "Black Minimalism"
+                                                     }
+                                                 ],
+                                      "inputText":  401,
+                                      "inputTextBody":  {
+                                                            "code":  "42501",
+                                                            "details":  null,
+                                                            "hint":  "Grant the required privileges to the current role with: GRANT SELECT ON public.core_outputs TO anon;",
+                                                            "message":  "permission denied for table core_outputs"
+                                                        },
+                                      "selectStar":  401,
+                                      "delete":  401
+                                  }
+                  },
+                  {
+                      "id":  "M1",
+                      "name":  "Mobile 375 px: no horizontal overflow",
+                      "pass":  true,
+                      "details":  {
+                                      "overflowPx":  0
+                                  }
+                  }
+              ]
+}

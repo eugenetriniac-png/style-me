@@ -19,4 +19,5 @@ desktop.ini
 
 # Documents de rendu generes (regenerables via docs/make-submission.ps1)
 docs/SUBMISSION.html
+docs/week-1/SUBMISSION.html
 *.pdf
