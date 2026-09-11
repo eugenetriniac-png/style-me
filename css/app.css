@@ -1382,3 +1382,100 @@ input[type=range]::-moz-range-thumb {
 .welcome .foot-links { justify-content: center; }
 
 .welcome-meta { margin: 0 0 14px; color: var(--ash); letter-spacing: .04em; }
+
+/* ============================================================
+   Style Core — /core
+
+   Form, then the card. On desktop they sit side by side so a
+   word can be changed and the card read again without scrolling.
+   ============================================================ */
+.core-intro { color: var(--bone-2); max-width: 60ch; margin: 2px 0 20px; }
+.core-grid { display: flex; flex-direction: column; gap: 24px; padding-inline: 18px; }
+/* On a phone, Generate scrolls to the card; this keeps it clear of the sticky header. */
+.core-out { scroll-margin-top: 78px; }
+
+.core-form { display: flex; flex-direction: column; }
+.core-form textarea { min-height: 150px; resize: vertical; line-height: 1.5; }
+.core-examples { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 14px; margin: -4px 0 16px; font-size: 13px; }
+.core-msg { color: var(--flame); font-size: 13.5px; margin: 0 0 12px; }
+.core-msg:empty { display: none; }
+
+.core-card, .core-empty {
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  padding: 20px;
+}
+.core-card { background: linear-gradient(150deg, #1F1E2A, var(--ink-1)); }
+.core-empty { border-style: dashed; border-color: var(--line-2); }
+.core-empty-title { font-family: var(--display); font-size: 21px; font-weight: 700; margin: 8px 0 10px; }
+.core-steps { margin: 12px 0 0; padding-left: 20px; color: var(--bone-2); line-height: 1.6; }
+.core-steps li { margin-bottom: 6px; }
+
+.core-sim {
+  display: inline-block;
+  margin-bottom: 16px;
+  padding: 4px 10px;
+  border: 1px solid rgba(255, 92, 66, .55);
+  border-radius: 8px;   /* wraps to two lines on a phone; a pill would not */
+  color: var(--flame);
+  font-size: 10.5px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+.core-arch {
+  font-family: var(--display);
+  font-size: clamp(28px, 7vw, 38px);
+  font-weight: 800;
+  letter-spacing: -.03em;
+  line-height: 1.08;
+  margin: 8px 0 6px;
+  overflow-wrap: break-word;
+}
+.core-line { color: var(--bone-2); margin-bottom: 18px; }
+.core-card .axis-fill { background: var(--klein-2); }
+.core-hint { margin-top: 12px; font-size: 13px; color: var(--flame); }
+
+.core-signals { display: flex; flex-wrap: wrap; gap: 6px; }
+.core-sig {
+  padding: 4px 9px;
+  border-radius: 6px;
+  background: var(--klein-dim);
+  color: var(--bone-2);
+  font-family: var(--mono);
+  font-size: 12px;
+}
+.core-sig.neg { background: rgba(255, 92, 66, .14); color: #FF8A75; }
+.core-thesis { color: var(--bone-2); line-height: 1.6; border-left: 2px solid var(--klein-2); padding-left: 12px; }
+
+.core-card-side { display: flex; flex-direction: column; gap: 14px; margin-top: 24px; }
+.core-fig {
+  align-self: center;
+  width: min(210px, 62%);
+  aspect-ratio: 9 / 15;
+  border-radius: var(--r);
+  overflow: hidden;
+  background: var(--studio);
+  display: grid;
+  place-items: end center;
+  padding: 12px 6% 6px;
+}
+.core-fig svg { width: 100%; height: 100%; }
+.core-side-info { min-width: 0; }
+.core-meta { display: flex; justify-content: space-between; gap: 8px; margin: 10px 0 12px; color: var(--ash); }
+
+@media (min-width: 900px) {
+  .core-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 340px) minmax(0, 1fr);
+    gap: 30px;
+    align-items: start;
+    padding-inline: 40px;
+  }
+}
+@media (min-width: 1180px) {
+  .core-card-grid { display: grid; grid-template-columns: minmax(0, 1fr) 210px; gap: 26px; }
+  .core-card-side { margin-top: 0; }
+  /* "Minimalism" at 38px is wider than the column beside the figure. */
+  .core-arch { font-size: 31px; }
+  .core-fig { width: 100%; }
+}

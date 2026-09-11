@@ -28,7 +28,8 @@ window.SM = window.SM || {};
     { re: /^#\/saved(?:\/(\w+))?$/,     name: 'saved', keys: ['tab'] },
     { re: /^#\/bag$/,                   name: 'bag' },
     { re: /^#\/studio$/,                name: 'studio' },
-    { re: /^#\/docs$/,                  name: 'docs' }
+    { re: /^#\/docs$/,                  name: 'docs' },
+    { re: /^#\/core$/,                  name: 'core' }
   ];
 
   function resolve() {
@@ -48,7 +49,7 @@ window.SM = window.SM || {};
     { hash: '#/shop', icon: 'search', label: 'Shop', match: ['shop', 'item'] },
     { hash: '#/community', icon: 'users', label: 'Community', match: ['community', 'post', 'person'] },
     { hash: '#/messages', icon: 'chat', label: 'Messages', match: ['messages', 'thread'] },
-    { hash: '#/me', icon: 'user', label: 'You', match: ['me', 'saved', 'studio', 'dna', 'bag'] }
+    { hash: '#/me', icon: 'user', label: 'You', match: ['me', 'saved', 'studio', 'dna', 'bag', 'core'] }
   ];
 
   function navHTML(active) {
@@ -67,7 +68,7 @@ window.SM = window.SM || {};
     shop: 'Shop — Style Me', community: 'Community — Style Me', post: 'Post — Style Me',
     person: 'Profile — Style Me', messages: 'Messages — Style Me', thread: 'Chat — Style Me',
     me: 'You — Style Me', saved: 'Saved — Style Me', bag: 'Bag — Style Me', studio: 'Studio — Style Me',
-    docs: 'Docs — Style Me'
+    docs: 'Docs — Style Me', core: 'Style Core — Style Me'
   };
 
   SM.render = function () {
@@ -75,8 +76,9 @@ window.SM = window.SM || {};
     var s = SM.store.get();
 
     /* First visit goes to the welcome screen, except for the feed,
-       which anyone can look at before answering anything. */
-    if (!s.onboarded && ['welcome', 'quiz', 'dna', 'feed', 'docs'].indexOf(route.name) === -1) {
+       which anyone can look at before answering anything, and the
+       Style Core, which is its own way in. */
+    if (!s.onboarded && ['welcome', 'quiz', 'dna', 'feed', 'docs', 'core'].indexOf(route.name) === -1) {
       location.hash = '#/';
       return;
     }
@@ -124,11 +126,11 @@ window.SM = window.SM || {};
 
   /* ---------- start-up ------------------------------------------ */
 
-  /* Routing is hash-based, but /docs is a path anyone might type or
-     link to. vercel.json rewrites it onto index.html; this turns the
-     path back into the hash the router understands, without leaving
-     a dead entry in history. */
-  var PATH_ALIASES = { '/docs': '#/docs' };
+  /* Routing is hash-based, but /docs and /core are paths anyone might
+     type or link to. vercel.json rewrites them onto index.html; this
+     turns the path back into the hash the router understands, without
+     leaving a dead entry in history. */
+  var PATH_ALIASES = { '/docs': '#/docs', '/core': '#/core' };
 
   function adoptPathAlias() {
     var alias = PATH_ALIASES[location.pathname.replace(/\/+$/, '') || '/'];

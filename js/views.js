@@ -1048,6 +1048,7 @@ window.SM = window.SM || {};
           '<a class="menu-row" href="#/messages">' + ui.icon('chat') + '<span>Messages</span><em class="mono">' +
             (SM.store.unreadTotal() || '') + '</em></a>' +
           '<a class="menu-row" href="#/quiz">' + ui.icon('sparkle') + '<span>Retake the style test</span><em></em></a>' +
+          '<a class="menu-row" href="#/core">' + ui.icon('comment') + '<span>Style Core — describe it in your words</span><em></em></a>' +
           /* Docs lives here because the welcome screen — the only other way in —
              stops being reachable the moment you finish the test. */
           '<a class="menu-row" href="#/docs">' + ui.icon('sparkle') + '<span>Docs — how this works</span><em></em></a>' +
@@ -1282,6 +1283,207 @@ window.SM = window.SM || {};
   };
 
   /* ============================================================
+     Style Core — /core. The ten-axis method on free text.
+     Engine in core.js. State survives leaving the screen, not a
+     reload: nothing here is written to localStorage.
+     ============================================================ */
+  var EXAMPLES = [
+    ['Black, sharper for work', 'Mostly black, oversized, I live in my Doc Martens. I never wear colour. I’d like to look sharper for work without looking like a banker.', 'work', 300],
+    ['Flea-market seventies', 'Flea markets every Saturday. Corduroy, my grandad’s old wool coat, seventies colours. I’d rather look second-hand than brand new.', 'weekend', 150],
+    ['Trail and pockets', 'Trail running at weekends, a Gore-Tex shell, lots of pockets, nothing fussy. Comfort first, but it has to work in town too.', 'everyday', 600]
+  ];
+
+  var coreState = { text: '', occasion: 'everyday', budget: 300, label: '', result: null, error: null };
+
+  var CORE_ORDER = { outer: 0, dress: 1, top: 1, bottom: 2, shoes: 3, accessory: 4 };
+
+  function coreOutHTML() {
+    var c = coreState;
+    if (c.result) return coreCardHTML(c.result);
+    if (c.error && c.error.error === 'nosignal') {
+      return '<div class="core-empty"><span class="kicker">Nothing to read yet</span>' +
+        '<p class="core-empty-title">Not enough to go on.</p>' +
+        '<p class="muted">Nothing in that says anything about clothes the Core recognises. Rather than guess an ' +
+        'archetype, it stops here. Try colours, fabrics, shoes, or a place you would wear it.</p></div>';
+    }
+    if (c.error && c.error.error === 'onlynegative') {
+      return '<div class="core-empty"><span class="kicker">Only refusals</span>' +
+        '<p class="core-empty-title">That is everything you don’t want.</p>' +
+        '<p class="muted">Noted: ' + esc(c.error.signals.map(function (s) { return s.word; }).join(', ')) + '. ' +
+        'Tell it one thing you do like — a colour, a fabric, a pair of shoes — and it will build from there.</p></div>';
+    }
+    return '<div class="core-empty"><span class="kicker">Your core appears here</span>' +
+      '<p class="core-empty-title">Free text in, a Style Core out.</p>' +
+      '<ol class="core-steps">' +
+        '<li>It reads your words for cues — fabrics, colours, shoes, places — and for what you say you avoid.</li>' +
+        '<li>It scores them on the same ten axes as the style test, and names the result.</li>' +
+        '<li>It dresses that result from the catalogue, inside your budget.</li>' +
+      '</ol>' +
+      '<p class="disclaimer">Simulated agent: rules, not a language model. The same words always give the same core.</p></div>';
+  }
+
+  function coreSignalHTML(s) {
+    var main = s.axes.slice().sort(function (a, b) { return s.weights[b] - s.weights[a]; })[0];
+    return '<span class="core-sig' + (s.negated ? ' neg' : '') + '">' + esc(s.word) + ' → ' +
+      (s.negated ? '−' : '') + esc(SM.AXES[main].label) + '</span>';
+  }
+
+  function corePieceHTML(item) {
+    return '<div class="credit">' +
+      '<span class="credit-thumb">' + SM.garment.productShot(item) + '</span>' +
+      '<span class="credit-main">' +
+        '<span class="credit-cat">' + esc(item.category) + '</span>' +
+        '<span class="credit-name">' + esc(item.name) + '</span>' +
+        '<span class="credit-brand">' + esc(item.brand) + '</span>' +
+      '</span>' +
+      '<span class="credit-price">' + ui.price(item.price) + '</span></div>';
+  }
+
+  function coreCardHTML(core) {
+    var items = core.outfit.items.slice().sort(function (a, b) { return CORE_ORDER[a.category] - CORE_ORDER[b.category]; });
+    var weak = core.confidence === 'low'
+      ? '<p class="core-hint">Only a couple of signals. Add a few words — a fabric, a colour, shoes — for a sharper read.</p>' : '';
+    return '<article class="core-card">' +
+      '<span class="core-sim mono">Simulated agent — rule-based, no language model</span>' +
+      '<div class="core-card-grid">' +
+        '<div class="core-card-main">' +
+          '<span class="kicker">Your Style Core · confidence ' + esc(core.confidence) + '</span>' +
+          '<h2 class="core-arch">' + esc(core.archetype.name) + '</h2>' +
+          '<p class="core-line">' + esc(core.archetype.line) + '</p>' +
+          ui.axisBars(core.axes, 3) + weak +
+          '<h3 class="sec-title">Signals read</h3>' +
+          '<div class="core-signals">' + core.signals.map(coreSignalHTML).join('') + '</div>' +
+          '<h3 class="sec-title">Thesis</h3>' +
+          '<p class="core-thesis">' + esc(core.thesis) + '</p>' +
+          '<h3 class="sec-title">Worth exploring</h3>' +
+          '<div class="chips">' + core.explore.map(function (k) {
+            return '<span class="chip">' + esc(SM.AXES[k].label) + '</span>';
+          }).join('') + '</div>' +
+        '</div>' +
+        '<div class="core-card-side">' +
+          '<div class="core-fig" role="img" aria-label="The key pieces, worn">' +
+            SM.fit.render(core.outfit, SM.store.lookFor(core.outfit)) + '</div>' +
+          '<div class="core-side-info">' +
+            '<div class="credits">' + items.map(corePieceHTML).join('') + '</div>' +
+            '<p class="core-meta mono"><span>total ' + ui.price(core.outfit.total) +
+              (core.input.budget ? ' / ' + ui.price(core.input.budget) : '') + '</span>' +
+              '<span>' + esc(core.engine) + '</span></p>' +
+          '</div>' +
+        '</div>' +
+      '</div></article>';
+  }
+
+  V.core = {
+    chrome: true,
+    render: function () {
+      var c = coreState;
+      var occasions = Object.keys(SM.core.OCCASIONS).map(function (k) {
+        var on = c.occasion === k;
+        return '<button type="button" class="chip' + (on ? ' on' : '') + '" data-occasion="' + k + '" aria-pressed="' + on + '">' +
+          esc(SM.core.OCCASIONS[k].label) + '</button>';
+      }).join('');
+      var budgets = SM.core.BUDGETS.map(function (b) {
+        var on = c.budget === b;
+        return '<button type="button" class="chip' + (on ? ' on' : '') + '" data-budget="' + (b || 'none') + '" aria-pressed="' + on + '">' +
+          (b ? ui.price(b) : 'No limit') + '</button>';
+      }).join('');
+
+      return '<div class="core">' + ui.header('Style Core', { kicker: 'Generative core agent' }) +
+        '<p class="core-intro pad">Describe how you dress — or how you wish you did — in your own words. ' +
+          'The Core reads it on the same ten axes as the style test, names it, and dresses it.</p>' +
+        '<div class="core-grid">' +
+          '<form class="core-form" id="coreForm" novalidate>' +
+            '<label class="field" for="coreText"><span>Describe how you dress <em class="mono" id="coreCount">' +
+              c.text.length + ' / ' + SM.core.MAX_CHARS + '</em></span>' +
+              '<textarea id="coreText" rows="6" maxlength="' + SM.core.MAX_CHARS + '" ' +
+                'placeholder="Colours, fabrics, shoes, a place you would wear it…">' + esc(c.text) + '</textarea></label>' +
+            '<p class="core-examples"><span class="muted">Or start from</span>' + EXAMPLES.map(function (x, i) {
+              return '<button type="button" class="link-btn" data-example="' + i + '">' + esc(x[0]) + '</button>';
+            }).join('') + '</p>' +
+            '<div class="field"><span>Occasion</span><div class="chips">' + occasions + '</div></div>' +
+            '<div class="field"><span>Budget for one outfit</span><div class="chips">' + budgets + '</div></div>' +
+            '<label class="field" for="coreLabel"><span>Name this run <em>optional</em></span>' +
+              '<input id="coreLabel" maxlength="40" autocomplete="off" value="' + esc(c.label) + '"></label>' +
+            '<p class="core-msg" id="coreMsg" role="alert"></p>' +
+            '<button class="btn btn-primary btn-lg full" type="submit">Generate my Style Core</button>' +
+          '</form>' +
+          '<section class="core-out" id="coreOut" aria-live="polite">' + coreOutHTML() + '</section>' +
+        '</div>' +
+        footerHTML() + '</div>';
+    },
+    mount: function (root) {
+      var c = coreState;
+      var ta = root.querySelector('#coreText');
+      var count = root.querySelector('#coreCount');
+      var msg = root.querySelector('#coreMsg');
+      var out = root.querySelector('#coreOut');
+
+      function syncText() {
+        count.textContent = ta.value.length + ' / ' + SM.core.MAX_CHARS;
+      }
+      function press(selector, el) {
+        root.querySelectorAll(selector).forEach(function (n) {
+          n.classList.toggle('on', n === el);
+          n.setAttribute('aria-pressed', String(n === el));
+        });
+      }
+
+      ta.addEventListener('input', function () {
+        c.text = ta.value;
+        syncText();
+        msg.textContent = '';
+      });
+      root.querySelector('#coreLabel').addEventListener('input', function (e) { c.label = e.target.value; });
+
+      root.addEventListener('click', function (e) {
+        var occ = e.target.closest('[data-occasion]');
+        if (occ) { c.occasion = occ.getAttribute('data-occasion'); press('[data-occasion]', occ); return; }
+
+        var bud = e.target.closest('[data-budget]');
+        if (bud) {
+          var v = bud.getAttribute('data-budget');
+          c.budget = v === 'none' ? null : parseInt(v, 10);
+          press('[data-budget]', bud);
+          return;
+        }
+
+        var ex = e.target.closest('[data-example]');
+        if (ex) {
+          var x = EXAMPLES[parseInt(ex.getAttribute('data-example'), 10)];
+          c.text = ta.value = x[1];
+          c.occasion = x[2];
+          c.budget = x[3];
+          press('[data-occasion]', root.querySelector('[data-occasion="' + x[2] + '"]'));
+          press('[data-budget]', root.querySelector('[data-budget="' + (x[3] || 'none') + '"]'));
+          syncText();
+          msg.textContent = '';
+          ta.focus();
+        }
+      });
+
+      root.querySelector('#coreForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        var res = SM.core.extract({ text: c.text, occasion: c.occasion, budget: c.budget, label: c.label });
+        if (res.error === 'short') {
+          msg.textContent = 'A little more, please — at least ' + res.min + ' characters. You have ' + res.length + '.';
+          ta.focus();
+          return;
+        }
+        if (res.error === 'long') {
+          msg.textContent = 'That is over ' + res.max + ' characters. Trim it a little.';
+          ta.focus();
+          return;
+        }
+        msg.textContent = '';
+        c.result = res.error ? null : res;
+        c.error = res.error ? res : null;
+        out.innerHTML = coreOutHTML();
+        if (window.innerWidth < 900) out.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    }
+  };
+
+  /* ============================================================
      Docs — what this is, what is real, and what comes next
      ============================================================ */
   var ROADMAP = [
@@ -1345,6 +1547,7 @@ window.SM = window.SM || {};
       '<p class="foot-links">' +
       '<a href="https://github.com/eugenetriniac-png/style-me" target="_blank" rel="noopener"><span>Source</span></a>' +
       '<a href="#/docs"><span>Docs</span></a>' +
+      '<a href="#/core"><span>Style Core</span></a>' +
       '<a href="#/feed"><span>Feed</span></a></p>' +
       '<p class="foot-note mono">Demo catalogue — invented prices, no payment taken.</p>' +
       '</footer>';
