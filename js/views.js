@@ -1585,12 +1585,38 @@ window.SM = window.SM || {};
     ['done', 'Outfit engine', 'Affinity, cohesion and colour harmony, recalculated as you like and skip.'],
     ['done', 'Layered rendering', 'Five independent layers, so one piece can change without the rest moving.'],
     ['done', 'Feed, shop, community, studio', 'The screens the product needs to be judged as a product.'],
-    ['now', 'Infrastructure', 'Public repo, automatic deployment, a database project standing by.'],
-    ['next', 'Saved outfits in Supabase', 'Today everything lives in localStorage and dies with the browser.'],
+    ['done', 'Infrastructure', 'Public repo, automatic deployment, a database project standing by.'],
+    ['now', 'Style Core', 'The ten-axis method on free text, saved to Supabase — the first data that outlives the browser.'],
+    ['next', 'Saved outfits in Supabase', 'Outfits and likes still live in localStorage and die with the browser.'],
     ['next', 'Real catalogue', 'Swap the demo data for a merchant feed. The item shape is already stable.'],
     ['later', 'Accounts', 'Carry a wardrobe between devices, and make the community real.'],
     ['later', 'Sizing', 'Cross the height and weight already collected with brand size charts.']
   ];
+
+  /* Prompt library: every prompt the product uses or is designed
+     around, with its status. Rendered from the constant the engine
+     sits next to, so the page cannot drift from the code. */
+  function promptLibraryHTML() {
+    var p = SM.core.PROMPT;
+    return '<section class="docs-sec docs-prompts" id="prompt-library"><h2>Prompt library</h2>' +
+      '<p>Each entry is a prompt the product runs, or is built to run. One so far.</p>' +
+      '<div class="prompt-entry">' +
+        '<p class="prompt-meta mono">#1 · ' + esc(p.id) + ' · ' + esc(p.version) + ' · page /core</p>' +
+        '<h3>Style Core extraction</h3>' +
+        '<ul class="docs-list">' +
+          '<li><strong>Job</strong> — free text about how someone dresses, in; ten axes, the signals behind ' +
+            'them, an archetype, a thesis and a confidence level, out.</li>' +
+          '<li><strong>Status</strong> — live as rules (engine <code>' + esc(SM.core.ENGINE) + '</code>), ' +
+            'the same contract carried out by hand, ' + SM.core.cueCount + ' vocabulary cues. Paid APIs are ' +
+            'out of scope for the course, so no model receives it yet. Saved rows record the engine, so ' +
+            'model output would stay distinguishable.</li>' +
+          '<li><strong>Not the model’s job</strong> — products. The catalogue engine picks the pieces from ' +
+            'the axes, inside the budget, so nothing invented can reach the card.</li>' +
+        '</ul>' +
+        '<p class="prompt-label mono">System</p><pre class="docs-pre">' + esc(p.system) + '</pre>' +
+        '<p class="prompt-label mono">User</p><pre class="docs-pre">' + esc(p.user) + '</pre>' +
+      '</div></section>';
+  }
 
   V.docs = {
     chrome: true,
@@ -1621,11 +1647,16 @@ window.SM = window.SM || {};
         'the filters, saved items, the bag, local persistence, photo import.</li>' +
         '<li><strong>Simulated</strong> — the community profiles and their posts are generated at load, ' +
         'as are the replies in Messages.</li>' +
+        '<li><strong>Simulated agent</strong> — the <a class="docs-link" href="#/core">Style Core</a> reads free text ' +
+        'with rules, not a language model, and says so on every card. What it saves in Supabase is real.</li>' +
         '<li><strong>Demo catalogue</strong> — brands are real so the price tiers mean something, but ' +
         'product names and prices are invented and labelled as such. Buy buttons open a search on the ' +
         'brand’s own site, never a fabricated product page. The bag takes no payment.</li>' +
         '</ul>' +
-        '<p class="muted">Nothing leaves the browser — not your answers, not your photos.</p></section>' +
+        '<p class="muted">Nothing leaves the browser — not your answers, not your photos — except a Style Core ' +
+          'you choose to save. Its description is stored, and never readable back through the public key.</p></section>' +
+
+        promptLibraryHTML() +
 
         '<section class="docs-sec"><h2>Roadmap</h2><ul class="roadmap">' + rows + '</ul></section>' +
 

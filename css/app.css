@@ -1340,6 +1340,28 @@ input[type=range]::-moz-range-thumb {
 .docs-list { margin: 0 0 12px; padding-left: 18px; color: var(--bone-2); line-height: 1.65; }
 .docs-list li { margin-bottom: 8px; }
 .docs-list strong, .docs-sec p strong { color: var(--bone); }
+.docs-link { color: var(--bone); border-bottom: 1px solid var(--line-2); }
+.docs-link:hover { border-bottom-color: var(--bone); }
+.docs-sec code { font-family: var(--mono); font-size: .85em; }
+
+.docs-prompts { max-width: 78ch; }
+.prompt-entry { border: 1px solid var(--line); border-radius: var(--r); padding: 18px 18px 6px; background: var(--ink-1); }
+.prompt-entry h3 { font-family: var(--display); font-size: 1.05rem; font-weight: 700; margin: 4px 0 12px; }
+.prompt-meta { color: var(--ash); margin: 0; }
+.prompt-label { color: var(--ash); margin: 14px 0 6px; text-transform: uppercase; letter-spacing: .12em; font-size: 10.5px; }
+.docs-pre {
+  margin: 0 0 12px;
+  padding: 12px 14px;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--ink);
+  color: var(--bone-2);
+  font-family: var(--mono);
+  font-size: 12px;
+  line-height: 1.55;
+}
 
 .roadmap { list-style: none; margin: 0; padding: 0; max-width: 62ch; }
 .road-row {
