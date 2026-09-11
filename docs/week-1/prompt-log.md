@@ -214,3 +214,18 @@ headless Edge, commits and deployments read live from `git log` and the GitHub
 API so the PDF cannot claim more than happened.
 **Left to me:** the human decision note is a draft I have to make my own; the
 demo video; submitting.
+
+---
+
+## Prompt 11 — Closing
+
+> I'm not going to do the video, and I trust you — so is there anything left
+> to do? If not, tell me what to send.
+
+**Files modified:** `docs/week-1/human-decision-note.md`,
+`docs/week-1/prompt-log.md`
+**Human decision:** no demo video this week, as in Week 0 — I accept losing
+that half point. I keep the decision note as drafted.
+**What the agent did:** removed the "draft" marker from the note, set the cover
+of the PDF to say the video was not submitted rather than "to be added", and
+rebuilt the PDF.

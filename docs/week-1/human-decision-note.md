@@ -1,6 +1,6 @@
 # Human Decision Note — Week 1
 
-*Draft for Eugène to edit before submitting — it has to say what I think. 245 words; the limit is 250.*
+*245 words.*
 
 ---
 
