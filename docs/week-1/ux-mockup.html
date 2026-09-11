@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<title>Style Core — wireframe</title>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;background:#0E0F12;color:#F2EFE9;font-family:"Segoe UI",Arial,sans-serif;width:1280px}
+  .wrap{padding:36px 48px 44px}
+  .top{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid rgba(242,239,233,.14);padding-bottom:18px}
+  .kick{font:11px Consolas,monospace;letter-spacing:.16em;text-transform:uppercase;color:#8E909B}
+  h1{margin:6px 0 0;font:800 40px "Segoe UI Black","Segoe UI",sans-serif;letter-spacing:-.03em}
+  .url{font:13px Consolas,monospace;color:#8E909B;border:1px dashed rgba(242,239,233,.3);padding:6px 12px;border-radius:99px}
+  .cols{display:grid;grid-template-columns:420px 1fr;gap:28px;margin-top:26px}
+  .box{border:1.5px dashed rgba(242,239,233,.28);border-radius:18px;padding:22px;position:relative}
+  .tag{position:absolute;top:-11px;left:18px;background:#0E0F12;padding:0 8px;font:11px Consolas,monospace;letter-spacing:.12em;color:#5B56F5;text-transform:uppercase}
+  .lab{font-size:12.5px;color:#8E909B;margin:0 0 6px}
+  .ta{height:150px;border:1px solid rgba(242,239,233,.2);border-radius:8px;background:#14161B;padding:12px;color:#CFCBC2;font-size:14px;line-height:1.5}
+  .in{height:40px;border:1px solid rgba(242,239,233,.2);border-radius:8px;background:#14161B;margin-bottom:16px}
+  .chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+  .chip{border:1px solid rgba(242,239,233,.22);border-radius:99px;padding:6px 13px;font-size:13px;color:#CFCBC2}
+  .chip.on{background:#3A34E8;border-color:#3A34E8;color:#fff}
+  .btn{border-radius:99px;padding:13px 0;text-align:center;font-weight:600;font-size:15px}
+  .pri{background:#3A34E8;color:#fff}
+  .gho{border:1px solid rgba(242,239,233,.25);color:#F2EFE9}
+  .note{font-size:12px;color:#62646E;margin-top:12px;line-height:1.45}
+  .card{display:grid;grid-template-columns:1fr 250px;gap:24px}
+  .sim{display:inline-block;font:11px Consolas,monospace;letter-spacing:.06em;border:1px solid #FF5C42;color:#FF5C42;padding:4px 10px;border-radius:99px;margin-bottom:12px}
+  .arch{font:800 34px "Segoe UI Black","Segoe UI",sans-serif;letter-spacing:-.03em;margin:0}
+  .line{color:#CFCBC2;margin:4px 0 16px;font-size:15px}
+  .bar{display:grid;grid-template-columns:90px 1fr 30px;gap:10px;align-items:center;font-size:13px;color:#CFCBC2;margin-bottom:8px}
+  .tr{height:4px;background:rgba(242,239,233,.2)} .fi{height:4px;background:#5B56F5}
+  .h{font:700 12px "Segoe UI",sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#CFCBC2;margin:18px 0 8px}
+  .sig{display:flex;gap:6px;flex-wrap:wrap}
+  .s{font:12px Consolas,monospace;padding:4px 9px;border-radius:6px;background:rgba(58,52,232,.18);color:#CFCBC2}
+  .s.neg{background:rgba(255,92,66,.14);color:#FF8A75}
+  .thesis{font-size:14px;line-height:1.55;color:#CFCBC2;border-left:2px solid #5B56F5;padding-left:12px}
+  .fig{border-radius:16px;background:linear-gradient(170deg,#EFEBE3,#E3DED4);height:300px;display:grid;place-items:center;color:#62646E;font:12px Consolas,monospace}
+  .cred{display:grid;grid-template-columns:34px 1fr auto;gap:10px;align-items:center;font-size:12.5px;color:#CFCBC2;padding:7px 0;border-bottom:1px solid rgba(242,239,233,.1)}
+  .th{width:34px;height:34px;border-radius:6px;background:#E3DED4}
+  .meta{display:flex;justify-content:space-between;font:12px Consolas,monospace;color:#8E909B;margin-top:14px}
+  .dash{margin-top:30px}
+  .dhead{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px}
+  .count{font:800 30px "Segoe UI Black","Segoe UI",sans-serif}
+  .row{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+  .mini{border:1px solid rgba(242,239,233,.16);border-radius:14px;padding:14px;background:#14161B}
+  .mini b{display:block;font-size:16px;margin:4px 0 8px}
+  .mini .s{font-size:11px}
+  .ann{position:absolute;right:-8px;top:-30px;font:12px "Segoe UI",sans-serif;color:#FF5C42}
+</style></head>
+<body><div class="wrap">
+  <div class="top">
+    <div><span class="kick">Style Me · Week 1 · Generative Core Agent</span><h1>Style Core</h1></div>
+    <span class="url">style-me-five.vercel.app/core</span>
+  </div>
+
+  <div class="cols">
+    <!-- left: intake -->
+    <div class="box">
+      <span class="tag">1 · Intake form</span>
+      <p class="lab">Describe how you dress — or how you wish you did</p>
+      <div class="ta">Mostly black, oversized, I live in my Doc Martens. I never wear colour. I'd like to look sharper for work without looking like a banker.</div>
+      <p class="lab" style="margin-top:6px;text-align:right">148 / 1200</p>
+      <p class="lab">Occasion</p>
+      <div class="chips"><span class="chip">Everyday</span><span class="chip on">Work</span><span class="chip">Night out</span><span class="chip">Weekend</span></div>
+      <p class="lab">Budget for one outfit</p>
+      <div class="chips"><span class="chip">€150</span><span class="chip on">€300</span><span class="chip">€600</span><span class="chip">No limit</span></div>
+      <p class="lab">Name this run (optional)</p>
+      <div class="in"></div>
+      <div class="btn pri">Generate my Style Core</div>
+      <p class="note">Under 20 characters: inline message, nothing generated.<br>No cue recognised: "not enough to go on" — no default archetype.</p>
+    </div>
+
+    <!-- right: output card -->
+    <div class="box">
+      <span class="tag">2 · Core extraction output card</span>
+      <div class="card">
+        <div>
+          <span class="sim">SIMULATED AGENT — RULE-BASED, NO LANGUAGE MODEL</span>
+          <p class="kick">Your Style Core · confidence high</p>
+          <p class="arch">Black Minimalism</p>
+          <p class="line">A three-colour palette, two of which are black.</p>
+          <div class="bar"><span>Edgy</span><span class="tr"><div class="fi" style="width:100%"></div></span><span>100</span></div>
+          <div class="bar"><span>Minimal</span><span class="tr"><div class="fi" style="width:78%"></div></span><span>78</span></div>
+          <div class="bar"><span>Classic</span><span class="tr"><div class="fi" style="width:52%"></div></span><span>52</span></div>
+          <p class="h">Signals read</p>
+          <div class="sig"><span class="s">black → Edgy</span><span class="s">oversized → Street</span><span class="s">doc martens → Edgy</span><span class="s">sharper → Classic</span><span class="s neg">never colour → −Colour</span></div>
+          <p class="h">Thesis</p>
+          <p class="thesis">Black Minimalism for work: built on Edgy and Minimal, with a classic edge for the office. Keep the black and the weight; skip anything that asks for attention through colour.</p>
+          <p class="h">Worth exploring</p>
+          <div class="chips"><span class="chip">Utility</span><span class="chip">Avant-garde</span></div>
+        </div>
+        <div>
+          <div class="fig">[ outfit drawn in SVG ]</div>
+          <div class="cred"><span class="th"></span><span>Boxy wool coat · COS</span><span>€140</span></div>
+          <div class="cred"><span class="th"></span><span>Pleated trouser · Arket</span><span>€79</span></div>
+          <div class="cred"><span class="th"></span><span>Derby, black · Dr. Martens</span><span>€69</span></div>
+          <div class="meta"><span>total €288 / €300</span><span>engine rules-v1</span></div>
+          <div class="btn pri" style="margin-top:14px">Save this core</div>
+          <p class="note">Save → one row in Supabase core_outputs. Locks after success.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- dashboard -->
+  <div class="box dash">
+    <span class="tag">3 · Dashboard preview — read from Supabase</span>
+    <div class="dhead"><span class="kick">Saved cores</span><span><span class="count">14</span> <span class="kick">in core_outputs</span></span></div>
+    <div class="row">
+      <div class="mini"><span class="kick">just now · Test 1</span><b>Black Minimalism</b><div class="sig"><span class="s">Edgy</span><span class="s">Minimal</span></div></div>
+      <div class="mini"><span class="kick">2h · Léa</span><b>Archive Street</b><div class="sig"><span class="s">Retro</span><span class="s">Street</span></div></div>
+      <div class="mini"><span class="kick">5h · —</span><b>Techwear</b><div class="sig"><span class="s">Sporty</span><span class="s">Utility</span></div></div>
+      <div class="mini"><span class="kick">1d · Sam</span><b>Soft Minimal</b><div class="sig"><span class="s">Minimal</span><span class="s">Romantic</span></div></div>
+      <div class="mini"><span class="kick">1d · —</span><b>Colourist</b><div class="sig"><span class="s">Colour</span><span class="s">Avant-garde</span></div></div>
+    </div>
+  </div>
+</div></body></html>
