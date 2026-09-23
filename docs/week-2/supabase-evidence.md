@@ -66,3 +66,29 @@ publishable key:
 `select=*` is refused because PostgREST expands the star to every column,
 including the one the key may not read — which is why the page asks for its
 columns by name.
+
+## What the table holds
+
+Read back through the live API with the publishable key, at the end of the
+final test run (times converted to Mexico City, UTC−6):
+
+| saved_at | question | market | verdict | sources on the page that day |
+|---|---|---|---|---|
+| 23 Sep 17:38 | Do people need help naming their taste, or just help shopping? | mexico | real | 24 |
+| 23 Sep 17:41 | Do people need help naming their taste, or just help shopping? | mexico | real | 24 |
+| 23 Sep 17:42 | Do people need help naming their taste, or just help shopping? | mexico | real | 24 |
+| 23 Sep 17:45 | Do people need help naming their taste, or just help shopping? | mexico | real | 24 |
+| 23 Sep 17:46 | Do people need help naming their taste, or just help shopping? | mexico | real | 24 |
+
+Five rows, one per run of the test script — the runs that fixed the test itself
+are in there too, because deleting them would be tidying the evidence. Every
+row was written by the live page's Save button; none was inserted by hand.
+
+Each row also carries what was on screen when it was saved: the twelve
+`competitor_ids` in view and the five `risk_ids` the map called top priority.
+The question is the same in all five because the script asks the same one — a
+human asking a different question is what the intake is for.
+
+`source_count: 24` is the page's own count of cited claims at the moment of
+saving, which is what makes a record re-checkable: if the page later carries 30
+claims, these rows still say what the conclusion was based on.

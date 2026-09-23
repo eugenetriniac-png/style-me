@@ -1,0 +1,275 @@
+﻿{
+    "base":  "https://style-me-five.vercel.app",
+    "ranAt":  "2026-09-23 17:46:43 -06:00",
+    "tests":  [
+                  {
+                      "id":  "T1",
+                      "name":  "Filter and search on the live page: every chip count matches the dataset, search narrows and clears, no row without a source",
+                      "pass":  true,
+                      "details":  {
+                                      "landing":  {
+                                                      "url":  "https://style-me-five.vercel.app/#/research",
+                                                      "title":  "Research desk — Style Me",
+                                                      "intake":  true,
+                                                      "rows":  12,
+                                                      "cards":  5,
+                                                      "finds":  7,
+                                                      "risks":  8,
+                                                      "sources":  24
+                                                  },
+                                      "filters":  {
+                                                      "expected":  {
+                                                                       "all":  12,
+                                                                       "global":  8,
+                                                                       "mexico":  4,
+                                                                       "wardrobe-app":  5,
+                                                                       "styling-service":  1,
+                                                                       "retailer":  2,
+                                                                       "marketplace":  1,
+                                                                       "substitute":  3
+                                                                   },
+                                                      "type:all":  12,
+                                                      "type:wardrobe-app":  5,
+                                                      "type:styling-service":  1,
+                                                      "type:retailer":  2,
+                                                      "type:marketplace":  1,
+                                                      "type:substitute":  3,
+                                                      "market:all":  12,
+                                                      "market:global":  8,
+                                                      "market:mexico":  4,
+                                                      "search:mexico":  8,
+                                                      "mexicoNames":  [
+                                                                          "Save Your Wardrobe",
+                                                                          "Stitch Fix",
+                                                                          "Zalando — Algorithmic Fashion Companion",
+                                                                          "Liverpool",
+                                                                          "GoTrendier",
+                                                                          "Shein and Temu",
+                                                                          "TikTok, Instagram and Pinterest",
+                                                                          "Asking a friend"
+                                                                      ],
+                                                      "search:none":  0,
+                                                      "emptyMessage":  true,
+                                                      "cleared":  12,
+                                                      "rowsWithoutSource":  0,
+                                                      "countText":  "12 of 12 · 24 sources"
+                                                  },
+                                      "typeCountsMatch":  true,
+                                      "marketCountsMatch":  true,
+                                      "searchBehaves":  true
+                                  }
+                  },
+                  {
+                      "id":  "T2",
+                      "name":  "Save a research record: one row per double click, read back after a reload, and counted by the You-screen widget",
+                      "pass":  true,
+                      "details":  {
+                                      "saveMessage":  "Saved to Supabase · row bf441091",
+                                      "totalBefore":  4,
+                                      "totalAfter":  5,
+                                      "firstOnPage":  "JUST NOW · MEXICO | Do people need help naming their taste, or just help shopping? | real | 24 sources",
+                                      "onboardedTo":  "#/dna",
+                                      "widget":  "RESEARCH DESK | 5 | research records saved | latest: “Do people need help naming their taste, or just help shopping?”"
+                                  }
+                  },
+                  {
+                      "id":  "T3",
+                      "name":  "Sources hold: every source URL on the page answers (11 distinct URLs behind 24 claims)",
+                      "pass":  true,
+                      "details":  {
+                                      "claims":  24,
+                                      "distinctUrls":  11,
+                                      "failures":  0,
+                                      "checked":  [
+                                                      {
+                                                          "id":  "whering",
+                                                          "url":  "https://tech.eu/2026/07/07/whering-lands-7m-as-digital-wardrobe-platform-reaches-10m-users/",
+                                                          "status":  200,
+                                                          "ok":  true
+                                                      },
+                                                      {
+                                                          "id":  "acloset",
+                                                          "url":  "https://www.myindyx.com/blog/the-best-wardrobe-apps",
+                                                          "status":  200,
+                                                          "ok":  true
+                                                      },
+                                                      {
+                                                          "id":  "indyx",
+                                                          "url":  "https://www.myindyx.com/blog/the-best-wardrobe-apps",
+                                                          "status":  200,
+                                                          "ok":  true
+                                                      },
+                                                      {
+                                                          "id":  "cladwell",
+                                                          "url":  "https://www.myindyx.com/blog/the-best-wardrobe-apps",
+                                                          "status":  200,
+                                                          "ok":  true
+                                                      },
+                                                      {
+                                                          "id":  "save-your-wardrobe",
+                                                          "url":  "https://www.myindyx.com/blog/the-best-wardrobe-apps",
+                                                          "status":  200,
+                                                          "ok":  true
+                                                      },
+                                                      {
+                                                          "id":  "stitch-fix",
+                                                          "url":  "https://www.sec.gov/Archives/edgar/data/1576942/000162828025055606/sfix-20251101.htm",
+                                                          "status":  200,
+                                                          "ok":  true
+                                                      },
+                                                      {
+                                                          "id":  "zalando",
+                                                          "url":  "https://corporate.zalando.com/en/company/how-zalando-helps-customers-make-perfect-fashion-choices",
+                                                          "status":  200,
+                                                          "ok":  true
+                                                      },
+                                                      {
+                                                          "id":  "liverpool",
+                                                          "url":  "https://www.merca20.com/quien-compra-ropa-en-shein-y-temu-este-es-el-perfil-de-sus-usuarios-en-mexico/",
+                                                          "status":  200,
+                                                          "ok":  true
+                                                      },
+                                                      {
+                                                          "id":  "gotrendier",
+                                                          "url":  "https://mexicobusiness.news/ecommerce/news/second-hand-fashion-attract-73-mexicans-2025",
+                                                          "status":  200,
+                                                          "ok":  true
+                                                      },
+                                                      {
+                                                          "id":  "shein-temu",
+                                                          "url":  "https://www.merca20.com/quien-compra-ropa-en-shein-y-temu-este-es-el-perfil-de-sus-usuarios-en-mexico/",
+                                                          "status":  200,
+                                                          "ok":  true
+                                                      },
+                                                      {
+                                                          "id":  "creators",
+                                                          "url":  "https://expansion.mx/tecnologia/2026/06/05/jovenes-comprara-temu-y-shein-impulsan-industria-low-cost",
+                                                          "status":  200,
+                                                          "ok":  true
+                                                      },
+                                                      {
+                                                          "id":  "friends",
+                                                          "url":  "docs/week-2/validation-conversation.md",
+                                                          "status":  "not a web source",
+                                                          "ok":  true
+                                                      },
+                                                      {
+                                                          "id":  "b-whering",
+                                                          "url":  "https://tech.eu/2026/07/07/whering-lands-7m-as-digital-wardrobe-platform-reaches-10m-users/",
+                                                          "status":  200,
+                                                          "ok":  true
+                                                      },
+                                                      {
+                                                          "id":  "b-stitchfix",
+                                                          "url":  "https://www.sec.gov/Archives/edgar/data/1576942/000162828025055606/sfix-20251101.htm",
+                                                          "status":  200,
+                                                          "ok":  true
+                                                      },
+                                                      {
+                                                          "id":  "b-zalando",
+                                                          "url":  "https://corporate.zalando.com/en/company/how-zalando-helps-customers-make-perfect-fashion-choices",
+                                                          "status":  200,
+                                                          "ok":  true
+                                                      },
+                                                      {
+                                                          "id":  "b-indyx",
+                                                          "url":  "https://www.myindyx.com/blog/the-best-wardrobe-apps",
+                                                          "status":  200,
+                                                          "ok":  true
+                                                      },
+                                                      {
+                                                          "id":  "b-amvo",
+                                                          "url":  "https://marketing4ecommerce.mx/estudio-de-venta-online-2026-amvo-mexico/",
+                                                          "status":  200,
+                                                          "ok":  true
+                                                      },
+                                                      {
+                                                          "id":  "mx-market",
+                                                          "url":  "https://marketing4ecommerce.mx/estudio-de-venta-online-2026-amvo-mexico/",
+                                                          "status":  200,
+                                                          "ok":  true
+                                                      },
+                                                      {
+                                                          "id":  "mx-fashion-first",
+                                                          "url":  "https://retailers.mx/moda-la-gran-protagonista-del-ecommerce-en-mexico/",
+                                                          "status":  200,
+                                                          "ok":  true
+                                                      },
+                                                      {
+                                                          "id":  "mx-returns",
+                                                          "url":  "https://marketing4ecommerce.mx/estudio-de-venta-online-2026-amvo-mexico/",
+                                                          "status":  200,
+                                                          "ok":  true
+                                                      },
+                                                      {
+                                                          "id":  "mx-satisfaction",
+                                                          "url":  "https://blog.amvo.org.mx/blog/moda-en-ecommerce-2025-alto-inter%C3%A9s-baja-conversi%C3%B3n",
+                                                          "status":  200,
+                                                          "ok":  true
+                                                      },
+                                                      {
+                                                          "id":  "mx-resale",
+                                                          "url":  "https://mexicobusiness.news/ecommerce/news/second-hand-fashion-attract-73-mexicans-2025",
+                                                          "status":  200,
+                                                          "ok":  true
+                                                      },
+                                                      {
+                                                          "id":  "mx-contradiction",
+                                                          "url":  "https://mexicobusiness.news/ecommerce/news/second-hand-fashion-attract-73-mexicans-2025",
+                                                          "status":  200,
+                                                          "ok":  true
+                                                      },
+                                                      {
+                                                          "id":  "mx-law",
+                                                          "url":  "https://www.ey.com/es_mx/technical/tax/boletines-fiscales/nueva-ley-federal-proteccion-datos-personal-posesion-particulares",
+                                                          "status":  200,
+                                                          "ok":  true
+                                                      }
+                                                  ]
+                                  }
+                  },
+                  {
+                      "id":  "S1",
+                      "name":  "Security: the public key cannot read notes, select *, or delete from research_records",
+                      "pass":  true,
+                      "details":  {
+                                      "allowed":  200,
+                                      "latest":  [
+                                                     {
+                                                         "id":  "bf441091-6ea2-4309-a2d6-67da2ef1e28b",
+                                                         "question":  "Do people need help naming their taste, or just help shopping?",
+                                                         "verdict":  "real"
+                                                     },
+                                                     {
+                                                         "id":  "c2f83252-62a4-4211-aeee-b49dc0ce56ac",
+                                                         "question":  "Do people need help naming their taste, or just help shopping?",
+                                                         "verdict":  "real"
+                                                     },
+                                                     {
+                                                         "id":  "d6c983bf-d4b3-4c1a-9cc5-88007b4b3e0a",
+                                                         "question":  "Do people need help naming their taste, or just help shopping?",
+                                                         "verdict":  "real"
+                                                     }
+                                                 ],
+                                      "notes":  401,
+                                      "notesBody":  {
+                                                        "code":  "42501",
+                                                        "details":  null,
+                                                        "hint":  "Grant the required privileges to the current role with: GRANT SELECT ON public.research_records TO anon;",
+                                                        "message":  "permission denied for table research_records"
+                                                    },
+                                      "selectStar":  401,
+                                      "delete":  401
+                                  }
+                  },
+                  {
+                      "id":  "M1",
+                      "name":  "Mobile 375 px: no horizontal overflow on the page; the wide table scrolls inside its own box",
+                      "pass":  true,
+                      "details":  {
+                                      "overflowPx":  0,
+                                      "tableScrollsInsideItsBox":  "true"
+                                  }
+                  }
+              ]
+}
