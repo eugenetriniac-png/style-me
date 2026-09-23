@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<title>Research desk — wireframe</title>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;background:#0E0F12;color:#F2EFE9;font-family:"Segoe UI",Arial,sans-serif;width:1280px}
+  .wrap{padding:34px 44px 40px}
+  .top{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid rgba(242,239,233,.14);padding-bottom:16px}
+  .kick{font:11px Consolas,monospace;letter-spacing:.16em;text-transform:uppercase;color:#8E909B}
+  h1{margin:6px 0 0;font:800 38px "Segoe UI Black","Segoe UI",sans-serif;letter-spacing:-.03em}
+  .url{font:13px Consolas,monospace;color:#8E909B;border:1px dashed rgba(242,239,233,.3);padding:6px 12px;border-radius:99px}
+  .box{border:1.5px dashed rgba(242,239,233,.28);border-radius:16px;padding:20px;position:relative;margin-top:26px}
+  .tag{position:absolute;top:-11px;left:18px;background:#0E0F12;padding:0 8px;font:11px Consolas,monospace;letter-spacing:.12em;color:#5B56F5;text-transform:uppercase}
+  .cols{display:grid;grid-template-columns:400px 1fr;gap:26px}
+  .lab{font-size:12.5px;color:#8E909B;margin:0 0 6px}
+  .in{height:34px;border:1px solid rgba(242,239,233,.2);border-radius:8px;background:#14161B;margin-bottom:12px;font-size:13px;color:#CFCBC2;padding:8px 11px;line-height:1.3}
+  .ta{height:62px}
+  .chips{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px}
+  .chip{border:1px solid rgba(242,239,233,.22);border-radius:99px;padding:5px 12px;font-size:12.5px;color:#CFCBC2}
+  .chip.on{background:#3A34E8;border-color:#3A34E8;color:#fff}
+  .btn{border-radius:99px;padding:12px 0;text-align:center;font-weight:600;font-size:14.5px;background:#3A34E8;color:#fff}
+  .note{font-size:11.5px;color:#62646E;margin-top:10px;line-height:1.45}
+  table{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px}
+  th{text-align:left;font:10.5px Consolas,monospace;letter-spacing:.1em;text-transform:uppercase;color:#8E909B;padding:7px 8px;border-bottom:1px solid rgba(242,239,233,.18)}
+  td{padding:9px 8px;border-bottom:1px solid rgba(242,239,233,.08);color:#CFCBC2;vertical-align:top}
+  td b{color:#F2EFE9;font-size:12.5px}
+  .pill{display:inline-block;font:10.5px Consolas,monospace;padding:2px 7px;border-radius:5px;background:rgba(58,52,232,.2)}
+  .pill.mx{background:rgba(255,92,66,.16);color:#FF8A75}
+  .pill.sub{background:rgba(242,239,233,.1)}
+  .src{font:11px Consolas,monospace;color:#5B56F5;border-bottom:1px solid rgba(91,86,245,.5)}
+  .searchrow{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:8px}
+  .search{flex:1;max-width:280px;height:32px;border:1px solid rgba(242,239,233,.2);border-radius:8px;background:#14161B;font-size:12.5px;color:#62646E;padding:7px 11px}
+  .count{font:12px Consolas,monospace;color:#8E909B}
+  .cards{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+  .card{border:1px solid rgba(242,239,233,.16);border-radius:12px;background:#14161B;padding:13px}
+  .fig{font:800 24px "Segoe UI Black","Segoe UI",sans-serif;letter-spacing:-.02em;margin:6px 0 2px}
+  .card p{margin:6px 0 0;font-size:11.5px;color:#8E909B;line-height:1.45}
+  .two{display:grid;grid-template-columns:1fr 470px;gap:26px}
+  .find{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid rgba(242,239,233,.08);font-size:12.5px;color:#CFCBC2}
+  .find b{color:#F2EFE9}
+  .grid{display:grid;grid-template-columns:70px repeat(3,1fr);grid-template-rows:26px repeat(3,78px);gap:6px;margin-top:8px}
+  .axis{font:10px Consolas,monospace;color:#62646E;display:flex;align-items:center;justify-content:center;text-transform:uppercase;letter-spacing:.1em}
+  .cell{border:1px solid rgba(242,239,233,.12);border-radius:8px;background:#14161B;padding:7px;display:flex;flex-direction:column;gap:4px}
+  .cell.hot{border-color:rgba(255,92,66,.5);background:rgba(255,92,66,.08)}
+  .r{font-size:10.5px;color:#CFCBC2;background:rgba(242,239,233,.07);border-radius:5px;padding:3px 6px}
+  .mini-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:8px}
+  .mini{border:1px solid rgba(242,239,233,.16);border-radius:12px;background:#14161B;padding:12px}
+  .mini b{display:block;font-size:13px;margin:4px 0 6px}
+  .widget{border:1px solid #5B56F5;border-radius:12px;background:rgba(58,52,232,.12);padding:12px 14px;display:flex;align-items:center;gap:14px;margin-top:12px}
+  .widget .big{font:800 26px "Segoe UI Black","Segoe UI",sans-serif}
+</style></head>
+<body><div class="wrap">
+  <div class="top">
+    <div><span class="kick">Style Me · Week 2 · Research + Benchmarking Dashboard</span><h1>Research desk</h1></div>
+    <span class="url">style-me-five.vercel.app/research</span>
+  </div>
+
+  <div class="cols">
+    <div class="box" style="margin-top:22px">
+      <span class="tag">1 · Research intake</span>
+      <p class="lab">Research question</p>
+      <div class="in">Do people need help naming their taste, or just help shopping?</div>
+      <p class="lab">What I believe (assumption)</p>
+      <div class="in ta">People can recognise a good outfit but cannot name a direction, so they buy single pieces that never combine.</div>
+      <p class="lab">What would prove me wrong (falsifier)</p>
+      <div class="in ta">If people say they already know their style and only want cheaper/faster shopping.</div>
+      <p class="lab">Market</p>
+      <div class="chips"><span class="chip">Global</span><span class="chip on">Mexico</span><span class="chip">Both</span></div>
+      <p class="lab">Verdict so far</p>
+      <div class="chips"><span class="chip on">Real</span><span class="chip">Partly</span><span class="chip">Not proven</span></div>
+      <div class="btn">Save this research record</div>
+      <p class="note">Saves to Supabase research_records with the 12 rows and the risks on screen. Notes are stored, never readable through the public key.</p>
+    </div>
+
+    <div class="box" style="margin-top:22px">
+      <span class="tag">3 · Benchmarks — 5 global examples</span>
+      <div class="cards">
+        <div class="card"><span class="kick">Whering · UK</span><p class="fig">10M</p><p>users on "style what you own". Copy: the premise. Avoid: photograph-your-wardrobe onboarding.</p></div>
+        <div class="card"><span class="kick">Stitch Fix · US</span><p class="fig">−7.9%</p><p>active clients YoY while revenue per client rose. Lesson: retention, not acquisition.</p></div>
+        <div class="card"><span class="kick">Zalando · EU</span><p class="fig">AFC</p><p>outfits trained on stylist-made looks. Copy: seed the engine with real outfits.</p></div>
+        <div class="card"><span class="kick">Indyx · US</span><p class="fig">$50</p><p>per human-styled lookbook. Lesson: the human layer is the paid layer.</p></div>
+        <div class="card"><span class="kick">Cladwell · US</span><p class="fig">$7.99</p><p>a month for a capsule method. Lesson: method sells, but locks you to a subscription.</p></div>
+      </div>
+      <p class="note">Every card: one figure, one source, one lesson. Figures dated and clickable.</p>
+    </div>
+  </div>
+
+  <div class="box">
+    <span class="tag">2 · Competitors and substitutes — filter, search, sources</span>
+    <div class="searchrow">
+      <div class="chips" style="margin:0">
+        <span class="chip on">All 12</span><span class="chip">Wardrobe app 5</span><span class="chip">Styling service 2</span>
+        <span class="chip">Retailer 2</span><span class="chip">Marketplace 1</span><span class="chip">Substitute 2</span>
+        <span class="chip" style="margin-left:10px">Global</span><span class="chip">Mexico</span>
+      </div>
+      <div class="search">Search name, description, tag…</div>
+      <span class="count">12 of 12 · 23 sources</span>
+    </div>
+    <table>
+      <tr><th>Name</th><th>Type</th><th>Market</th><th>What it does</th><th>Where it stops — the gap</th><th>Figure</th><th>Source</th></tr>
+      <tr><td><b>Whering</b></td><td><span class="pill">wardrobe app</span></td><td>Global</td><td>Digitise your wardrobe, build outfits from what you own</td><td>You must photograph everything first; no body, no fit</td><td>10M users · Jul 2026</td><td><span class="src">tech.eu ↗</span></td></tr>
+      <tr><td><b>Stitch Fix</b></td><td><span class="pill">styling service</span></td><td>US / UK</td><td>Human stylist + algorithm ships you a box</td><td>Requires buying; not in Mexico; clients falling</td><td>2.309M clients · Sep 2025</td><td><span class="src">investors ↗</span></td></tr>
+      <tr><td><b>GoTrendier</b></td><td><span class="pill mx">marketplace</span></td><td>Mexico</td><td>Second-hand fashion, largest in Mexico</td><td>Search, not styling: no answer to "does this suit me"</td><td>9M users · Jun 2026</td><td><span class="src">fashionnetwork ↗</span></td></tr>
+      <tr><td><b>Shein / Temu</b></td><td><span class="pill sub">substitute</span></td><td>Mexico</td><td>Infinite cheap catalogue, the default for under-30s</td><td>No guidance — makes "what suits me" harder, not easier</td><td>93% / 90% awareness · Jan 2025</td><td><span class="src">Statista ↗</span></td></tr>
+      <tr><td colspan="7" style="color:#62646E;font-size:11.5px;border:0;padding-top:10px">… 8 more rows: Acloset, Indyx, Cladwell, Save Your Wardrobe, Zalando, Liverpool personal shopping, TikTok / Pinterest, ChatGPT as stylist</td></tr>
+    </table>
+  </div>
+
+  <div class="two">
+    <div class="box">
+      <span class="tag">4 · Mexico localization</span>
+      <div class="find"><b>74%</b><span>of Mexican internet users buy clothing online — fashion is the top online category.</span></div>
+      <div class="find"><b>28%</b><span>of online returns are fashion, the highest of any category (AMVO).</span></div>
+      <div class="find"><b>35%</b><span>only rate their fashion purchase "very satisfactory": high interest, low conversion.</span></div>
+      <div class="find"><b>73%</b><span>of consumers expected to buy second-hand — resale is mainstream, not niche.</span></div>
+      <div class="find"><b>65%</b><span>worry about fast fashion's footprint (Ibero / Greenpeace) — but Shein still leads.</span></div>
+      <p class="note">The contradiction is the finding: the same market that says it worries buys the most from Shein.</p>
+    </div>
+
+    <div class="box">
+      <span class="tag">5 · Risk map</span>
+      <div class="grid">
+        <div class="axis"></div><div class="axis">Low impact</div><div class="axis">Medium</div><div class="axis">High impact</div>
+        <div class="axis">High<br>likelihood</div><div class="cell"><span class="r">Supabase pauses</span></div><div class="cell"><span class="r">No image model</span></div><div class="cell hot"><span class="r">Cold start: wardrobe photos</span></div>
+        <div class="axis">Medium</div><div class="cell"></div><div class="cell"><span class="r">Affiliate thin in MX</span><span class="r">Trust in "simulated"</span></div><div class="cell hot"><span class="r">Catalogue rights</span></div>
+        <div class="axis">Low</div><div class="cell"></div><div class="cell"><span class="r">Fast-fashion stance</span></div><div class="cell"><span class="r">Data law (LFPDPPP)</span></div>
+      </div>
+      <p class="note">Click a risk for its mitigation. 8 risks, no scores invented.</p>
+    </div>
+  </div>
+
+  <div class="box">
+    <span class="tag">6 · Saved research records — and the You-screen widget</span>
+    <div class="mini-row">
+      <div class="mini"><span class="kick">just now · mexico</span><b>Do people need help naming taste?</b><span class="pill">real</span></div>
+      <div class="mini"><span class="kick">2h · global</span><b>Is wardrobe upload the wall?</b><span class="pill">partly</span></div>
+      <div class="mini"><span class="kick">1d · both</span><b>Who pays: user or brand?</b><span class="pill">not proven</span></div>
+      <div class="mini"><span class="kick">widget on /me</span><div class="widget"><span class="big">3</span><span style="font-size:12px;color:#CFCBC2">research records saved<br>latest: "Do people need help naming taste?"</span></div></div>
+    </div>
+  </div>
+</div></body></html>
