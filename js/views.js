@@ -1038,6 +1038,7 @@ window.SM = window.SM || {};
           '<span class="kicker">Your style DNA</span>' +
           '<strong>' + esc(arch.name) + '</strong><em>' + esc(arch.line) + '</em>' +
           ui.axisBars(p.axes, 4) + '</a>' +
+        '<a class="rs-widget" href="#/research" id="rsWidget" aria-live="polite">' + rsWidgetHTML(null) + '</a>' +
         '<div class="menu">' +
           '<a class="menu-row" href="#/bag">' + ui.icon('bag') + '<span>Bag</span><em class="mono">' +
             (SM.store.bagCount() || '') + '</em></a>' +
@@ -1049,6 +1050,7 @@ window.SM = window.SM || {};
             (SM.store.unreadTotal() || '') + '</em></a>' +
           '<a class="menu-row" href="#/quiz">' + ui.icon('sparkle') + '<span>Retake the style test</span><em></em></a>' +
           '<a class="menu-row" href="#/core">' + ui.icon('comment') + '<span>Style Core — describe it in your words</span><em></em></a>' +
+          '<a class="menu-row" href="#/research">' + ui.icon('search') + '<span>Research desk — who else does this</span><em class="mono" id="rsWidgetCount"></em></a>' +
           /* Docs lives here because the welcome screen — the only other way in —
              stops being reachable the moment you finish the test. */
           '<a class="menu-row" href="#/docs">' + ui.icon('sparkle') + '<span>Docs — how this works</span><em></em></a>' +
@@ -1062,6 +1064,8 @@ window.SM = window.SM || {};
         footerHTML() + '</div>';
     },
     mount: function (root) {
+      rsLoadWidget(root);
+
       root.addEventListener('click', function (e) {
         if (!e.target.closest('[data-act="reset"]')) return;
         ui.sheet({
@@ -1578,6 +1582,387 @@ window.SM = window.SM || {};
   };
 
   /* ============================================================
+     Research desk — /research
+
+     Week 2. Who else solves this, where they stop, what is
+     different in Mexico, and what could sink it. The dataset is
+     in research-data.js, the logic in research.js; this file only
+     draws it.
+     ============================================================ */
+  var rsState = {
+    query: '', type: 'all', market: 'all',
+    form: { question: '', assumption: '', falsifier: '', market: 'mexico', verdict: 'real', notes: '' },
+    savedId: null, saving: false
+  };
+
+  function rsSourceHTML(r) {
+    if (r.sourceKind === 'interview') {
+      return '<span class="rs-src rs-src-off" title="' + esc(r.sourceName) + '">interview ↗</span>';
+    }
+    return '<a class="rs-src" href="' + esc(r.source) + '" target="_blank" rel="noopener noreferrer" ' +
+      'title="' + esc(r.sourceName) + '">' + esc(rsHost(r.source)) + ' ↗</a>';
+  }
+
+  function rsHost(url) {
+    var m = /^https?:\/\/([^/]+)/.exec(url || '');
+    return m ? m[1].replace(/^www\./, '') : 'source';
+  }
+
+  function rsRowHTML(c) {
+    var type = SM.RESEARCH.types.filter(function (t) { return t.id === c.type; })[0];
+    return '<tr>' +
+      '<th scope="row"><span class="rs-name">' + esc(c.name) + '</span>' +
+        '<span class="rs-where">' + esc(c.where) + '</span></th>' +
+      '<td><span class="rs-pill rs-' + esc(c.type) + '">' + esc(type ? type.label : c.type) + '</span></td>' +
+      '<td>' + esc(c.does) + '</td>' +
+      '<td class="rs-gap">' + esc(c.gap) + '</td>' +
+      '<td class="rs-figure">' + esc(c.figure) +
+        (c.note ? '<em class="rs-note">' + esc(c.note) + '</em>' : '') + '</td>' +
+      '<td>' + rsSourceHTML(c) + '<span class="rs-checked mono">' + esc(c.checked) + '</span></td>' +
+      '</tr>';
+  }
+
+  function rsTableHTML() {
+    var rows = SM.research.filter({ query: rsState.query, type: rsState.type, market: rsState.market });
+    if (!rows.length) {
+      return '<p class="rs-empty">Nothing matches “' + esc(rsState.query) + '”. ' +
+        'The dataset is twelve rows — it is meant to be read, not searched into silence.</p>';
+    }
+    return '<div class="rs-scroll"><table class="rs-table">' +
+      '<thead><tr><th scope="col">Who</th><th scope="col">Type</th><th scope="col">What it does</th>' +
+      '<th scope="col">Where it stops — the gap</th><th scope="col">Figure</th><th scope="col">Source</th></tr></thead>' +
+      '<tbody>' + rows.map(rsRowHTML).join('') + '</tbody></table></div>';
+  }
+
+  function rsChipsHTML() {
+    var c = SM.research.counts();
+    var types = [{ id: 'all', label: 'All' }].concat(SM.RESEARCH.types);
+    var typeChips = types.map(function (t) {
+      var on = rsState.type === t.id;
+      return '<button type="button" class="chip' + (on ? ' on' : '') + '" data-rs-type="' + t.id + '" aria-pressed="' + on + '">' +
+        esc(t.label) + ' <em class="mono">' + (c[t.id] || 0) + '</em></button>';
+    }).join('');
+    var markets = [{ id: 'all', label: 'Everywhere' }, { id: 'global', label: 'Global' }, { id: 'mexico', label: 'Mexico' }];
+    var marketChips = markets.map(function (m) {
+      var on = rsState.market === m.id;
+      return '<button type="button" class="chip' + (on ? ' on' : '') + '" data-rs-market="' + m.id + '" aria-pressed="' + on + '">' +
+        esc(m.label) + ' <em class="mono">' + (c[m.id] || 0) + '</em></button>';
+    }).join('');
+    return '<div class="chips">' + typeChips + '</div><div class="chips">' + marketChips + '</div>';
+  }
+
+  function rsCountHTML() {
+    var shown = SM.research.filter({ query: rsState.query, type: rsState.type, market: rsState.market }).length;
+    return shown + ' of ' + SM.RESEARCH.competitors.length + ' · ' + SM.research.sources().length + ' sources';
+  }
+
+  function rsBenchHTML() {
+    return SM.RESEARCH.benchmarks.map(function (b) {
+      return '<article class="rs-card">' +
+        '<span class="kicker">' + esc(b.name) + ' · ' + esc(b.place) + '</span>' +
+        '<p class="rs-fig">' + esc(b.figure) + '</p>' +
+        '<p class="rs-unit">' + esc(b.unit) + '</p>' +
+        '<p class="rs-what">' + esc(b.what) + '</p>' +
+        '<p class="rs-lesson"><strong>For Style Me.</strong> ' + esc(b.lesson) + '</p>' +
+        '<p class="rs-cardsrc">' + rsSourceHTML(b) + '<span class="rs-checked mono">' + esc(b.checked) + '</span></p>' +
+        '</article>';
+    }).join('');
+  }
+
+  function rsMexicoHTML() {
+    return SM.RESEARCH.mexico.map(function (m) {
+      return '<div class="rs-find' + (m.contradiction ? ' rs-contra' : '') + '">' +
+        '<span class="rs-find-fig">' + esc(m.figure) + '</span>' +
+        '<span class="rs-find-txt">' + esc(m.claim) +
+          ' <span class="rs-find-src">' + rsSourceHTML(m) + '</span></span></div>';
+    }).join('');
+  }
+
+  function rsRiskHTML() {
+    var grid = SM.research.riskGrid();
+    var L = SM.research.LEVELS;                    // low · medium · high
+    var rows = L.slice().reverse();                // high likelihood on top
+    var head = '<div class="rs-axis rs-corner"><span class="mono">likelihood ↑</span></div>' +
+      L.map(function (i) { return '<div class="rs-axis">' + i + ' impact</div>'; }).join('');
+    var body = rows.map(function (l) {
+      return '<div class="rs-axis rs-axis-y">' + l + '</div>' + L.map(function (i) {
+        var cell = grid[l + '|' + i] || [];
+        var hot = (l === 'high' && i === 'high') || (l === 'high' && i === 'medium') || (l === 'medium' && i === 'high');
+        return '<div class="rs-cell' + (hot && cell.length ? ' rs-hot' : '') + '">' +
+          cell.map(function (r) {
+            return '<button type="button" class="rs-risk" data-rs-risk="' + r.id + '">' + esc(r.name) + '</button>';
+          }).join('') + '</div>';
+      }).join('');
+    }).join('');
+    return '<div class="rs-map">' + head + body + '</div>';
+  }
+
+  function rsIntakeHTML() {
+    var f = rsState.form;
+    var chips = function (name, list) {
+      return list.map(function (v) {
+        var on = f[name] === v.id;
+        return '<button type="button" class="chip' + (on ? ' on' : '') + '" data-rs-' + name + '="' + v.id + '" aria-pressed="' + on + '">' +
+          esc(v.label) + '</button>';
+      }).join('');
+    };
+    var saved = !!rsState.savedId;
+    return '<form class="rs-intake" id="rsForm" novalidate>' +
+      '<h2 class="sec-title">Research intake</h2>' +
+      '<label class="field" for="rsQuestion"><span>Research question</span>' +
+        '<input id="rsQuestion" maxlength="' + SM.research.MAX.question + '" autocomplete="off" value="' + esc(f.question) + '" ' +
+        'placeholder="Do people need help naming their taste, or just help shopping?"></label>' +
+      '<label class="field" for="rsAssumption"><span>What I believe</span>' +
+        '<textarea id="rsAssumption" rows="3" maxlength="' + SM.research.MAX.assumption + '" ' +
+        'placeholder="People recognise a good outfit but cannot name a direction…">' + esc(f.assumption) + '</textarea></label>' +
+      '<label class="field" for="rsFalsifier"><span>What would prove me wrong</span>' +
+        '<textarea id="rsFalsifier" rows="3" maxlength="' + SM.research.MAX.falsifier + '" ' +
+        'placeholder="If people say they already know their style and only want cheaper shopping…">' + esc(f.falsifier) + '</textarea></label>' +
+      '<div class="field"><span>Market</span><div class="chips">' + chips('market', [
+        { id: 'global', label: 'Global' }, { id: 'mexico', label: 'Mexico' }, { id: 'both', label: 'Both' }]) + '</div></div>' +
+      '<div class="field"><span>Verdict, on today’s evidence</span><div class="chips">' + chips('verdict', [
+        { id: 'real', label: 'Problem is real' }, { id: 'partly', label: 'Partly' }, { id: 'not-proven', label: 'Not proven' }]) + '</div></div>' +
+      '<label class="field" for="rsNotes"><span>Notes <em>optional · stored, never shown back</em></span>' +
+        '<textarea id="rsNotes" rows="3" maxlength="' + SM.research.MAX.notes + '" ' +
+        'placeholder="What the validation conversation changed…">' + esc(f.notes) + '</textarea></label>' +
+      '<p class="core-msg" id="rsMsg" role="alert"></p>' +
+      '<button class="btn btn-primary btn-lg full" id="rsSave" type="submit"' + (saved || rsState.saving ? ' disabled' : '') + '>' +
+        (saved ? ui.icon('check') + 'Saved' : 'Save this research record') + '</button>' +
+      '<p class="core-save-msg" id="rsSaveMsg">' + (saved ? 'Saved to Supabase · row ' + esc(rsState.savedId.slice(0, 8)) : '') + '</p>' +
+      '<p class="disclaimer">The record keeps the rows in view and the risks the map calls top priority, ' +
+        'so a conclusion can be re-checked later instead of remembered.</p>' +
+      '</form>';
+  }
+
+  var RS_COLUMNS = 'id,created_at,question,market,verdict,source_count';
+
+  function rsSavedHTML(res) {
+    return '<div class="core-mini-row">' + res.rows.map(function (r) {
+      return '<div class="core-mini' + (r.id === rsState.savedId ? ' is-new' : '') + '">' +
+        '<span class="kicker">' + esc(ui.timeAgo(Date.parse(r.created_at))) + ' · ' + esc(r.market) + '</span>' +
+        '<strong>' + esc(r.question) + '</strong>' +
+        '<div class="core-signals"><span class="core-sig">' + esc(r.verdict) + '</span>' +
+        '<span class="core-sig">' + esc(String(r.source_count)) + ' sources</span></div></div>';
+    }).join('') + '</div>';
+  }
+
+  function rsLoadSaved(root) {
+    var el = root.querySelector('#rsSaved');
+    if (!el) return;
+    var head = '<div class="core-dash-head"><h2 class="sec-title">Saved research records</h2>';
+    if (!SM.db.configured()) {
+      el.innerHTML = head + '</div><p class="core-dash-note">Saved records will appear here once the database is connected.</p>';
+      return;
+    }
+    el.innerHTML = head + '</div><p class="core-dash-note">Loading from Supabase…</p>';
+    SM.db.list('research_records', { select: RS_COLUMNS, limit: 5 }).then(function (res) {
+      if (!el.isConnected) return;
+      if (!res.rows.length) {
+        el.innerHTML = head + '</div><p class="core-dash-note">No record saved yet. The first one is the baseline.</p>';
+        return;
+      }
+      el.innerHTML = head + '<p class="core-total"><strong>' + res.total + '</strong> <span class="kicker">in research_records</span></p></div>' +
+        rsSavedHTML(res) +
+        '<p class="disclaimer">The five most recent, read live from the Supabase table <code>research_records</code>. ' +
+        'Notes are not among the columns the public key may read.</p>';
+    }).catch(function (err) {
+      if (!el.isConnected) return;
+      el.innerHTML = head + '</div><p class="core-dash-note">Could not reach the database: ' + esc(err.message) + '</p>' +
+        '<button class="btn sm" type="button" data-rs-retry="1">Try again</button>';
+    });
+  }
+
+  /* The dashboard widget on the You screen: how much research is on
+     the record, and the last question asked. Read from Supabase —
+     the widget is empty until the database says otherwise. */
+  function rsWidgetHTML(state) {
+    var head = '<span class="kicker">Research desk</span>';
+    if (!state) return head + '<p class="rs-widget-note">Loading…</p>';
+    if (state.error) return head + '<p class="rs-widget-note">' + esc(state.error) + '</p>';
+    if (!state.total) {
+      return head + '<p class="rs-widget-note">No research record saved yet — ' +
+        SM.RESEARCH.competitors.length + ' competitors and ' + SM.research.sources().length +
+        ' sources are on the page.</p>';
+    }
+    return head +
+      '<p class="rs-widget-row"><strong class="rs-widget-num">' + state.total + '</strong>' +
+      '<span class="rs-widget-txt">research record' + (state.total === 1 ? '' : 's') + ' saved<br>' +
+      '<em>latest: “' + esc(state.latest) + '”</em></span></p>';
+  }
+
+  function rsLoadWidget(root) {
+    var el = root.querySelector('#rsWidget');
+    if (!el) return;
+    if (!SM.db.configured()) {
+      el.innerHTML = rsWidgetHTML({ error: 'Connect the database to see saved research.' });
+      return;
+    }
+    SM.db.list('research_records', { select: 'id,created_at,question', limit: 1 }).then(function (res) {
+      if (!el.isConnected) return;
+      el.innerHTML = rsWidgetHTML({ total: res.total, latest: res.rows.length ? res.rows[0].question : '' });
+      var badge = root.querySelector('#rsWidgetCount');
+      if (badge) badge.textContent = res.total || '';
+    }).catch(function (err) {
+      if (!el.isConnected) return;
+      el.innerHTML = rsWidgetHTML({ error: 'Could not reach the database: ' + err.message });
+    });
+  }
+
+  V.research = {
+    chrome: true,
+    render: function () {
+      var d = SM.RESEARCH;
+      return '<div class="research">' + ui.header('Research desk', { kicker: 'Week 2 · research and benchmarking' }) +
+        '<p class="core-intro pad">Who else solves this, where they stop, what is different in Mexico, and what ' +
+          'could sink it. Every claim below carries the source it came from and the date it was checked — ' +
+          'compiled ' + esc(d.compiled) + ', by hand, from ' + SM.research.sources().length + ' sources.</p>' +
+
+        '<div class="rs-top pad">' + rsIntakeHTML() +
+          '<section class="rs-bench-sec"><h2 class="sec-title">Benchmarks — five global examples</h2>' +
+            '<div class="rs-bench">' + rsBenchHTML() + '</div></section>' +
+        '</div>' +
+
+        '<section class="rs-sec pad"><h2 class="sec-title">Competitors and substitutes</h2>' +
+          '<div class="rs-controls">' + rsChipsHTML() +
+            '<div class="rs-search-row">' +
+              '<input id="rsSearch" class="rs-search" type="search" autocomplete="off" ' +
+                'placeholder="Search name, description, tag…" value="' + esc(rsState.query) + '" aria-label="Search the table">' +
+              '<span class="rs-count mono" id="rsCount">' + rsCountHTML() + '</span>' +
+            '</div></div>' +
+          '<div id="rsTable">' + rsTableHTML() + '</div></section>' +
+
+        '<div class="rs-two pad">' +
+          '<section><h2 class="sec-title">Mexico — what is different here</h2>' + rsMexicoHTML() +
+            '<p class="disclaimer">The contradiction is the finding, and it is left in: the market that says it ' +
+            'worries about fast fashion is the market buying the most of it.</p></section>' +
+          '<section><h2 class="sec-title">Risk map</h2>' + rsRiskHTML() +
+            '<p class="disclaimer">Eight risks, placed by likelihood and impact. No score was invented; click one ' +
+            'for what would be done about it.</p></section>' +
+        '</div>' +
+
+        '<section class="rs-sec pad" id="rsSaved" aria-live="polite"></section>' +
+        footerHTML() + '</div>';
+    },
+
+    mount: function (root) {
+      var search = root.querySelector('#rsSearch');
+      var table = root.querySelector('#rsTable');
+      var count = root.querySelector('#rsCount');
+      var msg = root.querySelector('#rsMsg');
+
+      function repaint() {
+        table.innerHTML = rsTableHTML();
+        count.textContent = rsCountHTML();
+        root.querySelectorAll('[data-rs-type]').forEach(function (b) {
+          var on = b.getAttribute('data-rs-type') === rsState.type;
+          b.classList.toggle('on', on);
+          b.setAttribute('aria-pressed', String(on));
+        });
+        root.querySelectorAll('[data-rs-market]').forEach(function (b) {
+          var on = b.getAttribute('data-rs-market') === rsState.market;
+          b.classList.toggle('on', on);
+          b.setAttribute('aria-pressed', String(on));
+        });
+      }
+
+      search.addEventListener('input', function () { rsState.query = search.value; repaint(); });
+
+      ['question', 'assumption', 'falsifier', 'notes'].forEach(function (k) {
+        var el = root.querySelector('#rs' + k.charAt(0).toUpperCase() + k.slice(1));
+        el.addEventListener('input', function () { rsState.form[k] = el.value; msg.textContent = ''; });
+      });
+
+      root.addEventListener('click', function (e) {
+        var t = e.target.closest('[data-rs-type]');
+        if (t) { rsState.type = t.getAttribute('data-rs-type'); repaint(); return; }
+
+        var m = e.target.closest('[data-rs-market]');
+        if (m) { rsState.market = m.getAttribute('data-rs-market'); repaint(); return; }
+
+        var risk = e.target.closest('[data-rs-risk]');
+        if (risk) { rsShowRisk(risk.getAttribute('data-rs-risk')); return; }
+
+        ['market', 'verdict'].forEach(function (field) {
+          var chip = e.target.closest('[data-rs-' + field + ']');
+          if (!chip) return;
+          rsState.form[field] = chip.getAttribute('data-rs-' + field);
+          root.querySelectorAll('[data-rs-' + field + ']').forEach(function (b) {
+            var on = b === chip;
+            b.classList.toggle('on', on);
+            b.setAttribute('aria-pressed', String(on));
+          });
+        });
+
+        if (e.target.closest('[data-rs-retry]')) rsLoadSaved(root);
+      });
+
+      root.querySelector('#rsForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        rsSave(root);
+      });
+
+      rsLoadSaved(root);
+    }
+  };
+
+  function rsShowRisk(id) {
+    var r = SM.research.riskById(id);
+    if (!r) return;
+    ui.sheet({
+      title: r.name,
+      sub: r.likelihood + ' likelihood · ' + r.impact + ' impact',
+      body: '<p class="rs-sheet-p">' + esc(r.detail) + '</p>' +
+        '<p class="rs-sheet-p"><strong>What is done about it.</strong> ' + esc(r.mitigation) + '</p>'
+    });
+  }
+
+  function rsSave(root) {
+    var btn = root.querySelector('#rsSave');
+    var msg = root.querySelector('#rsMsg');
+    var note = root.querySelector('#rsSaveMsg');
+    if (rsState.saving || rsState.savedId) return;
+
+    var errors = SM.research.validate(rsState.form);
+    if (errors.length) {
+      msg.textContent = errors[0].message;
+      var field = root.querySelector('#rs' + errors[0].field.charAt(0).toUpperCase() + errors[0].field.slice(1));
+      if (field) field.focus();
+      return;
+    }
+    msg.textContent = '';
+
+    if (!SM.db.configured()) {
+      note.className = 'core-save-msg err';
+      note.textContent = 'Saving is off on this deployment: the database is not configured.';
+      return;
+    }
+
+    var visible = SM.research.filter({ query: rsState.query, type: rsState.type, market: rsState.market });
+    var row = SM.research.toRecord(rsState.form, visible);
+    rsState.saving = true;
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+
+    SM.db.insert('research_records', row).then(function (saved) {
+      rsState.saving = false;
+      rsState.savedId = saved.id;
+      if (!btn.isConnected) return;
+      btn.innerHTML = ui.icon('check') + 'Saved';
+      note.className = 'core-save-msg';
+      note.textContent = 'Saved to Supabase · row ' + saved.id.slice(0, 8);
+      ui.toast('Research record saved');
+      rsLoadSaved(root);
+    }).catch(function (err) {
+      rsState.saving = false;
+      if (!btn.isConnected) return;
+      btn.disabled = false;
+      btn.textContent = 'Save this research record';
+      note.className = 'core-save-msg err';
+      note.textContent = 'Could not save: ' + err.message + '. Nothing was lost — try again.';
+    });
+  }
+
+  /* ============================================================
      Docs — what this is, what is real, and what comes next
      ============================================================ */
   var ROADMAP = [
@@ -1673,6 +2058,7 @@ window.SM = window.SM || {};
       '<a href="https://github.com/eugenetriniac-png/style-me" target="_blank" rel="noopener"><span>Source</span></a>' +
       '<a href="#/docs"><span>Docs</span></a>' +
       '<a href="#/core"><span>Style Core</span></a>' +
+      '<a href="#/research"><span>Research</span></a>' +
       '<a href="#/feed"><span>Feed</span></a></p>' +
       '<p class="foot-note mono">Demo catalogue — invented prices, no payment taken.</p>' +
       '</footer>';
