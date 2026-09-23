@@ -1596,8 +1596,11 @@ window.SM = window.SM || {};
   };
 
   function rsSourceHTML(r) {
+    /* A row whose evidence has not been gathered yet says so, rather
+       than borrowing the authority of the rows that have one. */
+    if (r.pending) return '<span class="rs-src rs-src-pending" title="' + esc(r.sourceName) + '">awaiting interview</span>';
     if (r.sourceKind === 'interview') {
-      return '<span class="rs-src rs-src-off" title="' + esc(r.sourceName) + '">interview ↗</span>';
+      return '<span class="rs-src rs-src-off" title="' + esc(r.sourceName) + '">interview</span>';
     }
     return '<a class="rs-src" href="' + esc(r.source) + '" target="_blank" rel="noopener noreferrer" ' +
       'title="' + esc(r.sourceName) + '">' + esc(rsHost(r.source)) + ' ↗</a>';

@@ -187,10 +187,11 @@ window.SM = window.SM || {};
       where: 'Everywhere',
       does: 'A photo in a group chat before buying, or a friend whose taste you trust coming along to the shop.',
       gap: 'Free, trusted and instant — and completely unscalable. It is also the benchmark: anything this product says has to be at least as useful as a friend replying "no, not that one".',
-      figure: 'Reported in this week\'s validation conversation — see the interview record',
+      figure: 'No figure yet. This row is waiting on the validation conversation — nothing is quoted here until a real person has actually said it.',
       source: 'docs/week-2/validation-conversation.md',
-      sourceName: 'Human validation conversation, Week 2',
+      sourceName: 'Human validation conversation, Week 2 — not yet held',
       sourceKind: 'interview',
+      pending: true,
       checked: CHECKED,
       tags: ['substitute', 'free', 'social', 'benchmark', 'mexico']
     }

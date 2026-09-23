@@ -1703,3 +1703,4 @@ input[type=range]::-moz-range-thumb {
 /* The source cell holds a host and a date: neither should wrap. */
 .rs-table td:last-child { min-width: 132px; }
 .rs-checked, .rs-src { white-space: nowrap; }
+.rs-src-pending { color: var(--flame); border-bottom: 1px dotted rgba(255, 92, 66, .5); cursor: help; }
