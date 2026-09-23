@@ -1704,3 +1704,6 @@ input[type=range]::-moz-range-thumb {
 .rs-table td:last-child { min-width: 132px; }
 .rs-checked, .rs-src { white-space: nowrap; }
 .rs-src-pending { color: var(--flame); border-bottom: 1px dotted rgba(255, 92, 66, .5); cursor: help; }
+/* "MX$941bn" is wider than the figure column was: let long figures wrap
+   inside their own column instead of running under the claim. */
+.rs-find-fig { width: 104px; font-size: 15.5px; line-height: 1.25; overflow-wrap: anywhere; }

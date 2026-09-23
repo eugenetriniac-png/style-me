@@ -1,7 +1,7 @@
-﻿﻿# ============================================================
+﻿# ============================================================
 #  Style Me - Week 2 - scripted self-tests against the LIVE site
 #
-#    powershell -ExecutionPolicy Bypass -File docs\week-1\run-tests.ps1
+#    powershell -ExecutionPolicy Bypass -File docs\week-2\run-tests.ps1
 #
 #  No Node, no Playwright on this machine, so this drives headless Edge
 #  directly over the Chrome DevTools Protocol from PowerShell. A fresh
@@ -156,10 +156,39 @@ window.__t = {
     await this.sleep(2700);                    // let the toast leave before any screenshot
     return msg;
   },
-  widget() { const w = document.querySelector('#rsWidget'); return w ? w.innerText.replace(/\n+/g, ' | ') : null; }
+  widget() { const w = document.querySelector('#rsWidget'); return w ? w.innerText.replace(/\n+/g, ' | ') : null; },
+
+  /* The You screen belongs to someone who has taken the style test:
+     a visitor who has not is sent back to the welcome screen, so the
+     widget does not exist for them. The test takes the test — twelve
+     clicks, the way a real user reaches that screen. */
+  async onboard() {
+    location.hash = '#/quiz';
+    await this.sleep(500);
+    for (let i = 0; i < 14 && location.hash === '#/quiz'; i++) {
+      const opt = document.querySelector('.q-option');
+      if (!opt) break;
+      opt.click();
+      await this.sleep(300);
+    }
+    await this.waitFor(() => location.hash === '#/dna');
+    return location.hash;
+  }
 };
 'ok'
 '@
+
+# Test 3 asks every cited source whether it still answers. Two hosts refuse
+# anything that does not look like a browser, and one of them - the SEC -
+# publishes the opposite rule: it wants a user agent carrying a contact.
+# PowerShell's own web client is refused by both, so this uses curl.exe,
+# which ships with Windows.
+function Get-LinkStatus([string]$url) {
+  $ua = if ($url -like '*sec.gov*') { 'Style Me research link check (eugene.triniac@ibero.mx)' } else { 'Mozilla/5.0' }
+  $code = & curl.exe -s -o NUL -w '%{http_code}' -A $ua -L --max-time 40 $url 2>$null
+  if ($code -match '^\d+$') { return [int]$code }
+  return -1
+}
 
 $results = [ordered]@{ base = $Base; ranAt = (Get-Date).ToString('yyyy-MM-dd HH:mm:ss zzz'); tests = @() }
 function Record($id, $name, [bool]$pass, $details) {
@@ -200,13 +229,18 @@ try {
   $after = [int](Js 'String(window.__t.savedTotal())')
   $first = Js 'window.__t.savedFirst()'
   ShotEl '#rsSaved' 'test2-records-after-reload'
-  Go '/me'
+  $onboarded = Js 'window.__t.onboard()'
+  # The You screen is a hash route: only /docs, /core and /research are
+  # rewritten to the app, so opening $Base/me would fetch a Vercel 404.
+  [void](Js "location.hash = '#/me'; 'ok'")
+  Start-Sleep -Milliseconds 900
   [void](Js 'window.__t.waitFor(() => { const w = window.__t.widget(); return w && !/Loading/.test(w); }).then(() => "ok")')
   $widget = Js 'window.__t.widget()'
   ShotEl '#rsWidget' 'test2-widget-on-you'
   $pass2 = ($saved -like 'Saved to Supabase*') -and ($after -eq $before + 1) -and ($first -like '*naming their taste*') -and ($widget -like "*$after*")
   Record 'T2' 'Save a research record: one row per double click, read back after a reload, and counted by the You-screen widget' $pass2 ([ordered]@{
-    saveMessage = $saved; totalBefore = $before; totalAfter = $after; firstOnPage = $first; widget = $widget })
+    saveMessage = $saved; totalBefore = $before; totalAfter = $after; firstOnPage = $first
+    onboardedTo = $onboarded; widget = $widget })
 
   # ---------- Test 3 - every source resolves ---------------------------
   Go '/research'
@@ -215,13 +249,7 @@ try {
   $bad = 0
   foreach ($s in $sources) {
     if ($s.kind -ne 'web') { $checked += [ordered]@{ id = $s.id; url = $s.url; status = 'not a web source'; ok = $true }; continue }
-    $status = 0
-    try {
-      $r = Invoke-WebRequest -Uri $s.url -Method Get -MaximumRedirection 5 -TimeoutSec 40 -UseBasicParsing -Headers @{ 'User-Agent' = 'Mozilla/5.0 (style-me research link check)' }
-      $status = [int]$r.StatusCode
-    } catch {
-      if ($_.Exception.Response) { $status = [int]$_.Exception.Response.StatusCode } else { $status = -1 }
-    }
+    $status = Get-LinkStatus $s.url
     $ok = ($status -ge 200 -and $status -lt 400)
     if (-not $ok) { $bad++ }
     $checked += [ordered]@{ id = $s.id; url = $s.url; status = $status; ok = $ok }
