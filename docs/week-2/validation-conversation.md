@@ -1,8 +1,18 @@
 # Human Validation Conversation — Week 2
 
 **Required by the assignment:** 1 real human validation conversation.
-**Status:** *to be filled in after the conversation — the template below is the
-script, not the result.*
+**Status:** **not yet held.** Scheduled for 24–25 September 2026 with one
+person in the target segment. The script below is written and the write-up
+section under it is deliberately empty.
+
+> **Why this section is empty rather than filled.** Everything else in this
+> packet was produced by me and a coding agent in an evening. This is the one
+> piece that cannot be: it needs another person, and the whole point of the
+> week is that a claim without a source is not evidence. Writing a plausible
+> quote here would contradict the single rule the `/research` page is built on
+> — which is also why the competitor row "asking a friend" currently reads
+> *awaiting interview* instead of carrying a figure. The conversation is worth
+> more late than invented on time.
 
 ---
 
