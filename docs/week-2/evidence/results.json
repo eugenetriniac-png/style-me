@@ -1,6 +1,6 @@
 ﻿{
     "base":  "https://style-me-five.vercel.app",
-    "ranAt":  "2026-09-24 17:11:03 -06:00",
+    "ranAt":  "2026-09-24 17:49:18 -06:00",
     "tests":  [
                   {
                       "id":  "T1",
@@ -62,15 +62,23 @@
                   },
                   {
                       "id":  "T2",
-                      "name":  "Save a research record: one row per double click, read back after a reload, and counted by the You-screen widget",
+                      "name":  "Save a research record: one row per double click, every field stored as chosen, read back after a reload, and counted by the You-screen widget",
                       "pass":  true,
                       "details":  {
-                                      "saveMessage":  "Saved to Supabase · row bd55384b",
-                                      "totalBefore":  7,
-                                      "totalAfter":  8,
-                                      "firstOnPage":  "JUST NOW · MEXICO | Do people need help naming their taste, or just help shopping? | real | 24 sources",
+                                      "saveMessage":  "Saved to Supabase · row 61a76d28",
+                                      "totalBefore":  9,
+                                      "totalAfter":  10,
+                                      "firstOnPage":  "JUST NOW · BOTH | Do people need help naming their taste, or just help shopping? | partly | 24 sources",
+                                      "storedRow":  {
+                                                        "id":  "61a76d28-19c7-4153-89f1-932ad6f4525d",
+                                                        "question":  "Do people need help naming their taste, or just help shopping?",
+                                                        "market":  "both",
+                                                        "verdict":  "partly",
+                                                        "source_count":  24
+                                                    },
+                                      "storedAsChosen":  true,
                                       "onboardedTo":  "#/dna",
-                                      "widget":  "RESEARCH DESK | 8 | research records saved | latest: “Do people need help naming their taste, or just help shopping?”"
+                                      "widget":  "RESEARCH DESK | 10 | research records saved | latest: “Do people need help naming their taste, or just help shopping?”"
                                   }
                   },
                   {
@@ -237,17 +245,17 @@
                                       "allowed":  200,
                                       "latest":  [
                                                      {
+                                                         "id":  "61a76d28-19c7-4153-89f1-932ad6f4525d",
+                                                         "question":  "Do people need help naming their taste, or just help shopping?",
+                                                         "verdict":  "partly"
+                                                     },
+                                                     {
+                                                         "id":  "27e2310b-b55d-47f3-9612-727ee8b16371",
+                                                         "question":  "Do people need help naming their taste, or just help shopping?",
+                                                         "verdict":  "partly"
+                                                     },
+                                                     {
                                                          "id":  "bd55384b-4453-45ff-809b-a12f6db6aa56",
-                                                         "question":  "Do people need help naming their taste, or just help shopping?",
-                                                         "verdict":  "real"
-                                                     },
-                                                     {
-                                                         "id":  "311a4caf-8e0c-40cc-aba4-774df2432603",
-                                                         "question":  "Do people need help naming their taste, or just help shopping?",
-                                                         "verdict":  "real"
-                                                     },
-                                                     {
-                                                         "id":  "5c36cd81-9e2c-4873-b32e-9737490751b3",
                                                          "question":  "Do people need help naming their taste, or just help shopping?",
                                                          "verdict":  "real"
                                                      }

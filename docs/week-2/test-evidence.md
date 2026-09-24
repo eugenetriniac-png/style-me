@@ -1,8 +1,8 @@
 # Test Evidence — Week 2
 
 **Live page under test:** https://style-me-five.vercel.app/research
-**Code under test:** deployment `0eba0f5`
-**Final run:** 24 September 2026, 17:11 (Mexico City, UTC−6)
+**Code under test:** deployment `7ed9a3a`
+**Final run:** 24 September 2026, 17:49 (Mexico City, UTC−6)
 
 ---
 
@@ -34,7 +34,7 @@ Two checks run alongside the three: security (S1) and mobile (M1).
 | # | Test | What was checked | Actual | Pass |
 |---|---|---|---|---|
 | T1 | Filter, search, console | Every type and market chip against `SM.research.counts()`; search narrows, empties and clears; no row without a source; no uncaught error on the page | All six type counts and three market counts matched; "mexico" narrowed to 4, "zzzznothing" gave 0 rows and the empty message, clearing restored 12; rows without a source: 0; header "12 of 12 · 24 sources"; console errors: `[]` | ✅ |
-| T2 | Save a record | Intake filled, **Save clicked twice**; reload; then the You-screen widget, reached by taking the style test | "Saved to Supabase"; total 7 → 8, so the double click made one row; the saved question first in the list; widget read "8 research records saved" | ✅ |
+| T2 | Save a record | Intake filled with values that are **not** the form defaults, **Save clicked twice**, then the written row read back field by field; reload; then the You-screen widget, reached by taking the style test | "Saved to Supabase"; total 9 → 10, so the double click made one row; the stored row carried `market: both` and `verdict: partly` exactly as chosen; the saved question first in the list; widget read "10 research records saved" | ✅ |
 | T3 | Sources hold | A real HTTP request to every source cited on the page | 24 claims behind 11 distinct URLs; all 23 web claims answered 200; 0 failures. The 24th is the pending interview, which has no URL and is reported as such rather than counted as a pass | ✅ |
 | S1 | Security | The publishable key against `research_records` | allowed columns 200 · `notes` **401** · `select=*` **401** · `DELETE` **401** | ✅ |
 | M1 | Responsive | Horizontal overflow at 375, 414, 600, 768, 900 and 1280 px, and the wide table | 0 px at every width; the table scrolls inside its own box rather than stretching the page | ✅ |
@@ -75,8 +75,8 @@ and it earned its keep the first time it was used.
 
 ## Defects found this week
 
-Eight. Two in the product, two in the research, four in the test tooling — and
-the last one was both at once.
+Nine. Three in the product, two in the research, four in the test tooling — and
+two of the nine were a product bug and a blind test at the same time.
 
 ### 1 — A source that could not be checked (found in development)
 
@@ -150,6 +150,25 @@ the subtraction comes out at a comfortable zero. Measured against
 `documentElement.clientWidth` the 20 px is plain. M1 now sweeps six widths —
 375, 414, 600, 768, 900, 1280 — and reports every one. Fixed in `0eba0f5`.
 
+### 9 — The form chips were driving the table
+
+Found by filling the form by hand after the validation conversation, to record
+the new verdict: **"Both" was clicked and the database stored "mexico"**.
+
+The form's market chips and the table's filter chips both carried
+`data-rs-market`. The click handler checks the filter chips first and returns,
+so a form chip was read as a filter click: the table emptied — no competitor
+has the market "both" — and the form's own value never changed. The chip lit up
+all the same, because the repaint marks every `[data-rs-market]` it finds.
+
+The form chips are now `data-rs-form-*`.
+
+Why T2 had passed six times over it: the test filled the form with the values
+that were already the defaults — `mexico` and `real` — so a field that never
+reached the row still arrived correct. T2 now fills the form with values that
+are deliberately **not** the defaults, and reads the written row back field by
+field instead of trusting that the count went up. Fixed in `7ed9a3a`.
+
 ---
 
 ## Iteration log
@@ -164,25 +183,28 @@ the subtraction comes out at a comfortable zero. Measured against
 | 6 | Figure column widened, long figures wrap | `MX$941bn` printed over its own claim | `6a8910d` |
 | 7 | Console-error collector added, then made to actually run | The packet promised a clean console and nothing checked it | `517aedc` |
 | 8 | Risk map columns `minmax(0, 1fr)`; M1 measures against `clientWidth` and sweeps six widths | The map overflowed 20 px at 375 px, and the mobile check could not see it | `0eba0f5` |
+| 9 | Form chips renamed `data-rs-form-*`; T2 fills non-default values and reads the row back | Clicking "Both" in the form emptied the table and stored the wrong market | `7ed9a3a` |
 
 ---
 
 ## What this round taught me
 
 Week 1's lesson was that a test round finding nothing is evidence about the
-test. This week the tests found eight things — and five of them were in the tests
-themselves, not in the product. A failing test is not the same as a
+test. This week nine things were found — five of them in the tests themselves, and
+the worst one not by a test at all. A failing test is not the same as a
 broken feature, and telling them apart took real work each time: the widget was
 "missing" because the test asked Vercel for a page that does not exist, and a
 source was "dead" because the SEC does not talk to scripts that fail to
 introduce themselves.
 
-Two will stay with me. The console check that reported *"collector missing"*:
+Three will stay with me. The console check that reported *"collector missing"*:
 written the obvious way it would have returned an empty list and passed for the
-rest of the semester without looking at anything. And the mobile check that
-read zero overflow three times because it measured the page against a viewport
-that had already stretched to swallow the overflow — a green check that was
-measuring the symptom instead of the screen.
+rest of the semester without looking at anything. The mobile check that read zero overflow three
+times because it measured the page against a viewport that had already
+stretched to swallow the overflow. And the save test that passed six times on a
+form field that never reached the database, because the value it typed happened
+to be the value already there — the bug only appeared when a human chose
+something else.
 
 And the defect I care about most was found by neither the tests nor the
 browser: reading the page as a reader, where a citation pointed at a

@@ -82,7 +82,7 @@ columns by name.
 Read back through the live API with the publishable key, at the end of the
 final test run (times converted to Mexico City, UTC−6):
 
-| saved_at | question | market | verdict | sources on the page that day |
+| saved_at | question | market | verdict | sources |
 |---|---|---|---|---|
 | 23 Sep 17:38 | Do people need help naming their taste, or just help shopping? | mexico | real | 24 |
 | 23 Sep 17:41 | (same) | mexico | real | 24 |
@@ -92,16 +92,29 @@ final test run (times converted to Mexico City, UTC−6):
 | 24 Sep 16:55 | (same) | mexico | real | 24 |
 | 24 Sep 16:56 | (same) | mexico | real | 24 |
 | 24 Sep 17:11 | (same) | mexico | real | 24 |
+| 24 Sep 17:47 | (same) | mexico | **partly** | 24 |
+| 24 Sep 17:49 | (same) | **both** | **partly** | 24 |
 
-Eight rows, one per run of the test script: five on 23 September, three more on
-24 September, as the console check and then the responsive sweep were added. The runs that fixed the test
-itself are in there too, because deleting them would be tidying the evidence. Every
-row was written by the live page's Save button; none was inserted by hand.
+Ten rows. Eight were written by runs of the test script — five on 23 September,
+three more on 24 September as the console check and the responsive sweep were
+added. The runs that fixed the test itself are in there too, because deleting
+them would be tidying the evidence.
+
+The last two were written by hand, on the live page, after the validation
+conversation: the verdict moved from `real` to `partly` because a real person
+contradicted the assumption. They also carry the fingerprint of the ninth
+defect. The 17:47 row says `mexico` although **both** was clicked — the form's
+market chips shared an attribute name with the table's filter chips, so the
+choice never reached the row. The 17:49 row, after the fix, stores `both` as
+chosen. Both rows are kept: the wrong one is the evidence.
+
+Every row was written by the page's Save button; none was inserted by hand into
+the database.
 
 Each row also carries what was on screen when it was saved: the twelve
 `competitor_ids` in view and the five `risk_ids` the map called top priority.
-The question is the same in all eight because the script asks the same one — a
-human asking a different question is what the intake is for.
+The question is the same throughout because the script asks the same one, and
+the two human records deliberately re-asked it to record the change of verdict.
 
 `source_count: 24` is the page's own count of cited claims at the moment of
 saving, which is what makes a record re-checkable: if the page later carries 30

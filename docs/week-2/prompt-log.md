@@ -212,3 +212,30 @@ client for opposite reasons, and `MX$941bn` printing over its own claim.
 **What the agent did not do, and why:** the validation conversation. It needs a
 real person, and inventing one would poison the only page in this project whose
 rule is that every claim carries a source.
+
+---
+
+## Prompt 12 — The validation conversation, transcribed
+
+> *(the full transcript of the conversation, pasted in: nine questions and the
+> answers, in French)*
+
+**Files modified:** `docs/week-2/validation-conversation.md`,
+`js/research-data.js`, `docs/week-2/human-decision-note.md`,
+`docs/week-2/build-discipline-packet.md` (addendum), `js/views.js`,
+`docs/week-2/run-tests.ps1`
+**The result:** the falsifier triggered. The person named his own style in one
+sentence and asked for cheaper and faster instead — the exact sentence the
+packet said would prove the premise wrong. The write-up keeps his words in
+French with a translation, including the ones that contradict the project.
+**What changed in the product:** the competitor row "asking a friend" finally
+carries a source; two risks — cold start, and used-once-then-forgotten — are
+now backed by a real person rather than by my own reasoning; the decision note
+was rewritten around the result; the verdict on the saved research record moved
+from *real* to *partly*.
+**Error found while doing it:** saving that record by hand exposed the ninth
+defect of the week — the form's market chips shared an attribute name with the
+table's filter chips, so choosing "Both" emptied the table and stored "mexico".
+Six passing runs of T2 had never caught it, because the test filled the form
+with the values that were already the defaults.
+**Commits:** `349cd10`, `7ed9a3a`
