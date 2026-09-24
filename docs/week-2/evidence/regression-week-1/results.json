@@ -1,0 +1,263 @@
+﻿{
+    "base":  "https://style-me-five.vercel.app",
+    "ranAt":  "2026-09-24 16:54:19 -06:00",
+    "tests":  [
+                  {
+                      "id":  "T1",
+                      "name":  "Full loop on the live site: /core loads, Generate, Save (double click), reload, row read back; the outfit keeps \"never colour\" and the Doc Martens",
+                      "pass":  true,
+                      "details":  {
+                                      "landing":  {
+                                                      "url":  "https://style-me-five.vercel.app/#/core",
+                                                      "title":  "Style Core — Style Me",
+                                                      "form":  true
+                                                  },
+                                      "card":  {
+                                                   "arch":  "Black Minimalism",
+                                                   "kicker":  "Your Style Core · confidence medium",
+                                                   "top":  [
+                                                               "Edgy",
+                                                               "Minimal",
+                                                               "Classic"
+                                                           ],
+                                                   "signals":  [
+                                                                   "black → Edgy",
+                                                                   "oversized → Street",
+                                                                   "doc martens → Edgy",
+                                                                   "[neg] colour → −Colour",
+                                                                   "sharper → Classic",
+                                                                   "[neg] banker → −Classic"
+                                                               ],
+                                                   "meta":  "total €274 / €300rules-v1",
+                                                   "thesis":  "Black Minimalism for work: built on Edgy — black, leather, hard lines — and Minimal — clean lines, nothing spare. Left out, because you said so: colour, banker. Kept to black, grey and white. Built around what you named: the eight eyelet boot from Dr. Martens. The whole outfit comes to €274, inside your €300.",
+                                                   "pieces":  [
+                                                                  "Heavyweight Cotton Tee",
+                                                                  "Technical Cargo Trousers",
+                                                                  "Eight Eyelet Boot"
+                                                              ]
+                                               },
+                                      "outfit":  {
+                                                     "items":  [
+                                                                   {
+                                                                       "name":  "Technical Cargo Trousers",
+                                                                       "brand":  "Zara",
+                                                                       "family":  "black",
+                                                                       "category":  "bottom",
+                                                                       "price":  50
+                                                                   },
+                                                                   {
+                                                                       "name":  "Eight Eyelet Boot",
+                                                                       "brand":  "Dr. Martens",
+                                                                       "family":  "black",
+                                                                       "category":  "shoes",
+                                                                       "price":  189
+                                                                   },
+                                                                   {
+                                                                       "name":  "Heavyweight Cotton Tee",
+                                                                       "brand":  "COS",
+                                                                       "family":  "white",
+                                                                       "category":  "top",
+                                                                       "price":  35
+                                                                   }
+                                                               ],
+                                                     "named":  [
+                                                                   "Doc Martens"
+                                                               ],
+                                                     "missed":  [
+
+                                                                ],
+                                                     "offColour":  [
+
+                                                                   ],
+                                                     "allowed":  [
+                                                                     "black",
+                                                                     "grey",
+                                                                     "white"
+                                                                 ]
+                                                 },
+                                      "colourRuleKept":  true,
+                                      "docMartensPresent":  true,
+                                      "saveMessage":  "Saved to Supabase · row da7026f6",
+                                      "totalBefore":  10,
+                                      "totalAfter":  11,
+                                      "firstOnDashboard":  "JUST NOW · TEST 1 | Black Minimalism | Edgy | Minimal"
+                                  }
+                  },
+                  {
+                      "id":  "T2",
+                      "name":  "Negation and determinism: \"never wear colour\" lowers Colour and keeps colour out of the outfit; the named leather jacket and boots are in it; two runs identical",
+                      "pass":  true,
+                      "details":  {
+                                      "card":  {
+                                                   "arch":  "Black Minimalism",
+                                                   "kicker":  "Your Style Core · confidence medium",
+                                                   "top":  [
+                                                               "Edgy",
+                                                               "Minimal",
+                                                               "Classic"
+                                                           ],
+                                                   "signals":  [
+                                                                   "[neg] colour → −Colour",
+                                                                   "black → Edgy",
+                                                                   "grey → Minimal",
+                                                                   "leather → Edgy",
+                                                                   "boots → Edgy"
+                                                               ],
+                                                   "meta":  "total €2,139rules-v1",
+                                                   "thesis":  "Black Minimalism for every day: built on Edgy — black, leather, hard lines — and Minimal — clean lines, nothing spare. Left out, because you said so: colour. Kept to black, grey and white. Built around what you named: the leather biker jacket from Acne Studios and the eight eyelet boot from Dr. Martens.",
+                                                   "pieces":  [
+                                                                  "Leather Biker Jacket",
+                                                                  "Fine Roll Neck",
+                                                                  "Slim Black Jeans",
+                                                                  "Eight Eyelet Boot",
+                                                                  "Rectangular Sunglasses"
+                                                              ]
+                                               },
+                                      "outfit":  {
+                                                     "items":  [
+                                                                   {
+                                                                       "name":  "Slim Black Jeans",
+                                                                       "brand":  "Levi’s",
+                                                                       "family":  "black",
+                                                                       "category":  "bottom",
+                                                                       "price":  100
+                                                                   },
+                                                                   {
+                                                                       "name":  "Leather Biker Jacket",
+                                                                       "brand":  "Acne Studios",
+                                                                       "family":  "black",
+                                                                       "category":  "outer",
+                                                                       "price":  1400
+                                                                   },
+                                                                   {
+                                                                       "name":  "Eight Eyelet Boot",
+                                                                       "brand":  "Dr. Martens",
+                                                                       "family":  "black",
+                                                                       "category":  "shoes",
+                                                                       "price":  189
+                                                                   },
+                                                                   {
+                                                                       "name":  "Rectangular Sunglasses",
+                                                                       "brand":  "Acne Studios",
+                                                                       "family":  "black",
+                                                                       "category":  "accessory",
+                                                                       "price":  240
+                                                                   },
+                                                                   {
+                                                                       "name":  "Fine Roll Neck",
+                                                                       "brand":  "Toteme",
+                                                                       "family":  "black",
+                                                                       "category":  "top",
+                                                                       "price":  210
+                                                                   }
+                                                               ],
+                                                     "named":  [
+                                                                   "leather jacket",
+                                                                   "boots"
+                                                               ],
+                                                     "missed":  [
+
+                                                                ],
+                                                     "offColour":  [
+
+                                                                   ],
+                                                     "allowed":  [
+                                                                     "black",
+                                                                     "grey",
+                                                                     "white"
+                                                                 ]
+                                                 },
+                                      "colourRuleKept":  true,
+                                      "namedPiecesKept":  true,
+                                      "renderedTwiceIdentical":  true,
+                                      "engineTwiceIdentical":  "true",
+                                      "colourNegative":  true,
+                                      "saveMessage":  "Saved to Supabase · row 795356f5"
+                                  }
+                  },
+                  {
+                      "id":  "T3",
+                      "name":  "Edges: under 20 characters, no recognisable cue, EUR 150 budget",
+                      "pass":  true,
+                      "details":  {
+                                      "tooShort":  {
+                                                       "msg":  "A little more, please — at least 20 characters. You have 9.",
+                                                       "arch":  "Black Minimalism"
+                                                   },
+                                      "archetypeKeptOnScreen":  "Black Minimalism",
+                                      "noSignal":  {
+                                                       "title":  "Not enough to go on.",
+                                                       "card":  false
+                                                   },
+                                      "budgetCard":  {
+                                                         "arch":  "Period Classic",
+                                                         "kicker":  "Your Style Core · confidence high",
+                                                         "top":  [
+                                                                     "Retro",
+                                                                     "Classic",
+                                                                     "Utility"
+                                                                 ],
+                                                         "signals":  [
+                                                                         "flea → Retro",
+                                                                         "corduroy → Retro",
+                                                                         "grandad → Retro",
+                                                                         "wool → Classic",
+                                                                         "seventies → Retro",
+                                                                         "colours → Colour"
+                                                                     ],
+                                                         "meta":  "total €148 / €150rules-v1",
+                                                         "thesis":  "Period Classic for the weekend: built on Retro — archive cuts and colours — and Classic — pieces that outlive seasons. Start with the ribbed tank from Monki and build out from it. Not in the catalogue within your budget: corduroy, coat. The whole outfit comes to €148, inside your €150.",
+                                                         "pieces":  [
+                                                                        "Ribbed Tank",
+                                                                        "Denim Shorts",
+                                                                        "Suede Chelsea Boot"
+                                                                    ]
+                                                     },
+                                      "budgetTotal":  148,
+                                      "saveMessage":  "Saved to Supabase · row bebed044"
+                                  }
+                  },
+                  {
+                      "id":  "S1",
+                      "name":  "Security: the public key cannot read input_text, select *, or delete",
+                      "pass":  true,
+                      "details":  {
+                                      "allowed":  200,
+                                      "latest":  [
+                                                     {
+                                                         "id":  "bebed044-147c-4141-b340-59adc2304153",
+                                                         "label":  "Test 3",
+                                                         "archetype":  "Period Classic"
+                                                     },
+                                                     {
+                                                         "id":  "795356f5-1ac7-44e7-80f3-b06c16c76797",
+                                                         "label":  "Test 2",
+                                                         "archetype":  "Black Minimalism"
+                                                     },
+                                                     {
+                                                         "id":  "da7026f6-5efe-4d3d-b826-5a6d21c58360",
+                                                         "label":  "Test 1",
+                                                         "archetype":  "Black Minimalism"
+                                                     }
+                                                 ],
+                                      "inputText":  401,
+                                      "inputTextBody":  {
+                                                            "code":  "42501",
+                                                            "details":  null,
+                                                            "hint":  "Grant the required privileges to the current role with: GRANT SELECT ON public.core_outputs TO anon;",
+                                                            "message":  "permission denied for table core_outputs"
+                                                        },
+                                      "selectStar":  401,
+                                      "delete":  401
+                                  }
+                  },
+                  {
+                      "id":  "M1",
+                      "name":  "Mobile 375 px: no horizontal overflow",
+                      "pass":  true,
+                      "details":  {
+                                      "overflowPx":  0
+                                  }
+                  }
+              ]
+}

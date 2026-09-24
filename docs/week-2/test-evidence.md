@@ -62,6 +62,12 @@ PASS  S1  Security: the public key cannot read input_text, select *, or delete
 PASS  M1  Mobile 375 px: no horizontal overflow
 ```
 
+The run's own results file and two of its screenshots are kept in
+`docs/week-2/evidence/regression-week-1/`. Week 1's evidence folder was
+restored to what was submitted: re-running its tests overwrote those images,
+and evidence of a handed-in week should not be quietly replaced by a later
+run.
+
 Keeping last week's tests runnable is the cheapest regression suite available,
 and it earned its keep the first time it was used.
 
