@@ -1705,7 +1705,10 @@ window.SM = window.SM || {};
     var chips = function (name, list) {
       return list.map(function (v) {
         var on = f[name] === v.id;
-        return '<button type="button" class="chip' + (on ? ' on' : '') + '" data-rs-' + name + '="' + v.id + '" aria-pressed="' + on + '">' +
+        /* data-rs-form-*, not data-rs-*: the table's own filter chips use
+           data-rs-market, and a form chip sharing that name was read as a
+           filter click — it emptied the table and never reached the form. */
+        return '<button type="button" class="chip' + (on ? ' on' : '') + '" data-rs-form-' + name + '="' + v.id + '" aria-pressed="' + on + '">' +
           esc(v.label) + '</button>';
       }).join('');
     };
@@ -1886,10 +1889,10 @@ window.SM = window.SM || {};
         if (risk) { rsShowRisk(risk.getAttribute('data-rs-risk')); return; }
 
         ['market', 'verdict'].forEach(function (field) {
-          var chip = e.target.closest('[data-rs-' + field + ']');
+          var chip = e.target.closest('[data-rs-form-' + field + ']');
           if (!chip) return;
-          rsState.form[field] = chip.getAttribute('data-rs-' + field);
-          root.querySelectorAll('[data-rs-' + field + ']').forEach(function (b) {
+          rsState.form[field] = chip.getAttribute('data-rs-form-' + field);
+          root.querySelectorAll('[data-rs-form-' + field + ']').forEach(function (b) {
             var on = b === chip;
             b.classList.toggle('on', on);
             b.setAttribute('aria-pressed', String(on));

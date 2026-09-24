@@ -142,8 +142,19 @@ window.__t = {
   fill(f) {
     const set = (id, v) => { const el = document.querySelector(id); el.value = v; el.dispatchEvent(new Event('input', { bubbles: true })); };
     set('#rsQuestion', f.question); set('#rsAssumption', f.assumption); set('#rsFalsifier', f.falsifier); set('#rsNotes', f.notes || '');
-    document.querySelector('[data-rs-market="' + f.market + '"]').click();
-    document.querySelector('[data-rs-verdict="' + f.verdict + '"]').click();
+    document.querySelector('[data-rs-form-market="' + f.market + '"]').click();
+    document.querySelector('[data-rs-form-verdict="' + f.verdict + '"]').click();
+  },
+
+  /* What the database actually stored, read back through the same public
+     key the page uses. T2 used to check only that the row count went up:
+     a form field that never reached the row passed happily, as long as its
+     default happened to match what the test clicked. */
+  async lastRow() {
+    const c = SM.config.supabase;
+    const r = await fetch(c.url + '/rest/v1/research_records?select=id,question,market,verdict,source_count&order=created_at.desc&limit=1',
+      { headers: { apikey: c.key } });
+    return JSON.stringify((await r.json())[0] || {});
   },
   savedReady() { const d = document.querySelector('#rsSaved'); return d && !/Loading/.test(d.innerText) && d.innerText.trim().length > 20; },
   savedTotal() { const s = document.querySelector('#rsSaved .core-total strong'); return s ? +s.textContent : 0; },
@@ -233,8 +244,11 @@ addEventListener('unhandledrejection', e => window.__errs.push('unhandled reject
   # ---------- Test 2 - save a research record --------------------------
   [void](Js 'window.__t.waitFor(() => window.__t.savedReady()).then(() => "ok")')
   $before = [int](Js 'String(window.__t.savedTotal())')
-  [void](Js ("window.__t.fill({ question: " + ($Q | ConvertTo-Json) + ", assumption: " + ($A | ConvertTo-Json) + ", falsifier: " + ($F | ConvertTo-Json) + ", market: 'mexico', verdict: 'real', notes: 'Saved by the Week 2 test script.' }); 'ok'"))
+  # Deliberately not the form's defaults (mexico / real): a field that never
+  # reaches the row cannot hide behind a default that matches the test.
+  [void](Js ("window.__t.fill({ question: " + ($Q | ConvertTo-Json) + ", assumption: " + ($A | ConvertTo-Json) + ", falsifier: " + ($F | ConvertTo-Json) + ", market: 'both', verdict: 'partly', notes: 'Saved by the Week 2 test script.' }); 'ok'"))
   $saved = Js 'window.__t.save()'
+  $row = (Js 'window.__t.lastRow()') | ConvertFrom-Json
   ShotEl '#rsForm' 'test2-record-saved'
   Go '/research'
   [void](Js 'window.__t.waitFor(() => window.__t.savedReady()).then(() => "ok")')
@@ -249,10 +263,12 @@ addEventListener('unhandledrejection', e => window.__errs.push('unhandled reject
   [void](Js 'window.__t.waitFor(() => { const w = window.__t.widget(); return w && !/Loading/.test(w); }).then(() => "ok")')
   $widget = Js 'window.__t.widget()'
   ShotEl '#rsWidget' 'test2-widget-on-you'
-  $pass2 = ($saved -like 'Saved to Supabase*') -and ($after -eq $before + 1) -and ($first -like '*naming their taste*') -and ($widget -like "*$after*")
-  Record 'T2' 'Save a research record: one row per double click, read back after a reload, and counted by the You-screen widget' $pass2 ([ordered]@{
+  $storedRight = ($row.market -eq 'both') -and ($row.verdict -eq 'partly') -and ($row.question -eq $Q) -and ($row.source_count -gt 0)
+  $pass2 = ($saved -like 'Saved to Supabase*') -and ($after -eq $before + 1) -and ($first -like '*naming their taste*') -and
+           ($widget -like "*$after*") -and $storedRight
+  Record 'T2' 'Save a research record: one row per double click, every field stored as chosen, read back after a reload, and counted by the You-screen widget' $pass2 ([ordered]@{
     saveMessage = $saved; totalBefore = $before; totalAfter = $after; firstOnPage = $first
-    onboardedTo = $onboarded; widget = $widget })
+    storedRow = $row; storedAsChosen = $storedRight; onboardedTo = $onboarded; widget = $widget })
 
   # ---------- Test 3 - every source resolves ---------------------------
   Go '/research'
