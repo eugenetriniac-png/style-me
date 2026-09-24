@@ -91,15 +91,16 @@ final test run (times converted to Mexico City, UTC−6):
 | 23 Sep 17:46 | (same) | mexico | real | 24 |
 | 24 Sep 16:55 | (same) | mexico | real | 24 |
 | 24 Sep 16:56 | (same) | mexico | real | 24 |
+| 24 Sep 17:11 | (same) | mexico | real | 24 |
 
-Seven rows, one per run of the test script: five on 23 September, two more on
-24 September when the console check was added. The runs that fixed the test
+Eight rows, one per run of the test script: five on 23 September, three more on
+24 September, as the console check and then the responsive sweep were added. The runs that fixed the test
 itself are in there too, because deleting them would be tidying the evidence. Every
 row was written by the live page's Save button; none was inserted by hand.
 
 Each row also carries what was on screen when it was saved: the twelve
 `competitor_ids` in view and the five `risk_ids` the map called top priority.
-The question is the same in all seven because the script asks the same one — a
+The question is the same in all eight because the script asks the same one — a
 human asking a different question is what the intake is for.
 
 `source_count: 24` is the page's own count of cited claims at the moment of

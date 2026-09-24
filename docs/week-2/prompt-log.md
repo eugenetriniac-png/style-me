@@ -201,6 +201,13 @@ client for opposite reasons, and `MX$941bn` printing over its own claim.
   after the fact stops being evidence of what was planned.
 - cut the decision note from 265 to 248 words, inside the 150–250 the
   assignment asks for.
+- read the live page at an odd window width instead of only the two the tests
+  used, which found a real 20 px overflow in the risk map at 375 px — and then
+  found why the mobile check had passed three times over it (`0eba0f5`).
+- added `api/keepalive.js` and a daily Vercel cron so the free Supabase project
+  stops pausing between handing this in and it being marked.
+- restored Week 1's evidence folder after re-running its tests overwrote it:
+  evidence of a week already handed in should not be replaced by a later run.
 
 **What the agent did not do, and why:** the validation conversation. It needs a
 real person, and inventing one would poison the only page in this project whose

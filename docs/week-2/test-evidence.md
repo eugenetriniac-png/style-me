@@ -1,8 +1,8 @@
 # Test Evidence — Week 2
 
 **Live page under test:** https://style-me-five.vercel.app/research
-**Code under test:** deployment `6a8910d`
-**Final run:** 24 September 2026, 16:56 (Mexico City, UTC−6)
+**Code under test:** deployment `0eba0f5`
+**Final run:** 24 September 2026, 17:11 (Mexico City, UTC−6)
 
 ---
 
@@ -34,10 +34,10 @@ Two checks run alongside the three: security (S1) and mobile (M1).
 | # | Test | What was checked | Actual | Pass |
 |---|---|---|---|---|
 | T1 | Filter, search, console | Every type and market chip against `SM.research.counts()`; search narrows, empties and clears; no row without a source; no uncaught error on the page | All six type counts and three market counts matched; "mexico" narrowed to 4, "zzzznothing" gave 0 rows and the empty message, clearing restored 12; rows without a source: 0; header "12 of 12 · 24 sources"; console errors: `[]` | ✅ |
-| T2 | Save a record | Intake filled, **Save clicked twice**; reload; then the You-screen widget, reached by taking the style test | "Saved to Supabase"; total 6 → 7, so the double click made one row; the saved question first in the list; widget read "7 research records saved" | ✅ |
+| T2 | Save a record | Intake filled, **Save clicked twice**; reload; then the You-screen widget, reached by taking the style test | "Saved to Supabase"; total 7 → 8, so the double click made one row; the saved question first in the list; widget read "8 research records saved" | ✅ |
 | T3 | Sources hold | A real HTTP request to every source cited on the page | 24 claims behind 11 distinct URLs; all 23 web claims answered 200; 0 failures. The 24th is the pending interview, which has no URL and is reported as such rather than counted as a pass | ✅ |
 | S1 | Security | The publishable key against `research_records` | allowed columns 200 · `notes` **401** · `select=*` **401** · `DELETE` **401** | ✅ |
-| M1 | Mobile, 375 px | Horizontal overflow, and the wide table | Page overflow 0 px; the table scrolls inside its own box rather than stretching the page | ✅ |
+| M1 | Responsive | Horizontal overflow at 375, 414, 600, 768, 900 and 1280 px, and the wide table | 0 px at every width; the table scrolls inside its own box rather than stretching the page | ✅ |
 
 ![Test 1 — the competitor table with its filter chips, counts read back from the dataset](evidence/test1-table-filters.png)
 
@@ -75,8 +75,8 @@ and it earned its keep the first time it was used.
 
 ## Defects found this week
 
-Seven. Two were in the product, one was in the research, and four were in the
-test tooling — which is its own lesson.
+Eight. Two in the product, two in the research, four in the test tooling — and
+the last one was both at once.
 
 ### 1 — A source that could not be checked (found in development)
 
@@ -135,6 +135,21 @@ only reason the gap was visible: a check that cannot run must fail, not return
 "nothing found". Fixed the same day; the console is now verified empty on
 `/research`.
 
+### 8 — A real overflow, and a test that could not see it
+
+Read on the live site at an odd window width, the risk map pushed the page 20
+pixels wider than the screen at 375 px. A CSS grid column set to `1fr` never
+shrinks below its longest word, and "forgotten" is wider than a third of a
+phone. `minmax(0, 1fr)` lets the columns shrink, the labels now wrap, and under
+420 px the label column narrows.
+
+The interesting half is why M1 had passed three times. It measured
+`scrollWidth - innerWidth`, and under mobile emulation the layout viewport
+widens to fit overflowing content — so `innerWidth` grows with the overflow and
+the subtraction comes out at a comfortable zero. Measured against
+`documentElement.clientWidth` the 20 px is plain. M1 now sweeps six widths —
+375, 414, 600, 768, 900, 1280 — and reports every one. Fixed in `0eba0f5`.
+
 ---
 
 ## Iteration log
@@ -148,22 +163,26 @@ only reason the gap was visible: a check that cannot run must fail, not return
 | 5 | Duplicate BOM removed from the test script | PowerShell could not read the first line | `6a8910d` |
 | 6 | Figure column widened, long figures wrap | `MX$941bn` printed over its own claim | `6a8910d` |
 | 7 | Console-error collector added, then made to actually run | The packet promised a clean console and nothing checked it | `517aedc` |
+| 8 | Risk map columns `minmax(0, 1fr)`; M1 measures against `clientWidth` and sweeps six widths | The map overflowed 20 px at 375 px, and the mobile check could not see it | `0eba0f5` |
 
 ---
 
 ## What this round taught me
 
 Week 1's lesson was that a test round finding nothing is evidence about the
-test. This week the tests found seven things — and four of them were in the
-tests themselves, not in the product. A failing test is not the same as a
+test. This week the tests found eight things — and five of them were in the tests
+themselves, not in the product. A failing test is not the same as a
 broken feature, and telling them apart took real work each time: the widget was
 "missing" because the test asked Vercel for a page that does not exist, and a
 source was "dead" because the SEC does not talk to scripts that fail to
 introduce themselves.
 
-The one that will stay with me is the console check that reported *"collector
-missing"*. Written the obvious way, it would have returned an empty list and
-passed for the rest of the semester without ever looking at anything.
+Two will stay with me. The console check that reported *"collector missing"*:
+written the obvious way it would have returned an empty list and passed for the
+rest of the semester without looking at anything. And the mobile check that
+read zero overflow three times because it measured the page against a viewport
+that had already stretched to swallow the overflow — a green check that was
+measuring the symptom instead of the screen.
 
 And the defect I care about most was found by neither the tests nor the
 browser: reading the page as a reader, where a citation pointed at a
