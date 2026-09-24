@@ -159,3 +159,49 @@ On a page whose one rule is "no claim without a source", that was the worst
 possible row to get wrong.
 **Fix applied:** the row now reads "awaiting interview" in the source column and
 carries no figure until someone has actually said something.
+
+---
+
+## Prompt 10 — Task prompt: run it all against the live site
+
+> Create the table, run the tests against the live site, and write the evidence.
+
+**Files modified:** `docs/week-2/supabase-evidence.md`,
+`docs/week-2/test-evidence.md`, `docs/week-2/make-submission.ps1`,
+`css/app.css`, `docs/week-2/run-tests.ps1`
+**What the agent did:** resumed the paused Supabase project, created
+`research_records` from the repository's SQL in the SQL editor, and confirmed
+from two directions that `notes` is insert-only — in the database
+(`information_schema.column_privileges`) and through the live API (401).
+**Errors encountered:** four, all in the tooling — the duplicated BOM, `/me`
+fetched as a URL Vercel does not serve, two hosts refusing PowerShell's web
+client for opposite reasons, and `MX$941bn` printing over its own claim.
+**Commits:** `6a8910d`, `dcc8053`
+
+---
+
+## Prompt 11 — Finish it
+
+> I don't know where you are, but I want you to finish the work for good. Do as
+> much as you can on your own, take the initiative, check that what you did is
+> right, and do what you haven't done. After your reply I shouldn't have much
+> left, and whatever you couldn't do should be explained clearly.
+
+**Files modified:** `docs/week-2/build-discipline-packet.md` (addendum),
+`docs/week-2/human-decision-note.md`, `docs/week-2/test-evidence.md`,
+`docs/week-2/supabase-evidence.md`, `docs/week-2/run-tests.ps1`
+**What the agent did on its own initiative:**
+- ran **Week 1's** scripted suite against the live site as a regression check,
+  because this week touched three files the Style Core also uses. All five of
+  its checks still pass.
+- added the console-error check the packet had promised and nothing verified —
+  which immediately found that the check itself could not run (`517aedc`).
+- wrote an **addendum** to the packet instead of editing it: the plan quotes
+  Stitch Fix at −7.9%, the verified filing says −5.2%, and a packet edited
+  after the fact stops being evidence of what was planned.
+- cut the decision note from 265 to 248 words, inside the 150–250 the
+  assignment asks for.
+
+**What the agent did not do, and why:** the validation conversation. It needs a
+real person, and inventing one would poison the only page in this project whose
+rule is that every claim carries a source.

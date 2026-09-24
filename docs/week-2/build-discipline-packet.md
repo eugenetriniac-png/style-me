@@ -219,3 +219,36 @@ The exact implementation prompt given to Claude Code, written from this packet:
 > browser before committing and report what you checked.
 
 Full log: `docs/week-2/prompt-log.md`
+
+---
+
+## 📎 Addendum, written after the build — 24 September 2026
+
+Everything above is unchanged from the version committed as `b2de5cd`, before
+the first line of Week 2 code. Four things turned out differently, and they are
+recorded here rather than quietly edited into the plan.
+
+1. **The Stitch Fix figure in the plan is wrong, and is left standing.** The
+   problem statement above, and the wireframe, both say the company lost 7.9%
+   of its clients — the number from the press release found in the first pass.
+   Verifying it moved the citation to Stitch Fix's own 10-Q filed with the SEC,
+   which says **−5.2%** (2,307,000 active clients on 1 November 2025, against
+   2,434,000 a year earlier). The page carries the filing's number. The plan
+   keeps the old one, dated and corrected here, because a packet edited after
+   the fact stops being evidence of what was planned. The wireframe's "23
+   sources" became 24 for the same reason.
+2. **Eight competitors became twelve.** The assignment asks for eight; the
+   landscape needed twelve to be honest — five wardrobe apps, one styling
+   service, two retailers, one marketplace and three substitutes. The three
+   substitutes matter most: they are what people actually use today.
+3. **Five Mexico findings became seven,** including the one that contradicts
+   the others and the data-protection law that constrains what may be stored.
+4. **The dashboard widget sits behind onboarding.** The You screen belongs to
+   someone who has taken the style test, so a first-time visitor never sees the
+   widget. Found by the test script, which was opening that screen as a URL
+   Vercel does not serve. The required page carries its own count and list, so
+   the evidence is reachable either way; the widget was left where it belongs
+   rather than moved to make a grader's path shorter.
+
+What did not change: no claim without a source, no invented score, a static
+dated dataset, and `notes` unreadable through the public key.

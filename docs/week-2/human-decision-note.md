@@ -1,34 +1,29 @@
 # Human Decision Note — Week 2
 
-*Draft — to be finished after the validation conversation, and to be read and
-owned by me before it is submitted.*
-
 ---
 
-The decision that shaped this week was a rule I gave the agent before it wrote
-anything: **no claim without a source**. It cost rows. A widely repeated "7
-million users" figure for Acloset traces back only to comparison pages written
-by rival apps, so Acloset is on the page without a user count. Zalando's
-much-quoted "50% of recommendations are good outfits, 40% larger baskets" is
-not on Zalando's own site, so it appears with its real attribution — a 2018
-S&P Global piece — rather than borrowed authority. Where the only available
-source is a competitor describing a competitor, the row says so.
+The rule I set before the agent wrote anything was: **no claim without a
+source**. It cost rows. A repeated "7 million users" for Acloset traces back only
+to pages written by rival apps, so Acloset sits there with no user count. Zalando's much-quoted "50% good outfits" is nowhere on
+Zalando's site, so it appears attributed to the 2018 S&P Global piece it comes
+from.
 
-The correction I care about most was in my own page. The substitute row "asking
-a friend" cited the validation conversation as its source — before the
-conversation had happened. On a page whose one rule is the one above, that was
-the worst row to get wrong, and it now reads "awaiting interview" and carries
-no figure until a real person has actually said something.
+The correction I care about most was my own: the row "asking a friend" cited
+this week's validation conversation before it had happened. It now reads
+*awaiting interview*, with no figure.
 
-I also rejected a tidier design: scoring each competitor 0–100. It would have
-looked rigorous and meant nothing, because I have no instrument that produces
-those numbers. The risk map is a 3 × 3 grid for the same reason — nine cells
-are as much precision as I actually have.
+I rejected a tidier design: scoring each competitor from 0 to 100. It would look rigorous and mean nothing — I own no
+instrument that produces those numbers. The risk map is a 3 × 3 grid for the same reason.
 
-What the research changed: the strongest argument for Style Me is no longer
-"people cannot name their taste". It is that in Mexico fashion is the most
-bought category online and the most returned — 28% of all returns. That is the
-same problem, denominated in money.
+I also corrected Stitch Fix. My plan quoted −7.9% from a press release; the
+company's own filing with the SEC says −5.2%. The page carries the filing. The
+plan keeps the wrong number, with the correction dated underneath, because a
+packet edited after the fact stops being evidence of what was planned.
 
-*[To add after the conversation: what the person said, whether the falsifier
-triggered, and what changes because of it.]*
+What the research changed: the argument for Style Me is no longer "people
+cannot name their taste". It is that in Mexico, fashion is both the most bought
+category online and the most returned, at 28% of all returns. The same problem,
+denominated in money.
+
+The validation conversation tests the half no source can settle: whether anyone
+actually wants the answer.

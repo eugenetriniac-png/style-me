@@ -75,18 +75,21 @@ final test run (times converted to Mexico City, UTC−6):
 | saved_at | question | market | verdict | sources on the page that day |
 |---|---|---|---|---|
 | 23 Sep 17:38 | Do people need help naming their taste, or just help shopping? | mexico | real | 24 |
-| 23 Sep 17:41 | Do people need help naming their taste, or just help shopping? | mexico | real | 24 |
-| 23 Sep 17:42 | Do people need help naming their taste, or just help shopping? | mexico | real | 24 |
-| 23 Sep 17:45 | Do people need help naming their taste, or just help shopping? | mexico | real | 24 |
-| 23 Sep 17:46 | Do people need help naming their taste, or just help shopping? | mexico | real | 24 |
+| 23 Sep 17:41 | (same) | mexico | real | 24 |
+| 23 Sep 17:42 | (same) | mexico | real | 24 |
+| 23 Sep 17:45 | (same) | mexico | real | 24 |
+| 23 Sep 17:46 | (same) | mexico | real | 24 |
+| 24 Sep 16:55 | (same) | mexico | real | 24 |
+| 24 Sep 16:56 | (same) | mexico | real | 24 |
 
-Five rows, one per run of the test script — the runs that fixed the test itself
-are in there too, because deleting them would be tidying the evidence. Every
+Seven rows, one per run of the test script: five on 23 September, two more on
+24 September when the console check was added. The runs that fixed the test
+itself are in there too, because deleting them would be tidying the evidence. Every
 row was written by the live page's Save button; none was inserted by hand.
 
 Each row also carries what was on screen when it was saved: the twelve
 `competitor_ids` in view and the five `risk_ids` the map called top priority.
-The question is the same in all five because the script asks the same one — a
+The question is the same in all seven because the script asks the same one — a
 human asking a different question is what the intake is for.
 
 `source_count: 24` is the page's own count of cited claims at the moment of
