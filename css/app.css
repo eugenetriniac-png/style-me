@@ -1707,3 +1707,14 @@ input[type=range]::-moz-range-thumb {
 /* "MX$941bn" is wider than the figure column was: let long figures wrap
    inside their own column instead of running under the claim. */
 .rs-find-fig { width: 104px; font-size: 15.5px; line-height: 1.25; overflow-wrap: anywhere; }
+
+/* The risk map overflowed by 20px at 375px: a grid column of 1fr never
+   shrinks below its longest word, and "forgotten" is longer than a third
+   of a phone. minmax(0,1fr) lets the columns shrink; the labels wrap. */
+.rs-map { grid-template-columns: 74px repeat(3, minmax(0, 1fr)); }
+.rs-risk { overflow-wrap: anywhere; }
+@media (max-width: 420px) {
+  .rs-map { grid-template-columns: 56px repeat(3, minmax(0, 1fr)); gap: 5px; }
+  .rs-axis { font-size: 9px; letter-spacing: .04em; }
+  .rs-risk { font-size: 11px; padding: 4px 6px; }
+}

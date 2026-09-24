@@ -290,13 +290,28 @@ addEventListener('unhandledrejection', e => window.__errs.push('unhandled reject
   ShotEl '.rs-two' 'mexico-and-risks'
   ShotPage 'research-desktop-full' 1280
 
-  Viewport 375 812 $true
-  Go '/research'
-  [void](Js 'window.__t.waitFor(() => window.__t.savedReady()).then(() => "ok")')
-  $overflow = [int](Js 'String(document.documentElement.scrollWidth - innerWidth)')
-  $tableScrolls = Js 'String(document.querySelector(".rs-scroll").scrollWidth > document.querySelector(".rs-scroll").clientWidth)'
-  ShotPage 'research-mobile-375-full' 375 $true
-  Record 'M1' 'Mobile 375 px: no horizontal overflow on the page; the wide table scrolls inside its own box' (($overflow -le 0) -and ($tableScrolls -eq 'True')) @{ overflowPx = $overflow; tableScrollsInsideItsBox = $tableScrolls }
+  # Overflow is measured against documentElement.clientWidth, not innerWidth:
+  # under mobile emulation the layout viewport widens to fit overflowing
+  # content, so innerWidth reports the overflow as if it were the screen and
+  # the check reads a comfortable zero. That is how a 20px overflow in the
+  # risk map survived the first three runs of this suite.
+  $widths = @()
+  $worst = 0
+  foreach ($w in 375, 414, 600, 768, 900, 1280) {
+    Viewport $w 900 ($w -lt 768)
+    Go '/research'
+    [void](Js 'window.__t.waitFor(() => document.querySelector(".rs-map")).then(() => "ok")')
+    $o = [int](Js 'String(document.documentElement.scrollWidth - document.documentElement.clientWidth)')
+    $widths += [ordered]@{ width = $w; overflowPx = $o }
+    if ($o -gt $worst) { $worst = $o }
+    if ($w -eq 375) {
+      [void](Js 'window.__t.waitFor(() => window.__t.savedReady()).then(() => "ok")')
+      $tableScrolls = Js 'String(document.querySelector(".rs-scroll").scrollWidth > document.querySelector(".rs-scroll").clientWidth)'
+      ShotPage 'research-mobile-375-full' 375 $true
+    }
+  }
+  Record 'M1' 'Responsive: no horizontal overflow at 375, 414, 600, 768, 900 or 1280 px; the wide table scrolls inside its own box' (($worst -le 0) -and ($tableScrolls -eq 'True')) @{
+    perWidth = $widths; worstOverflowPx = $worst; tableScrollsInsideItsBox = $tableScrolls }
 }
 finally {
   $results | ConvertTo-Json -Depth 12 | Out-File -Encoding utf8 (Join-Path $out 'results.json')
