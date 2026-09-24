@@ -250,5 +250,13 @@ recorded here rather than quietly edited into the plan.
    the evidence is reachable either way; the widget was left where it belongs
    rather than moved to make a grader's path shorter.
 
+5. **The validation conversation contradicted the plan.** Success criterion 7
+   above asked for the conversation "recorded with what it changed". It changed
+   the premise: the person named his own style fluently and asked for cheaper
+   and faster instead — the falsifier written into the test plan, triggered.
+   The verdict on the saved research record moved from *real* to *partly*, and
+   the competitor row that had been waiting now carries his words. See the
+   conversation section for what follows from it.
+
 What did not change: no claim without a source, no invented score, a static
 dated dataset, and `notes` unreadable through the public key.

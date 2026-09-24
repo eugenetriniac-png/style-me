@@ -187,11 +187,10 @@ window.SM = window.SM || {};
       where: 'Everywhere',
       does: 'A photo in a group chat before buying, or a friend whose taste you trust coming along to the shop.',
       gap: 'Free, trusted and instant — and completely unscalable. It is also the benchmark: anything this product says has to be at least as useful as a friend replying "no, not that one".',
-      figure: 'No figure yet. This row is waiting on the validation conversation — nothing is quoted here until a real person has actually said it.',
+      figure: '“J’envoie un petit snap dans le groupe des potes, ou je demande à ma copine.” — “I send a snap to the group chat, or I ask my girlfriend.” The first place he looks, before any app.',
       source: 'docs/week-2/validation-conversation.md',
-      sourceName: 'Human validation conversation, Week 2 — not yet held',
+      sourceName: 'Human validation conversation, 24 Sep 2026',
       sourceKind: 'interview',
-      pending: true,
       checked: CHECKED,
       tags: ['substitute', 'free', 'social', 'benchmark', 'mexico']
     }
@@ -329,7 +328,7 @@ window.SM = window.SM || {};
       name: 'Cold start',
       likelihood: 'high',
       impact: 'high',
-      detail: 'Every wardrobe app hits the same wall: nobody photographs forty garments to try a product. Whering reached 10M users despite it, which proves the wall is survivable, not that it is small.',
+      detail: 'Every wardrobe app hits the same wall: nobody photographs forty garments to try a product. Whering reached 10M users despite it, which proves the wall is survivable, not that it is small. Confirmed in this week\'s validation conversation, unprompted: “j’utilise pas d’appli dédiée au style, j’ai la flemme” — “I don’t use any style app, I can’t be bothered.”',
       mitigation: 'The Style Core needs one sentence, no photos, no account. Wardrobe upload stays optional and late.'
     },
     {
@@ -345,7 +344,7 @@ window.SM = window.SM || {};
       name: 'Used once, then forgotten',
       likelihood: 'high',
       impact: 'medium',
-      detail: 'A diagnosis is a one-off. Stitch Fix was down 5.2% of its clients year on year while earning more per client — the shape of a product people stop coming back to.',
+      detail: 'A diagnosis is a one-off. Stitch Fix was down 5.2% of its clients year on year while earning more per client — the shape of a product people stop coming back to. The validation conversation said the same thing in one sentence: “je m’en servirais peut-être une fois par curiosité” — “I’d use it maybe once, out of curiosity.”',
       mitigation: 'Give a reason to reopen: saved cores, the feed, and later the wardrobe. Measure returning visits before adding features.'
     },
     {
