@@ -203,6 +203,16 @@ $F = 'If people say they already know their style and only want cheaper or faste
 try {
   Viewport 1280 900
 
+  # The packet promises a clean console, so every page this script opens
+  # collects its own errors from the first line of script it runs.
+  # Page.enable first: without it the injection is accepted and never runs.
+  [void](Cdp 'Page.enable')
+  [void](Cdp 'Page.addScriptToEvaluateOnNewDocument' @{ source = @'
+window.__errs = [];
+addEventListener('error', e => window.__errs.push(String(e.message || e.error)));
+addEventListener('unhandledrejection', e => window.__errs.push('unhandled rejection: ' + e.reason));
+'@ })
+
   # ---------- Test 1 - filter and search ------------------------------
   Go '/research'
   $landing = (Js 'JSON.stringify({ url: location.href, title: document.title, intake: !!document.querySelector("#rsForm"), rows: window.__t.rows(), cards: document.querySelectorAll(".rs-card").length, finds: document.querySelectorAll(".rs-find").length, risks: document.querySelectorAll(".rs-risk").length, sources: SM.research.sources().length })') | ConvertFrom-Json
@@ -212,10 +222,12 @@ try {
              ($f.'type:retailer' -eq $e.retailer) -and ($f.'type:marketplace' -eq $e.marketplace) -and ($f.'type:substitute' -eq $e.substitute)
   $marketsOk = ($f.'market:all' -eq $e.all) -and ($f.'market:global' -eq $e.global) -and ($f.'market:mexico' -eq $e.mexico)
   $searchOk = ($f.'search:mexico' -gt 0) -and ($f.'search:mexico' -lt $e.all) -and ($f.'search:none' -eq 0) -and $f.emptyMessage -and ($f.cleared -eq $e.all)
+  $errs = Js 'JSON.stringify(window.__errs || ["collector missing"])'
   $pass1 = $landing.intake -and ($landing.rows -eq $e.all) -and ($landing.cards -eq 5) -and ($landing.risks -eq 8) -and
-           $typesOk -and $marketsOk -and $searchOk -and ($f.rowsWithoutSource -eq 0)
-  Record 'T1' 'Filter and search on the live page: every chip count matches the dataset, search narrows and clears, no row without a source' $pass1 ([ordered]@{
-    landing = $landing; filters = $f; typeCountsMatch = $typesOk; marketCountsMatch = $marketsOk; searchBehaves = $searchOk })
+           $typesOk -and $marketsOk -and $searchOk -and ($f.rowsWithoutSource -eq 0) -and ($errs -eq '[]')
+  Record 'T1' 'Filter and search on the live page: every chip count matches the dataset, search narrows and clears, no row without a source, console clean' $pass1 ([ordered]@{
+    landing = $landing; filters = $f; typeCountsMatch = $typesOk; marketCountsMatch = $marketsOk; searchBehaves = $searchOk
+    consoleErrors = $errs })
   ShotEl '.rs-sec' 'test1-table-filters'
 
   # ---------- Test 2 - save a research record --------------------------
