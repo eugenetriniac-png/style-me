@@ -18,6 +18,16 @@ Two consequences, both already written into the product: the Save buttons say
 so instead of breaking, and "free-tier infrastructure" is one of the eight
 risks on `/research` — high likelihood, low impact, mitigation documented.
 
+After the second pause, the mitigation stopped being a paragraph and became
+code: `api/keepalive.js`, run once a day by Vercel's scheduler (the `crons`
+entry in `vercel.json`), does one `select id limit 1` against each table. It uses
+the same publishable key the browser already carries, and writes nothing.
+Called by hand right after deploying, it answered
+`{"ok":true,"core_outputs":200,"research_records":200}`; the scheduled run
+fires for the first time the next morning, so the schedule itself is declared
+and not yet observed. If Vercel ever stops running it, opening the site once a
+week does the same job.
+
 ## The table was created from the repository
 
 `supabase/research_records.sql` was run in the SQL editor. As in Week 1, the
