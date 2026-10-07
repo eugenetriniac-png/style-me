@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<title>Product and Pricing — wireframe</title>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;background:#0E0F12;color:#F2EFE9;font-family:"Segoe UI",Arial,sans-serif;width:1280px}
+  .wrap{padding:30px 40px 36px}
+  .top{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid rgba(242,239,233,.14);padding-bottom:14px}
+  .kick{font:11px Consolas,monospace;letter-spacing:.16em;text-transform:uppercase;color:#8E909B}
+  h1{margin:5px 0 0;font:800 34px "Segoe UI Black","Segoe UI",sans-serif;letter-spacing:-.03em}
+  .url{font:12.5px Consolas,monospace;color:#8E909B;border:1px dashed rgba(242,239,233,.3);padding:5px 11px;border-radius:99px}
+  .page{border:1.5px dashed rgba(242,239,233,.28);border-radius:16px;padding:20px;position:relative;margin-top:26px}
+  .tag{position:absolute;top:-11px;left:18px;background:#0E0F12;padding:0 8px;font:11px Consolas,monospace;letter-spacing:.12em;color:#5B56F5;text-transform:uppercase}
+  .lab{font-size:12px;color:#8E909B;margin:0 0 6px}
+  h2{font:700 12px "Segoe UI";letter-spacing:.14em;text-transform:uppercase;color:#CFCBC2;margin:20px 0 10px}
+  .tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .tier{border:1px solid rgba(242,239,233,.18);border-radius:14px;background:#14161B;padding:16px}
+  .tier.mid{border-color:#5B56F5;background:rgba(58,52,232,.1)}
+  .tier h3{margin:0;font:700 16px "Segoe UI"}
+  .seg{display:inline-block;font:10px Consolas,monospace;padding:2px 7px;border-radius:5px;background:rgba(242,239,233,.1);color:#8E909B;margin-top:6px}
+  .seg.b{background:rgba(255,92,66,.16);color:#FF8A75}
+  .price{font:800 26px "Segoe UI Black","Segoe UI";letter-spacing:-.02em;margin:10px 0 2px}
+  .price small{font:400 12px "Segoe UI";color:#8E909B}
+  .tier ul{margin:10px 0 0;padding-left:16px;font-size:12px;color:#CFCBC2;line-height:1.6}
+  table{width:100%;border-collapse:collapse;font-size:12px}
+  th{text-align:left;font:10px Consolas,monospace;letter-spacing:.1em;text-transform:uppercase;color:#8E909B;padding:6px 8px;border-bottom:1px solid rgba(242,239,233,.18)}
+  td{padding:8px;border-bottom:1px solid rgba(242,239,233,.08);color:#CFCBC2;vertical-align:top}
+  td b{color:#F2EFE9}
+  .pill{display:inline-block;font:10px Consolas,monospace;padding:2px 7px;border-radius:5px}
+  .built{background:rgba(58,52,232,.22);color:#CFCBC2}
+  .planned{background:rgba(242,239,233,.08);color:#8E909B}
+  .src{font:10.5px Consolas,monospace;color:#5B56F5;border-bottom:1px solid rgba(91,86,245,.5)}
+  .guess{font:10px Consolas,monospace;padding:2px 7px;border-radius:5px;background:rgba(255,92,66,.16);color:#FF8A75}
+  .sourced{font:10px Consolas,monospace;padding:2px 7px;border-radius:5px;background:rgba(58,52,232,.22);color:#CFCBC2}
+  .est{font:10px Consolas,monospace;padding:2px 7px;border-radius:5px;background:rgba(242,239,233,.1);color:#8E909B}
+  .calc{display:grid;grid-template-columns:330px 1fr;gap:24px;align-items:start}
+  .field{margin-bottom:12px}
+  .in{height:32px;border:1px solid rgba(242,239,233,.2);border-radius:8px;background:#14161B;font-size:12.5px;color:#CFCBC2;padding:7px 10px}
+  .slider{height:4px;background:rgba(242,239,233,.2);border-radius:4px;position:relative;margin:12px 0 4px}
+  .slider i{position:absolute;left:38%;top:-5px;width:14px;height:14px;border-radius:50%;background:#5B56F5}
+  .chips{display:flex;gap:7px;margin-bottom:14px}
+  .chip{border:1px solid rgba(242,239,233,.22);border-radius:99px;padding:5px 12px;font-size:12px;color:#CFCBC2}
+  .chip.on{background:#3A34E8;border-color:#3A34E8;color:#fff}
+  .out{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px}
+  .big{border:1px solid rgba(242,239,233,.16);border-radius:12px;background:#14161B;padding:14px}
+  .big .n{font:800 28px "Segoe UI Black","Segoe UI";letter-spacing:-.02em;margin:4px 0 0}
+  .big .n.mut{color:#8E909B;font-size:22px}
+  .note{font-size:11px;color:#62646E;margin-top:10px;line-height:1.45}
+  .btn{border-radius:99px;padding:11px 0;text-align:center;font-weight:600;font-size:14px;background:#3A34E8;color:#fff;margin-top:6px}
+  .saved{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:8px}
+  .mini{border:1px solid rgba(242,239,233,.16);border-radius:12px;background:#14161B;padding:12px}
+  .mini b{display:block;font-size:14px;margin:4px 0 6px}
+</style></head>
+<body><div class="wrap">
+  <div class="top">
+    <div><span class="kick">Style Me · Week 3 · Product Architecture + Pricing Simulator</span><h1>Who pays, and how much</h1></div>
+    <span class="url">/product &nbsp;·&nbsp; /pricing</span>
+  </div>
+
+  <!-- PAGE 1 -->
+  <div class="page">
+    <span class="tag">Page 1 · /product — feature map</span>
+    <h2 style="margin-top:4px">The three tiers, by what they contain</h2>
+    <div class="tiers">
+      <div class="tier"><h3>Free</h3><span class="seg">person getting dressed</span>
+        <p class="price">MX$0<small> forever</small></p>
+        <ul><li>Style Core</li><li>Outfit feed</li><li>Saved outfits</li><li>Research desk</li></ul></div>
+      <div class="tier mid"><h3>Styled</h3><span class="seg">person getting dressed</span>
+        <p class="price">MX$249<small> per lookbook, not a subscription</small></p>
+        <ul><li>Everything in Free</li><li>A human stylist's lookbook</li><li>Pay when you want one</li></ul></div>
+      <div class="tier"><h3>Brand</h3><span class="seg b">brand / marketplace</span>
+        <p class="price">MX$4,900<small> per month + per kept order</small></p>
+        <ul><li>Catalogue in the engine</li><li>Fit and returns analytics</li><li>"Kept, not returned" reporting</li></ul></div>
+    </div>
+
+    <h2>Feature map — what exists today, and what is sold later</h2>
+    <table>
+      <tr><th>Feature</th><th>Tier</th><th>Segment</th><th>Status</th><th>Where</th></tr>
+      <tr><td><b>Style Core</b> — free text to a named style</td><td>Free</td><td>Person</td><td><span class="pill built">built</span></td><td>/core</td></tr>
+      <tr><td><b>Outfit engine + layered SVG</b></td><td>Free</td><td>Person</td><td><span class="pill built">built</span></td><td>/feed</td></tr>
+      <tr><td><b>Research desk</b> — 12 competitors, sourced</td><td>Free</td><td>Both</td><td><span class="pill built">built</span></td><td>/research</td></tr>
+      <tr><td><b>Human lookbook</b></td><td>Styled</td><td>Person</td><td><span class="pill planned">planned</span></td><td>—</td></tr>
+      <tr><td><b>Brand catalogue feed</b></td><td>Brand</td><td>Brand</td><td><span class="pill planned">planned</span></td><td>—</td></tr>
+      <tr><td colspan="5" style="color:#62646E;font-size:11px;border:0;padding-top:8px">… 7 more rows. Every row says built or planned; nothing claims to exist that does not.</td></tr>
+    </table>
+  </div>
+
+  <!-- PAGE 2 -->
+  <div class="page">
+    <span class="tag">Page 2 · /pricing — the simulator</span>
+    <div class="calc">
+      <div>
+        <h2 style="margin-top:4px">Scenario</h2>
+        <div class="chips"><span class="chip">Conservative</span><span class="chip on">Base</span><span class="chip">Optimistic</span></div>
+        <p class="note" style="margin:-8px 0 14px">Moves the guesses. Never moves a sourced number — and a test proves it.</p>
+
+        <h2>Segment 1 · people</h2>
+        <div class="field"><p class="lab">Monthly active users</p><div class="in">12 000</div></div>
+        <div class="field"><p class="lab">Ask for a lookbook each month</p><div class="slider"><i></i></div><p class="lab">1.2 % · guess</p></div>
+        <div class="field"><p class="lab">Price per lookbook (MX$)</p><div class="in">249</div></div>
+
+        <h2>Segment 2 · brands</h2>
+        <div class="field"><p class="lab">Partner brands</p><div class="in">6</div></div>
+        <div class="field"><p class="lab">Monthly fee per brand (MX$)</p><div class="in">4 900</div></div>
+        <div class="field"><p class="lab">Orders influenced / brand / month</p><div class="in">900</div></div>
+        <div class="field"><p class="lab">Return rate avoided</p><div class="slider"><i></i></div><p class="lab">3 points of 19.3 % · guess</p></div>
+        <div class="btn">Save this scenario</div>
+      </div>
+
+      <div>
+        <h2 style="margin-top:4px">Revenue</h2>
+        <div class="out">
+          <div class="big"><span class="kick">Monthly</span><p class="n">MX$65k</p></div>
+          <div class="big"><span class="kick">Annual</span><p class="n">MX$749k</p></div>
+          <div class="big"><span class="kick">Gross margin</span><p class="n mut">71 %</p></div>
+        </div>
+        <table>
+          <tr><th>Line</th><th>Segment</th><th>Monthly</th><th>Annual</th></tr>
+          <tr><td>Styled lookbooks</td><td>Person</td><td>MX$35,856</td><td>MX$430,272</td></tr>
+          <tr><td>— stylist cost</td><td>Person</td><td>−MX$18,000</td><td>−MX$216,000</td></tr>
+          <tr><td>Brand subscriptions</td><td>Brand</td><td>MX$29,400</td><td>MX$352,800</td></tr>
+          <tr><td>Per kept order</td><td>Brand</td><td>MX$0</td><td>MX$0 <span class="guess">off by default</span></td></tr>
+        </table>
+
+        <h2>Assumptions — sourced, estimated, guessed</h2>
+        <table>
+          <tr><th>Assumption</th><th>Value</th><th>Kind</th><th>Source</th></tr>
+          <tr><td>Fashion share of Mexican online returns</td><td>28 %</td><td><span class="sourced">sourced</span></td><td><span class="src">AMVO 2026 ↗</span></td></tr>
+          <tr><td>Online orders returned</td><td>19.3 %</td><td><span class="sourced">sourced</span></td><td><span class="src">NRF 2025 ↗</span></td></tr>
+          <tr><td>Minimum wage, Mexico 2026</td><td>MX$9,582/mo</td><td><span class="sourced">sourced</span></td><td><span class="src">Littler ↗</span></td></tr>
+          <tr><td>Human lookbook benchmark</td><td>$50 (Indyx)</td><td><span class="sourced">sourced</span></td><td><span class="src">myindyx.com ↗</span></td></tr>
+          <tr><td>He walks away at</td><td>€150</td><td><span class="sourced">sourced</span></td><td><span class="src">interview ↗</span></td></tr>
+          <tr><td>Lookbook conversion</td><td>1.2 %</td><td><span class="guess">guess</span></td><td>—</td></tr>
+          <tr><td>Return points avoided</td><td>3 pts</td><td><span class="guess">guess</span></td><td>—</td></tr>
+          <tr><td>Stylist pay per lookbook</td><td>MX$125</td><td><span class="est">estimate</span></td><td>min wage × time</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <h2>Saved scenarios — read from Supabase</h2>
+    <div class="saved">
+      <div class="mini"><span class="kick">just now · base</span><b>MX$65k / month</b><span class="est">12 000 users · 6 brands</span></div>
+      <div class="mini"><span class="kick">2h · conservative</span><b>MX$31k / month</b><span class="est">8 000 users · 3 brands</span></div>
+      <div class="mini"><span class="kick">1d · optimistic</span><b>MX$180k / month</b><span class="est">30 000 users · 12 brands</span></div>
+      <div class="mini"><span class="kick">1d · base</span><b>MX$52k / month</b><span class="est">before the price change</span></div>
+    </div>
+    <p class="note">Each row keeps its inputs and its outputs, so a number can be re-checked instead of remembered.</p>
+  </div>
+</div></body></html>
