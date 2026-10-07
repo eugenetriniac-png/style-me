@@ -1,0 +1,300 @@
+﻿{
+    "base":  "https://style-me-five.vercel.app",
+    "ranAt":  "2026-10-06 20:59:51 -06:00",
+    "tests":  [
+                  {
+                      "id":  "L1",
+                      "name":  "Pricing logic: the engine matches a case computed by hand, the segments sum to the total, and annual equals monthly x 12 less the stated annual discount",
+                      "pass":  true,
+                      "details":  {
+                                      "engine":  {
+                                                     "mrr":  190000,
+                                                     "arr":  2220000,
+                                                     "margin":  74.7,
+                                                     "styled":  120000,
+                                                     "subs":  50000,
+                                                     "kept":  20000,
+                                                     "stylist":  -48000,
+                                                     "person":  120000,
+                                                     "brand":  70000,
+                                                     "segmentsSumToTotal":  true,
+                                                     "annualIdentity":  true,
+                                                     "lookbooks":  400,
+                                                     "returnsAvoided":  400
+                                                 },
+                                      "handComputed":  {
+                                                           "subs":  50000,
+                                                           "stylist":  -48000,
+                                                           "arr":  2220000,
+                                                           "kept":  20000,
+                                                           "styled":  120000,
+                                                           "mrr":  190000,
+                                                           "margin":  74.7
+                                                       }
+                                  }
+                  },
+                  {
+                      "id":  "L2",
+                      "name":  "Pricing logic: conservative \u003c= base \u003c= optimistic, no sourced assumption moves with the scenario, zero users gives zero revenue, absurd inputs are clamped",
+                      "pass":  true,
+                      "details":  {
+                                      "mrr":  [
+                                                  25457,
+                                                  65256,
+                                                  187882
+                                              ],
+                                      "arr":  [
+                                                  287842,
+                                                  747792,
+                                                  2184019
+                                              ],
+                                      "monotonicMrr":  true,
+                                      "monotonicArr":  true,
+                                      "sourcedStable":  true,
+                                      "noSourcedMultiplier":  true,
+                                      "zeroRevenue":  true,
+                                      "absurdClamped":  true,
+                                      "absurdInputs":  {
+                                                           "mau":  0,
+                                                           "lookbookRate":  20,
+                                                           "lookbookPrice":  0,
+                                                           "stylistPay":  0,
+                                                           "brands":  0,
+                                                           "brandFee":  0,
+                                                           "ordersPerBrand":  0,
+                                                           "pointsAvoided":  19.3,
+                                                           "returnCost":  0,
+                                                           "takeRate":  50
+                                                       },
+                                      "absurdMrr":  0,
+                                      "scenarioTouches":  [
+                                                              "mau",
+                                                              "lookbookRate",
+                                                              "brands",
+                                                              "ordersPerBrand",
+                                                              "pointsAvoided"
+                                                          ]
+                                  }
+                  },
+                  {
+                      "id":  "S1",
+                      "name":  "Both pages load with a clean console, and the three tiers read identically on /product and on /pricing",
+                      "pass":  true,
+                      "details":  {
+                                      "pricing":  {
+                                                      "url":  "https://style-me-five.vercel.app/#/pricing",
+                                                      "title":  "Pricing — Style Me",
+                                                      "calc":  true,
+                                                      "fields":  10,
+                                                      "assumptions":  13,
+                                                      "figures":  [
+                                                                      "$65,256",
+                                                                      "$747,792",
+                                                                      "66.9%"
+                                                                  ]
+                                                  },
+                                      "product":  {
+                                                      "url":  "https://style-me-five.vercel.app/#/product",
+                                                      "title":  "Product — Style Me",
+                                                      "segments":  2,
+                                                      "features":  12,
+                                                      "built":  7,
+                                                      "planned":  5
+                                                  },
+                                      "tiersAgree":  true,
+                                      "tiersAsRendered":  {
+                                                              "value":  [
+                                                                            {
+                                                                                "name":  "Free",
+                                                                                "price":  "MX$0",
+                                                                                "unit":  "forever",
+                                                                                "segment":  "The person getting dressed"
+                                                                            },
+                                                                            {
+                                                                                "name":  "Styled",
+                                                                                "price":  "$249",
+                                                                                "unit":  "per lookbook — not a subscription",
+                                                                                "segment":  "The person getting dressed"
+                                                                            },
+                                                                            {
+                                                                                "name":  "Brand",
+                                                                                "price":  "$4,900",
+                                                                                "unit":  "per month, per catalogue",
+                                                                                "segment":  "The brand or marketplace"
+                                                                            }
+                                                                        ],
+                                                              "Count":  3
+                                                          },
+                                      "pricingConsole":  "[]",
+                                      "productConsole":  "[]"
+                                  }
+                  },
+                  {
+                      "id":  "S2",
+                      "name":  "Save a scenario: one row per double click, every field stored as entered, read back after a reload",
+                      "pass":  false,
+                      "details":  {
+                                      "saveMessage":  "Could not save: Could not find the table \u0027public.pricing_scenarios\u0027 in the schema cache. Nothing was lost — try again.",
+                                      "totalBefore":  0,
+                                      "totalAfter":  0,
+                                      "firstOnPage":  null,
+                                      "figuresOnScreen":  {
+                                                              "value":  [
+                                                                            "$65,000",
+                                                                            "$750,000",
+                                                                            "77.8%"
+                                                                        ],
+                                                              "Count":  3
+                                                          },
+                                      "storedRow":  {
+
+                                                    },
+                                      "storedAsEntered":  false
+                                  }
+                  },
+                  {
+                      "id":  "S4",
+                      "name":  "Security: the public key cannot read note, select *, or delete from pricing_scenarios",
+                      "pass":  false,
+                      "details":  {
+                                      "allowed":  404,
+                                      "latest":  {
+                                                     "code":  "PGRST205",
+                                                     "details":  null,
+                                                     "hint":  null,
+                                                     "message":  "Could not find the table \u0027public.pricing_scenarios\u0027 in the schema cache"
+                                                 },
+                                      "note":  404,
+                                      "noteBody":  {
+                                                       "code":  "PGRST205",
+                                                       "details":  null,
+                                                       "hint":  null,
+                                                       "message":  "Could not find the table \u0027public.pricing_scenarios\u0027 in the schema cache"
+                                                   },
+                                      "selectStar":  404,
+                                      "delete":  404
+                                  }
+                  },
+                  {
+                      "id":  "S3",
+                      "name":  "Responsive and sources: no horizontal overflow on either page at 375, 414, 600, 768, 900 or 1280 px, and every source cited in the assumptions table answers",
+                      "pass":  true,
+                      "details":  {
+                                      "perWidth":  [
+                                                       {
+                                                           "width":  375,
+                                                           "page":  "/pricing",
+                                                           "overflowPx":  0
+                                                       },
+                                                       {
+                                                           "width":  375,
+                                                           "page":  "/product",
+                                                           "overflowPx":  0
+                                                       },
+                                                       {
+                                                           "width":  414,
+                                                           "page":  "/pricing",
+                                                           "overflowPx":  0
+                                                       },
+                                                       {
+                                                           "width":  414,
+                                                           "page":  "/product",
+                                                           "overflowPx":  0
+                                                       },
+                                                       {
+                                                           "width":  600,
+                                                           "page":  "/pricing",
+                                                           "overflowPx":  0
+                                                       },
+                                                       {
+                                                           "width":  600,
+                                                           "page":  "/product",
+                                                           "overflowPx":  0
+                                                       },
+                                                       {
+                                                           "width":  768,
+                                                           "page":  "/pricing",
+                                                           "overflowPx":  0
+                                                       },
+                                                       {
+                                                           "width":  768,
+                                                           "page":  "/product",
+                                                           "overflowPx":  0
+                                                       },
+                                                       {
+                                                           "width":  900,
+                                                           "page":  "/pricing",
+                                                           "overflowPx":  0
+                                                       },
+                                                       {
+                                                           "width":  900,
+                                                           "page":  "/product",
+                                                           "overflowPx":  0
+                                                       },
+                                                       {
+                                                           "width":  1280,
+                                                           "page":  "/pricing",
+                                                           "overflowPx":  0
+                                                       },
+                                                       {
+                                                           "width":  1280,
+                                                           "page":  "/product",
+                                                           "overflowPx":  0
+                                                       }
+                                                   ],
+                                      "worstOverflowPx":  0,
+                                      "sourceFailures":  0,
+                                      "sourcesChecked":  [
+                                                             {
+                                                                 "id":  "a-returns-mx",
+                                                                 "url":  "https://marketing4ecommerce.mx/estudio-de-venta-online-2026-amvo-mexico/",
+                                                                 "status":  200,
+                                                                 "ok":  true
+                                                             },
+                                                             {
+                                                                 "id":  "a-returns-online",
+                                                                 "url":  "https://nrf.com/research/2025-retail-returns-landscape",
+                                                                 "status":  200,
+                                                                 "ok":  true
+                                                             },
+                                                             {
+                                                                 "id":  "a-minwage",
+                                                                 "url":  "https://www.littler.com/news-analysis/asap/mexico-aumenta-el-salario-minimo-para-el-2026",
+                                                                 "status":  200,
+                                                                 "ok":  true
+                                                             },
+                                                             {
+                                                                 "id":  "a-indyx",
+                                                                 "url":  "https://www.myindyx.com/blog/the-best-wardrobe-apps",
+                                                                 "status":  200,
+                                                                 "ok":  true
+                                                             },
+                                                             {
+                                                                 "id":  "a-walkaway",
+                                                                 "url":  "docs/week-2/validation-conversation.md",
+                                                                 "status":  "not a web source",
+                                                                 "ok":  true
+                                                             },
+                                                             {
+                                                                 "id":  "a-buyers",
+                                                                 "url":  "https://marketing4ecommerce.mx/estudio-de-venta-online-2026-amvo-mexico/",
+                                                                 "status":  200,
+                                                                 "ok":  true
+                                                             },
+                                                             {
+                                                                 "id":  "a-fx-eur",
+                                                                 "url":  "https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/eurofxref-graph-mxn.es.html",
+                                                                 "status":  200,
+                                                                 "ok":  true
+                                                             },
+                                                             {
+                                                                 "id":  "a-fx-usd",
+                                                                 "url":  "https://www.banxico.org.mx/tipcamb/main.do?page=tip\u0026idioma=sp",
+                                                                 "status":  200,
+                                                                 "ok":  true
+                                                             }
+                                                         ]
+                                  }
+                  }
+              ]
+}

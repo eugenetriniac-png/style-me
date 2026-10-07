@@ -1989,8 +1989,12 @@ window.SM = window.SM || {};
     return psState.inputs;
   }
 
-  var psMoneyFmt = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', maximumFractionDigits: 0 });
-  function psMoney(n) { return psMoneyFmt.format(n || 0); }
+  /* Written out rather than left to Intl: es-MX renders MXN as a bare
+     "$", which reads as dollars on a page that also quotes USD and EUR. */
+  function psMoney(n) {
+    var v = Math.round(n || 0);
+    return (v < 0 ? '−MX$' : 'MX$') + Math.abs(v).toLocaleString('es-MX');
+  }
   function psShort(n) {
     var abs = Math.abs(n);
     if (abs >= 1000000) return (n / 1000000).toFixed(1).replace('.0', '') + 'M';
@@ -2007,7 +2011,7 @@ window.SM = window.SM || {};
   /* One tier card, two readings: what it contains (/product) and
      what it costs (/pricing). Same data either way. */
   function psTierHTML(tier, mode) {
-    var price = tier.price === 0 ? 'MX$0' : psMoney(tier.price);
+    var price = psMoney(tier.price);
     return '<article class="ps-tier' + (tier.id === 'styled' ? ' ps-tier-mid' : '') + '">' +
       '<h3 class="ps-tier-name">' + esc(tier.name) + '</h3>' +
       '<span class="ps-seg' + (tier.segment === 'brand' ? ' ps-seg-brand' : '') + '">' + esc(psSegmentName(tier.segment)) + '</span>' +
@@ -2111,9 +2115,12 @@ window.SM = window.SM || {};
     }).join('');
 
     return '<div class="ps-figures">' +
-        '<div class="ps-fig"><span class="kicker">Monthly</span><p class="ps-fig-n">' + esc(psMoney(result.mrr)) + '</p></div>' +
-        '<div class="ps-fig"><span class="kicker">Annual</span><p class="ps-fig-n">' + esc(psMoney(result.arr)) + '</p></div>' +
-        '<div class="ps-fig"><span class="kicker">Gross margin</span><p class="ps-fig-n ps-muted">' + result.margin + '%</p></div>' +
+        '<div class="ps-fig"><span class="kicker">Monthly</span><p class="ps-fig-n">' + esc(psShort(result.mrr)) + '</p>' +
+          '<span class="ps-fig-exact mono">' + esc(psMoney(result.mrr)) + '</span></div>' +
+        '<div class="ps-fig"><span class="kicker">Annual</span><p class="ps-fig-n">' + esc(psShort(result.arr)) + '</p>' +
+          '<span class="ps-fig-exact mono">' + esc(psMoney(result.arr)) + '</span></div>' +
+        '<div class="ps-fig"><span class="kicker">Gross margin</span><p class="ps-fig-n ps-muted">' + result.margin + '%</p>' +
+          '<span class="ps-fig-exact mono">after ' + esc(psMoney(result.cogsMonthly)) + ' of stylist time</span></div>' +
       '</div>' +
       '<div class="rs-scroll"><table class="rs-table ps-table"><thead><tr>' +
         '<th scope="col">Line</th><th scope="col">Segment</th><th scope="col">Monthly</th><th scope="col">Annual</th>' +

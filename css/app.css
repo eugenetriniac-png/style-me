@@ -1829,3 +1829,14 @@ input[type=range]::-moz-range-thumb {
 @media (min-width: 900px) {
   .ps-calc { display: grid; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); gap: 32px; align-items: start; }
 }
+
+/* Read off the first screenshot, not from an assertion:
+   - "$65,256" was breaking mid-number, because overflow-wrap:anywhere
+     treats a thousands separator as a break opportunity;
+   - the revenue lines inherited the research table's 860px floor, so
+     the Monthly and Annual columns sat outside the card and had to be
+     scrolled to. A four-column table of short numbers does not need it. */
+.ps-fig-n { font-size: clamp(20px, 3.2vw, 28px); white-space: nowrap; overflow-wrap: normal; }
+.ps-figures { grid-template-columns: repeat(auto-fit, minmax(168px, 1fr)); }
+.ps-table { min-width: 520px; }
+.ps-fig-n { font-size: clamp(20px, 2.8vw, 26px); }
