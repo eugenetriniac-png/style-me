@@ -65,3 +65,68 @@ two segments where the second one is the only one expected to pay; assumptions
 labelled `sourced` / `estimate` / `guess` on screen; the scenario toggle moves
 only guesses, which is written as an acceptance criterion and as a test; no
 charts; no payments.
+
+---
+
+## Prompt 4 — Task prompt: the dataset
+
+> `js/pricing-data.js`: three tiers, two segments, the feature map, the
+> assumptions and the scenario multipliers. Every assumption carries its kind,
+> and every sourced one a URL and a date.
+
+**Files modified:** `js/pricing-data.js` (new), `index.html`, `build.ps1`
+**Decision:** the feature map has a `status` column with two values and no
+third. Twelve features, seven built and five planned, and the built ones link
+to the page they run on. A "coming soon" column with five shades of almost
+would have been easier to write and worth nothing.
+**Commit:** `6bcb362`
+
+---
+
+## Prompt 5 — Task prompt: the engine
+
+> `js/pricing.js`: pure functions — compute, priceCheck, assumptionsFor,
+> validate, toRecord. No DOM, clamp inputs rather than trusting them.
+
+**Files modified:** `js/pricing.js` (new)
+**What the agent did:** worked the base case by hand first — 144 lookbooks,
+MX$35,856 of lookbook revenue, MX$29,400 of subscriptions, MX$65,256 a month,
+MX$747,792 a year once the 10% annual prepay discount hits the brand line,
+66.9% margin — then wrote the engine and checked it against those numbers
+rather than the other way round.
+**Commit:** `428be28`
+
+---
+
+## Prompt 6 — Task prompt: the two pages
+
+> `/product` with the feature map and the tier cards; `/pricing` with the
+> calculator, the scenario toggle, the assumptions table and the saved
+> scenarios. Both from the same data file.
+
+**Files modified:** `js/views.js`, `js/app.js`, `css/app.css`, `vercel.json`,
+`serve.ps1`, `supabase/pricing_scenarios.sql` (new)
+**Errors found before pushing:** two links in the feature map were lying. The
+renderer pointed at `/outfit`, which without an id falls through to the feed,
+and `/saved` sends a first-time visitor back to the welcome screen. The first
+now points at `/feed`, where the renderer actually runs; the second says
+"after the style test" under the link.
+**Commit:** `082951a`
+
+---
+
+## Prompt 7 — Task prompt: the tests
+
+> `docs/week-3/run-tests.ps1`: the two logic tests and the three software
+> tests, plus the security check, against the live site.
+
+**Files modified:** `docs/week-3/run-tests.ps1` (new),
+`docs/week-3/make-submission.ps1` (new), `js/views.js`, `css/app.css`
+**Errors encountered:** three, every one of them found by reading a screenshot
+rather than by an assertion — the big figures breaking mid-number
+(`MX$65,2 / 56`), the revenue table inheriting the research page's 860-pixel
+floor so that the Monthly and Annual columns sat outside the card, and amounts
+printed as plain `$` on a page that also quotes USD and EUR.
+**Fixes applied:** compact figure with the exact amount beneath it, a narrower
+minimum for this table, and `MX$` written out everywhere.
+**Commit:** `8813f9a`
