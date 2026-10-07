@@ -1,6 +1,6 @@
 ﻿{
     "base":  "https://style-me-five.vercel.app",
-    "ranAt":  "2026-10-06 20:59:51 -06:00",
+    "ranAt":  "2026-10-06 21:13:15 -06:00",
     "tests":  [
                   {
                       "id":  "L1",
@@ -88,8 +88,8 @@
                                                       "fields":  10,
                                                       "assumptions":  13,
                                                       "figures":  [
-                                                                      "$65,256",
-                                                                      "$747,792",
+                                                                      "65k",
+                                                                      "748k",
                                                                       "66.9%"
                                                                   ]
                                                   },
@@ -112,13 +112,13 @@
                                                                             },
                                                                             {
                                                                                 "name":  "Styled",
-                                                                                "price":  "$249",
+                                                                                "price":  "MX$249",
                                                                                 "unit":  "per lookbook — not a subscription",
                                                                                 "segment":  "The person getting dressed"
                                                                             },
                                                                             {
                                                                                 "name":  "Brand",
-                                                                                "price":  "$4,900",
+                                                                                "price":  "MX$4,900",
                                                                                 "unit":  "per month, per catalogue",
                                                                                 "segment":  "The brand or marketplace"
                                                                             }
@@ -132,47 +132,96 @@
                   {
                       "id":  "S2",
                       "name":  "Save a scenario: one row per double click, every field stored as entered, read back after a reload",
-                      "pass":  false,
+                      "pass":  true,
                       "details":  {
-                                      "saveMessage":  "Could not save: Could not find the table \u0027public.pricing_scenarios\u0027 in the schema cache. Nothing was lost — try again.",
+                                      "saveMessage":  "Saved to Supabase · row c414b7a0",
                                       "totalBefore":  0,
-                                      "totalAfter":  0,
-                                      "firstOnPage":  null,
+                                      "totalAfter":  1,
+                                      "firstOnPage":  "JUST NOW · CONSERVATIVE | MX$65,000 / month | MX$750,000 / year | Week 3 test run",
                                       "figuresOnScreen":  {
                                                               "value":  [
-                                                                            "$65,000",
-                                                                            "$750,000",
+                                                                            "65k",
+                                                                            "750k",
                                                                             "77.8%"
                                                                         ],
                                                               "Count":  3
                                                           },
                                       "storedRow":  {
-
+                                                        "id":  "c414b7a0-9384-4476-87b6-4692ba1c0c77",
+                                                        "label":  "Week 3 test run",
+                                                        "scenario":  "conservative",
+                                                        "mrr_mxn":  65000,
+                                                        "arr_mxn":  750000,
+                                                        "inputs":  {
+                                                                       "mau":  20000,
+                                                                       "brands":  10,
+                                                                       "brandFee":  5000,
+                                                                       "takeRate":  10,
+                                                                       "returnCost":  500,
+                                                                       "stylistPay":  120,
+                                                                       "lookbookRate":  2,
+                                                                       "lookbookPrice":  300,
+                                                                       "pointsAvoided":  4,
+                                                                       "ordersPerBrand":  1000
+                                                                   },
+                                                        "outputs":  {
+                                                                        "arr":  750000,
+                                                                        "mrr":  65000,
+                                                                        "lines":  [
+                                                                                      {
+                                                                                          "id":  "styled",
+                                                                                          "annual":  432000,
+                                                                                          "monthly":  36000
+                                                                                      },
+                                                                                      {
+                                                                                          "id":  "stylist",
+                                                                                          "annual":  -172800,
+                                                                                          "monthly":  -14400
+                                                                                      },
+                                                                                      {
+                                                                                          "id":  "subs",
+                                                                                          "annual":  270000,
+                                                                                          "monthly":  25000
+                                                                                      },
+                                                                                      {
+                                                                                          "id":  "kept",
+                                                                                          "annual":  48000,
+                                                                                          "monthly":  4000
+                                                                                      }
+                                                                                  ],
+                                                                        "margin":  77.8,
+                                                                        "bySegment":  {
+                                                                                          "brand":  29000,
+                                                                                          "person":  36000
+                                                                                      }
+                                                                    },
+                                                        "assumptions_version":  "pricing-v1"
                                                     },
-                                      "storedAsEntered":  false
+                                      "storedAsEntered":  true
                                   }
                   },
                   {
                       "id":  "S4",
                       "name":  "Security: the public key cannot read note, select *, or delete from pricing_scenarios",
-                      "pass":  false,
+                      "pass":  true,
                       "details":  {
-                                      "allowed":  404,
-                                      "latest":  {
-                                                     "code":  "PGRST205",
-                                                     "details":  null,
-                                                     "hint":  null,
-                                                     "message":  "Could not find the table \u0027public.pricing_scenarios\u0027 in the schema cache"
-                                                 },
-                                      "note":  404,
+                                      "allowed":  200,
+                                      "latest":  [
+                                                     {
+                                                         "id":  "c414b7a0-9384-4476-87b6-4692ba1c0c77",
+                                                         "scenario":  "conservative",
+                                                         "mrr_mxn":  65000
+                                                     }
+                                                 ],
+                                      "note":  401,
                                       "noteBody":  {
-                                                       "code":  "PGRST205",
+                                                       "code":  "42501",
                                                        "details":  null,
-                                                       "hint":  null,
-                                                       "message":  "Could not find the table \u0027public.pricing_scenarios\u0027 in the schema cache"
+                                                       "hint":  "Grant the required privileges to the current role with: GRANT SELECT ON public.pricing_scenarios TO anon;",
+                                                       "message":  "permission denied for table pricing_scenarios"
                                                    },
-                                      "selectStar":  404,
-                                      "delete":  404
+                                      "selectStar":  401,
+                                      "delete":  401
                                   }
                   },
                   {
