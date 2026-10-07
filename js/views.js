@@ -1051,6 +1051,8 @@ window.SM = window.SM || {};
           '<a class="menu-row" href="#/quiz">' + ui.icon('sparkle') + '<span>Retake the style test</span><em></em></a>' +
           '<a class="menu-row" href="#/core">' + ui.icon('comment') + '<span>Style Core — describe it in your words</span><em></em></a>' +
           '<a class="menu-row" href="#/research">' + ui.icon('search') + '<span>Research desk — who else does this</span><em class="mono" id="rsWidgetCount"></em></a>' +
+          '<a class="menu-row" href="#/product">' + ui.icon('bag') + '<span>Product — tiers and feature map</span><em></em></a>' +
+          '<a class="menu-row" href="#/pricing">' + ui.icon('settings') + '<span>Pricing — the revenue simulator</span><em></em></a>' +
           /* Docs lives here because the welcome screen — the only other way in —
              stops being reachable the moment you finish the test. */
           '<a class="menu-row" href="#/docs">' + ui.icon('sparkle') + '<span>Docs — how this works</span><em></em></a>' +
@@ -1969,6 +1971,380 @@ window.SM = window.SM || {};
   }
 
   /* ============================================================
+     Product and Pricing — /product and /pricing
+
+     Week 3. Both pages render from js/pricing-data.js, so the
+     tiers cannot say one thing here and another there; the
+     engine is js/pricing.js, which the logic tests call directly.
+     ============================================================ */
+  var psState = {
+    inputs: null,            // filled from the dataset on first render
+    scenario: 'base',
+    label: '', note: '',
+    savedId: null, saving: false
+  };
+
+  function psInputs() {
+    if (!psState.inputs) psState.inputs = SM.pricing.defaults();
+    return psState.inputs;
+  }
+
+  var psMoneyFmt = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', maximumFractionDigits: 0 });
+  function psMoney(n) { return psMoneyFmt.format(n || 0); }
+  function psShort(n) {
+    var abs = Math.abs(n);
+    if (abs >= 1000000) return (n / 1000000).toFixed(1).replace('.0', '') + 'M';
+    if (abs >= 1000) return Math.round(n / 1000) + 'k';
+    return String(Math.round(n));
+  }
+
+  function psSegmentName(id) {
+    if (id === 'both') return 'Both';
+    var s = SM.PRICING.segments.filter(function (x) { return x.id === id; })[0];
+    return s ? s.name : id;
+  }
+
+  /* One tier card, two readings: what it contains (/product) and
+     what it costs (/pricing). Same data either way. */
+  function psTierHTML(tier, mode) {
+    var price = tier.price === 0 ? 'MX$0' : psMoney(tier.price);
+    return '<article class="ps-tier' + (tier.id === 'styled' ? ' ps-tier-mid' : '') + '">' +
+      '<h3 class="ps-tier-name">' + esc(tier.name) + '</h3>' +
+      '<span class="ps-seg' + (tier.segment === 'brand' ? ' ps-seg-brand' : '') + '">' + esc(psSegmentName(tier.segment)) + '</span>' +
+      '<p class="ps-price">' + esc(price) + '<small>' + esc(tier.unit) + '</small></p>' +
+      '<p class="ps-tier-line">' + esc(tier.line) + '</p>' +
+      (mode === 'contains'
+        ? '<ul class="ps-list">' + tier.includes.map(function (f) { return '<li>' + esc(f) + '</li>'; }).join('') + '</ul>'
+        : '<p class="ps-why"><strong>Why this number.</strong> ' + esc(tier.why) + '</p>') +
+      '</article>';
+  }
+
+  function psTiersHTML(mode) {
+    return '<div class="ps-tiers">' + SM.PRICING.tiers.map(function (t) { return psTierHTML(t, mode); }).join('') + '</div>';
+  }
+
+  /* ---------- /product ------------------------------------------- */
+  V.product = {
+    chrome: true,
+    render: function () {
+      var d = SM.PRICING;
+      var built = d.features.filter(function (f) { return f.status === 'built'; }).length;
+
+      var rows = d.features.map(function (f) {
+        var tier = d.tiers.filter(function (t) { return t.id === f.tier; })[0];
+        return '<tr>' +
+          '<th scope="row"><span class="ps-f-name">' + esc(f.name) + '</span>' +
+            '<span class="ps-f-what">' + esc(f.what) + '</span></th>' +
+          '<td><span class="ps-pill ps-pill-' + esc(f.tier) + '">' + esc(tier ? tier.name : f.tier) + '</span></td>' +
+          '<td>' + esc(psSegmentName(f.segment)) + '</td>' +
+          '<td><span class="ps-status ps-' + esc(f.status) + '">' + esc(f.status) + '</span></td>' +
+          '<td class="mono">' + (f.where === '—' ? '—' : '<a class="rs-src" href="#' + esc(f.where) + '">' + esc(f.where) + '</a>') +
+            (f.gated ? '<span class="ps-f-what">after the style test</span>' : '') + '</td>' +
+          '</tr>';
+      }).join('');
+
+      return '<div class="research">' + ui.header('Product', { kicker: 'Week 3 · what it is, and who it is for' }) +
+        '<p class="core-intro pad">Three tiers, two segments, and every feature marked <strong>built</strong> or ' +
+          '<strong>planned</strong>. ' + built + ' of ' + d.features.length + ' are built and running today — the rest are ' +
+          'sold on this page and nowhere else yet. The prices are on ' +
+          '<a class="docs-link" href="#/pricing">/pricing</a>, drawn from this same file.</p>' +
+
+        '<section class="rs-sec pad"><h2 class="sec-title">Who this is for</h2>' +
+          '<div class="ps-segments">' + d.segments.map(function (s) {
+            return '<article class="ps-segment' + (s.id === 'brand' ? ' ps-segment-brand' : '') + '">' +
+              '<span class="kicker">' + esc(s.id === 'brand' ? 'Segment 2 · pays' : 'Segment 1 · does not pay') + '</span>' +
+              '<h3>' + esc(s.name) + '</h3>' +
+              '<p class="ps-who">' + esc(s.who) + '</p>' +
+              '<p class="ps-pays"><strong>' + esc(s.pays) + '</strong></p>' +
+              '<p class="ps-evidence">' + esc(s.evidence) + '</p></article>';
+          }).join('') + '</div></section>' +
+
+        '<section class="rs-sec pad"><h2 class="sec-title">The three tiers, by what they contain</h2>' +
+          psTiersHTML('contains') + '</section>' +
+
+        '<section class="rs-sec pad"><h2 class="sec-title">Feature map</h2>' +
+          '<div class="rs-scroll"><table class="rs-table ps-table">' +
+          '<thead><tr><th scope="col">Feature</th><th scope="col">Tier</th><th scope="col">Segment</th>' +
+          '<th scope="col">Status</th><th scope="col">Where</th></tr></thead>' +
+          '<tbody>' + rows + '</tbody></table></div>' +
+          '<p class="disclaimer">Nothing in this table claims to exist that does not. The <em>built</em> rows can be ' +
+          'opened from the last column right now; the <em>planned</em> ones have no link because they have no page.</p>' +
+        '</section>' +
+        footerHTML() + '</div>';
+    }
+  };
+
+  /* ---------- /pricing ------------------------------------------- */
+  function psFieldHTML(spec, value) {
+    var isPct = spec.unit === '%' || spec.unit === 'points';
+    return '<div class="ps-field" data-ps-field="' + esc(spec.id) + '">' +
+      '<label class="ps-label" for="ps-' + esc(spec.id) + '">' + esc(spec.label) +
+        '<em class="mono">' + esc(spec.unit) + '</em></label>' +
+      '<div class="ps-inputs">' +
+        '<input class="ps-range" type="range" id="ps-range-' + esc(spec.id) + '" min="' + spec.min + '" max="' + spec.max +
+          '" step="' + spec.step + '" value="' + value + '" aria-label="' + esc(spec.label) + ' slider">' +
+        '<input class="ps-number" type="number" id="ps-' + esc(spec.id) + '" min="' + spec.min + '" max="' + spec.max +
+          '" step="' + spec.step + '" value="' + value + '">' +
+      '</div>' +
+      (spec.basedOn || spec.note
+        ? '<p class="ps-hint">' + (spec.basedOn ? psAssumptionTag(spec.basedOn) : '') + (spec.note ? ' ' + esc(spec.note) : '') + '</p>'
+        : '') +
+      (isPct ? '' : '') +
+      '</div>';
+  }
+
+  function psAssumptionTag(id) {
+    var a = SM.pricing.assumption(id);
+    if (!a) return '';
+    return '<span class="ps-kind ps-kind-' + esc(a.kind) + '">' + esc(a.kind) + '</span> ' + esc(a.label.toLowerCase());
+  }
+
+  function psOutputsHTML(result) {
+    var check = SM.pricing.priceCheck(psInputs());
+    var lines = result.lines.map(function (l) {
+      return '<tr' + (l.cost ? ' class="ps-cost"' : '') + '>' +
+        '<th scope="row"><span class="ps-f-name">' + esc(l.label) + '</span>' +
+          '<span class="ps-f-what">' + esc(l.detail) + '</span></th>' +
+        '<td>' + esc(psSegmentName(l.segment)) + '</td>' +
+        '<td class="mono ps-num">' + esc(psMoney(l.monthly)) + '</td>' +
+        '<td class="mono ps-num">' + esc(psMoney(l.annual)) + '</td></tr>';
+    }).join('');
+
+    return '<div class="ps-figures">' +
+        '<div class="ps-fig"><span class="kicker">Monthly</span><p class="ps-fig-n">' + esc(psMoney(result.mrr)) + '</p></div>' +
+        '<div class="ps-fig"><span class="kicker">Annual</span><p class="ps-fig-n">' + esc(psMoney(result.arr)) + '</p></div>' +
+        '<div class="ps-fig"><span class="kicker">Gross margin</span><p class="ps-fig-n ps-muted">' + result.margin + '%</p></div>' +
+      '</div>' +
+      '<div class="rs-scroll"><table class="rs-table ps-table"><thead><tr>' +
+        '<th scope="col">Line</th><th scope="col">Segment</th><th scope="col">Monthly</th><th scope="col">Annual</th>' +
+        '</tr></thead><tbody>' + lines + '</tbody></table></div>' +
+      '<p class="ps-check' + (check.ok ? '' : ' ps-check-bad') + '">' +
+        (check.ok
+          ? 'Price check: ' + esc(psMoney(check.price)) + ' is ' + check.share + '% of the ' + esc(psMoney(check.limitMxn)) +
+            ' at which the person interviewed in Week 2 said he walks away, and ' + check.ofMinWage + '% of a minimum monthly wage.'
+          : 'Price check failed: ' + esc(psMoney(check.price)) + ' is above the ' + esc(psMoney(check.limitMxn)) +
+            ' walk-away price recorded in Week 2.') +
+      '</p>';
+  }
+
+  function psAssumptionsHTML() {
+    var rows = SM.pricing.assumptionsFor(psState.scenario).map(function (a) {
+      var value = a.kind === 'sourced' ? a.value : a.scenarioValue;
+      var shown = (a.unit === 'MX$' ? psMoney(value) : String(value) + (a.unit ? ' ' + a.unit : ''));
+      var src = a.sourceKind === 'interview'
+        ? '<span class="rs-src rs-src-off" title="' + esc(a.sourceName) + '">interview</span>'
+        : (a.source
+            ? '<a class="rs-src" href="' + esc(a.source) + '" target="_blank" rel="noopener noreferrer" title="' +
+              esc(a.sourceName) + '">' + esc(rsHost(a.source)) + ' ↗</a>'
+            : '<span class="ps-derived">derived</span>');
+      return '<tr>' +
+        '<th scope="row"><span class="ps-f-name">' + esc(a.label) + '</span>' +
+          (a.note ? '<span class="ps-f-what">' + esc(a.note) + '</span>' : '') + '</th>' +
+        '<td class="mono ps-num">' + esc(shown) + (a.moved ? '<em class="ps-moved">moved by scenario</em>' : '') + '</td>' +
+        '<td><span class="ps-kind ps-kind-' + esc(a.kind) + '">' + esc(a.kind) + '</span></td>' +
+        '<td>' + src + (a.checked ? '<span class="rs-checked mono">' + esc(a.checked) + '</span>' : '') + '</td>' +
+        '</tr>';
+    }).join('');
+
+    var counts = { sourced: 0, estimate: 0, guess: 0 };
+    SM.PRICING.assumptions.forEach(function (a) { counts[a.kind]++; });
+
+    return '<div class="rs-scroll"><table class="rs-table ps-table"><thead><tr>' +
+      '<th scope="col">Assumption</th><th scope="col">Value</th><th scope="col">Kind</th><th scope="col">Source</th>' +
+      '</tr></thead><tbody>' + rows + '</tbody></table></div>' +
+      '<p class="disclaimer">' + counts.sourced + ' sourced, ' + counts.estimate + ' estimated, ' + counts.guess +
+      ' guessed. The scenario toggle moves estimates and guesses only — every sourced row above holds the same value ' +
+      'in all three scenarios, and a test proves it.</p>';
+  }
+
+  var PS_COLUMNS = 'id,created_at,label,scenario,mrr_mxn,arr_mxn,assumptions_version';
+
+  function psSavedHTML(res) {
+    return '<div class="core-mini-row">' + res.rows.map(function (r) {
+      return '<div class="core-mini' + (r.id === psState.savedId ? ' is-new' : '') + '">' +
+        '<span class="kicker">' + esc(ui.timeAgo(Date.parse(r.created_at))) + ' · ' + esc(r.scenario) + '</span>' +
+        '<strong>' + esc(psMoney(r.mrr_mxn)) + ' / month</strong>' +
+        '<div class="core-signals"><span class="core-sig">' + esc(psMoney(r.arr_mxn)) + ' / year</span>' +
+        (r.label ? '<span class="core-sig">' + esc(r.label) + '</span>' : '') + '</div></div>';
+    }).join('') + '</div>';
+  }
+
+  function psLoadSaved(root) {
+    var el = root.querySelector('#psSaved');
+    if (!el) return;
+    var head = '<div class="core-dash-head"><h2 class="sec-title">Saved scenarios</h2>';
+    if (!SM.db.configured()) {
+      el.innerHTML = head + '</div><p class="core-dash-note">Saved scenarios will appear here once the database is connected.</p>';
+      return;
+    }
+    el.innerHTML = head + '</div><p class="core-dash-note">Loading from Supabase…</p>';
+    SM.db.list('pricing_scenarios', { select: PS_COLUMNS, limit: 5 }).then(function (res) {
+      if (!el.isConnected) return;
+      if (!res.rows.length) {
+        el.innerHTML = head + '</div><p class="core-dash-note">No scenario saved yet.</p>';
+        return;
+      }
+      el.innerHTML = head + '<p class="core-total"><strong>' + res.total + '</strong> <span class="kicker">in pricing_scenarios</span></p></div>' +
+        psSavedHTML(res) +
+        '<p class="disclaimer">The five most recent, read live from <code>pricing_scenarios</code>. Each row keeps its ' +
+        'inputs and its outputs, so a number can be re-checked instead of remembered. Notes are not among the columns ' +
+        'the public key may read.</p>';
+    }).catch(function (err) {
+      if (!el.isConnected) return;
+      el.innerHTML = head + '</div><p class="core-dash-note">Could not reach the database: ' + esc(err.message) + '</p>' +
+        '<button class="btn sm" type="button" data-ps-retry="1">Try again</button>';
+    });
+  }
+
+  function psSave(root) {
+    var btn = root.querySelector('#psSave');
+    var msg = root.querySelector('#psMsg');
+    var note = root.querySelector('#psSaveMsg');
+    if (psState.saving || psState.savedId) return;
+
+    var form = { label: psState.label, note: psState.note, scenario: psState.scenario };
+    var errors = SM.pricing.validate(form);
+    if (errors.length) { msg.textContent = errors[0].message; return; }
+    msg.textContent = '';
+
+    if (!SM.db.configured()) {
+      note.className = 'core-save-msg err';
+      note.textContent = 'Saving is off on this deployment: the database is not configured.';
+      return;
+    }
+
+    var result = SM.pricing.compute(psInputs(), psState.scenario);
+    psState.saving = true;
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+
+    SM.db.insert('pricing_scenarios', SM.pricing.toRecord(form, result)).then(function (saved) {
+      psState.saving = false;
+      psState.savedId = saved.id;
+      if (!btn.isConnected) return;
+      btn.innerHTML = ui.icon('check') + 'Saved';
+      note.className = 'core-save-msg';
+      note.textContent = 'Saved to Supabase · row ' + saved.id.slice(0, 8);
+      ui.toast('Scenario saved');
+      psLoadSaved(root);
+    }).catch(function (err) {
+      psState.saving = false;
+      if (!btn.isConnected) return;
+      btn.disabled = false;
+      btn.textContent = 'Save this scenario';
+      note.className = 'core-save-msg err';
+      note.textContent = 'Could not save: ' + err.message + '. Nothing was lost — try again.';
+    });
+  }
+
+  V.pricing = {
+    chrome: true,
+    render: function () {
+      var inputs = psInputs();
+      var result = SM.pricing.compute(inputs, psState.scenario);
+      var bySegment = function (segId) {
+        return SM.PRICING.inputs.filter(function (i) { return i.segment === segId; })
+          .map(function (spec) { return psFieldHTML(spec, inputs[spec.id]); }).join('');
+      };
+      var scenarioChips = SM.PRICING.scenarios.map(function (s) {
+        var on = psState.scenario === s.id;
+        return '<button type="button" class="chip' + (on ? ' on' : '') + '" data-ps-scenario="' + s.id + '" aria-pressed="' + on + '">' +
+          esc(s.label) + '</button>';
+      }).join('');
+      var saved = !!psState.savedId;
+
+      return '<div class="research">' + ui.header('Pricing', { kicker: 'Week 3 · the model, and what it rests on' }) +
+        '<p class="core-intro pad">Three tiers, two segments, and a calculator whose assumptions are on the same ' +
+          'screen as its answer. Move the sliders. The scenario toggle moves the guesses and leaves the sourced ' +
+          'numbers alone. Feature detail is on <a class="docs-link" href="#/product">/product</a>.</p>' +
+
+        '<section class="rs-sec pad"><h2 class="sec-title">The three tiers, by what they cost</h2>' +
+          psTiersHTML('costs') + '</section>' +
+
+        '<section class="rs-sec pad"><h2 class="sec-title">Revenue simulator</h2>' +
+          '<div class="ps-calc">' +
+            '<form class="ps-form" id="psForm" novalidate>' +
+              '<p class="ps-label">Scenario</p>' +
+              '<div class="chips">' + scenarioChips + '</div>' +
+              '<p class="ps-hint" id="psScenarioLine">' + esc(SM.PRICING.scenarios.filter(function (s) {
+                return s.id === psState.scenario; })[0].line) + '</p>' +
+              '<h3 class="sec-title">Segment 1 · people</h3>' + bySegment('person') +
+              '<h3 class="sec-title">Segment 2 · brands</h3>' + bySegment('brand') +
+              '<label class="field" for="psLabel"><span>Name this scenario <em>optional</em></span>' +
+                '<input id="psLabel" maxlength="60" autocomplete="off" value="' + esc(psState.label) + '"></label>' +
+              '<label class="field" for="psNote"><span>Note <em>optional · stored, never shown back</em></span>' +
+                '<textarea id="psNote" rows="2" maxlength="1200">' + esc(psState.note) + '</textarea></label>' +
+              '<p class="core-msg" id="psMsg" role="alert"></p>' +
+              '<button class="btn btn-primary btn-lg full" id="psSave" type="submit"' + (saved || psState.saving ? ' disabled' : '') + '>' +
+                (saved ? ui.icon('check') + 'Saved' : 'Save this scenario') + '</button>' +
+              '<p class="core-save-msg" id="psSaveMsg">' + (saved ? 'Saved to Supabase · row ' + esc(psState.savedId.slice(0, 8)) : '') + '</p>' +
+            '</form>' +
+            '<section class="ps-results" id="psResults" aria-live="polite">' + psOutputsHTML(result) + '</section>' +
+          '</div></section>' +
+
+        '<section class="rs-sec pad"><h2 class="sec-title">Assumptions</h2>' +
+          '<div id="psAssumptions">' + psAssumptionsHTML() + '</div></section>' +
+
+        '<section class="rs-sec pad" id="psSaved" aria-live="polite"></section>' +
+        footerHTML() + '</div>';
+    },
+
+    mount: function (root) {
+      var results = root.querySelector('#psResults');
+      var assumptions = root.querySelector('#psAssumptions');
+      var scenarioLine = root.querySelector('#psScenarioLine');
+
+      function repaint() {
+        var result = SM.pricing.compute(psInputs(), psState.scenario);
+        results.innerHTML = psOutputsHTML(result);
+        assumptions.innerHTML = psAssumptionsHTML();
+        scenarioLine.textContent = SM.PRICING.scenarios.filter(function (s) { return s.id === psState.scenario; })[0].line;
+      }
+
+      /* Slider and number box are two views of one value: whichever
+         moves, both are set, then the page recomputes. */
+      SM.PRICING.inputs.forEach(function (spec) {
+        var range = root.querySelector('#ps-range-' + spec.id);
+        var number = root.querySelector('#ps-' + spec.id);
+        function set(v) {
+          var clamped = SM.pricing.clamp(spec.id, v);
+          psInputs()[spec.id] = clamped;
+          if (range.value !== String(clamped)) range.value = clamped;
+          if (number.value !== String(clamped)) number.value = clamped;
+          repaint();
+        }
+        range.addEventListener('input', function () { set(range.value); });
+        number.addEventListener('input', function () { set(number.value); });
+      });
+
+      root.querySelector('#psLabel').addEventListener('input', function (e) { psState.label = e.target.value; });
+      root.querySelector('#psNote').addEventListener('input', function (e) { psState.note = e.target.value; });
+
+      root.addEventListener('click', function (e) {
+        var chip = e.target.closest('[data-ps-scenario]');
+        if (chip) {
+          psState.scenario = chip.getAttribute('data-ps-scenario');
+          root.querySelectorAll('[data-ps-scenario]').forEach(function (b) {
+            var on = b === chip;
+            b.classList.toggle('on', on);
+            b.setAttribute('aria-pressed', String(on));
+          });
+          repaint();
+          return;
+        }
+        if (e.target.closest('[data-ps-retry]')) psLoadSaved(root);
+      });
+
+      root.querySelector('#psForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        psSave(root);
+      });
+
+      psLoadSaved(root);
+    }
+  };
+
+  /* ============================================================
      Docs — what this is, what is real, and what comes next
      ============================================================ */
   var ROADMAP = [
@@ -2065,6 +2441,8 @@ window.SM = window.SM || {};
       '<a href="#/docs"><span>Docs</span></a>' +
       '<a href="#/core"><span>Style Core</span></a>' +
       '<a href="#/research"><span>Research</span></a>' +
+      '<a href="#/product"><span>Product</span></a>' +
+      '<a href="#/pricing"><span>Pricing</span></a>' +
       '<a href="#/feed"><span>Feed</span></a></p>' +
       '<p class="foot-note mono">Demo catalogue — invented prices, no payment taken.</p>' +
       '</footer>';

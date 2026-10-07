@@ -1718,3 +1718,114 @@ input[type=range]::-moz-range-thumb {
   .rs-axis { font-size: 9px; letter-spacing: .04em; }
   .rs-risk { font-size: 11px; padding: 4px 6px; }
 }
+
+/* ============================================================
+   Product and Pricing — /product and /pricing
+
+   Tier cards, the feature map, the calculator and the
+   assumptions table. Both pages reuse the research desk's table
+   and scroll container, so a wide table behaves the same way
+   everywhere.
+   ============================================================ */
+.ps-tiers { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; }
+.ps-tier {
+  display: flex;
+  flex-direction: column;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--ink-1);
+}
+.ps-tier-mid { border-color: var(--klein-2); background: rgba(58, 52, 232, .1); }
+.ps-tier-name { font-family: var(--display); font-size: 19px; font-weight: 700; }
+.ps-seg {
+  align-self: flex-start;
+  margin-top: 6px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: rgba(242, 239, 233, .08);
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--ash);
+}
+.ps-seg-brand { background: rgba(255, 92, 66, .16); color: #FF8A75; }
+.ps-price {
+  margin: 12px 0 2px;
+  font-family: var(--display);
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -.03em;
+  line-height: 1.1;
+  overflow-wrap: anywhere;
+}
+.ps-price small { display: block; margin-top: 3px; font-family: var(--ui); font-size: 12px; font-weight: 400; color: var(--ash); letter-spacing: 0; }
+.ps-tier-line { margin: 10px 0 0; color: var(--bone-2); font-size: 14px; line-height: 1.5; }
+.ps-list { margin: 12px 0 0; padding-left: 18px; color: var(--bone-2); font-size: 13px; line-height: 1.6; }
+.ps-why { margin: 12px 0 0; padding-left: 10px; border-left: 2px solid var(--klein-2); color: var(--bone-2); font-size: 13px; line-height: 1.55; }
+.ps-why strong { color: var(--bone); }
+
+.ps-segments { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+.ps-segment { padding: 16px 18px; border: 1px solid var(--line); border-radius: var(--r); background: var(--ink-1); }
+.ps-segment-brand { border-color: rgba(255, 92, 66, .4); }
+.ps-segment h3 { font-family: var(--display); font-size: 17px; font-weight: 700; margin: 6px 0 8px; }
+.ps-who { color: var(--bone-2); font-size: 13.5px; line-height: 1.55; }
+.ps-pays { margin: 10px 0; font-size: 14px; }
+.ps-evidence { color: var(--ash); font-size: 12.5px; line-height: 1.55; }
+
+.ps-f-name { display: block; font-size: 14px; font-weight: 600; color: var(--bone); }
+.ps-f-what { display: block; margin-top: 3px; font-size: 11.5px; font-weight: 400; color: var(--ash); line-height: 1.45; }
+.ps-table th[scope="row"] { min-width: 170px; }
+.ps-num { white-space: nowrap; text-align: right; }
+.ps-cost td, .ps-cost th { color: var(--flame); }
+.ps-pill { display: inline-block; padding: 3px 8px; border-radius: 6px; background: rgba(242, 239, 233, .08); font-family: var(--mono); font-size: 10.5px; white-space: nowrap; }
+.ps-pill-styled { background: var(--klein-dim); }
+.ps-pill-brand { background: rgba(255, 92, 66, .16); color: #FF8A75; }
+.ps-status { font-family: var(--mono); font-size: 10.5px; padding: 3px 8px; border-radius: 6px; }
+.ps-built { background: rgba(58, 52, 232, .25); color: var(--bone-2); }
+.ps-planned { background: rgba(242, 239, 233, .07); color: var(--ash); }
+
+.ps-calc { display: flex; flex-direction: column; gap: 26px; }
+.ps-form { display: flex; flex-direction: column; }
+.ps-form .sec-title { margin: 22px 0 10px; }
+.ps-label { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; font-size: 12.5px; color: var(--ash); margin: 0 0 6px; }
+.ps-label em { font-style: normal; color: var(--ash-2); }
+.ps-field { margin-bottom: 14px; }
+.ps-inputs { display: grid; grid-template-columns: minmax(0, 1fr) 104px; gap: 10px; align-items: center; }
+.ps-range { width: 100%; accent-color: var(--klein-2); }
+.ps-number {
+  padding: 8px 10px;
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-sm);
+  background: var(--ink-1);
+  font-family: var(--mono);
+  font-size: 13px;
+  text-align: right;
+  outline: none;
+}
+.ps-number:focus { border-color: var(--klein-2); }
+.ps-hint { margin: 6px 0 0; font-size: 11.5px; color: var(--ash-2); line-height: 1.45; }
+
+.ps-kind { font-family: var(--mono); font-size: 10px; padding: 2px 7px; border-radius: 5px; white-space: nowrap; }
+.ps-kind-sourced { background: rgba(58, 52, 232, .25); color: var(--bone-2); }
+.ps-kind-estimate { background: rgba(242, 239, 233, .1); color: var(--ash); }
+.ps-kind-guess { background: rgba(255, 92, 66, .16); color: #FF8A75; }
+.ps-derived { font-family: var(--mono); font-size: 11px; color: var(--ash-2); }
+.ps-moved { display: block; margin-top: 3px; font-style: normal; font-family: var(--ui); font-size: 10.5px; color: var(--flame); }
+
+.ps-figures { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 16px; }
+.ps-fig { padding: 14px 16px; border: 1px solid var(--line); border-radius: var(--r); background: var(--ink-1); }
+.ps-fig-n {
+  margin: 6px 0 0;
+  font-family: var(--display);
+  font-size: clamp(22px, 4.4vw, 30px);
+  font-weight: 800;
+  letter-spacing: -.03em;
+  overflow-wrap: anywhere;
+}
+.ps-muted { color: var(--ash); }
+.ps-check { margin-top: 14px; padding: 11px 13px; border-radius: var(--r-sm); background: var(--klein-dim); color: var(--bone-2); font-size: 13px; line-height: 1.55; }
+.ps-check-bad { background: rgba(255, 92, 66, .14); color: #FF8A75; }
+
+@media (min-width: 900px) {
+  .ps-calc { display: grid; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); gap: 32px; align-items: start; }
+}

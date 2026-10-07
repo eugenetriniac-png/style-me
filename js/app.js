@@ -30,7 +30,9 @@ window.SM = window.SM || {};
     { re: /^#\/studio$/,                name: 'studio' },
     { re: /^#\/docs$/,                  name: 'docs' },
     { re: /^#\/core$/,                  name: 'core' },
-    { re: /^#\/research$/,              name: 'research' }
+    { re: /^#\/research$/,              name: 'research' },
+    { re: /^#\/product$/,               name: 'product' },
+    { re: /^#\/pricing$/,               name: 'pricing' }
   ];
 
   function resolve() {
@@ -50,7 +52,7 @@ window.SM = window.SM || {};
     { hash: '#/shop', icon: 'search', label: 'Shop', match: ['shop', 'item'] },
     { hash: '#/community', icon: 'users', label: 'Community', match: ['community', 'post', 'person'] },
     { hash: '#/messages', icon: 'chat', label: 'Messages', match: ['messages', 'thread'] },
-    { hash: '#/me', icon: 'user', label: 'You', match: ['me', 'saved', 'studio', 'dna', 'bag', 'core', 'research'] }
+    { hash: '#/me', icon: 'user', label: 'You', match: ['me', 'saved', 'studio', 'dna', 'bag', 'core', 'research', 'product', 'pricing'] }
   ];
 
   function navHTML(active) {
@@ -69,7 +71,7 @@ window.SM = window.SM || {};
     shop: 'Shop — Style Me', community: 'Community — Style Me', post: 'Post — Style Me',
     person: 'Profile — Style Me', messages: 'Messages — Style Me', thread: 'Chat — Style Me',
     me: 'You — Style Me', saved: 'Saved — Style Me', bag: 'Bag — Style Me', studio: 'Studio — Style Me',
-    docs: 'Docs — Style Me', core: 'Style Core — Style Me', research: 'Research desk — Style Me'
+    docs: 'Docs — Style Me', core: 'Style Core — Style Me', research: 'Research desk — Style Me', product: 'Product — Style Me', pricing: 'Pricing — Style Me'
   };
 
   SM.render = function () {
@@ -79,7 +81,7 @@ window.SM = window.SM || {};
     /* First visit goes to the welcome screen, except for the feed,
        which anyone can look at before answering anything, and the
        Style Core, which is its own way in. */
-    if (!s.onboarded && ['welcome', 'quiz', 'dna', 'feed', 'docs', 'core', 'research'].indexOf(route.name) === -1) {
+    if (!s.onboarded && ['welcome', 'quiz', 'dna', 'feed', 'docs', 'core', 'research', 'product', 'pricing'].indexOf(route.name) === -1) {
       location.hash = '#/';
       return;
     }
@@ -131,7 +133,7 @@ window.SM = window.SM || {};
      anyone might type or link to. vercel.json rewrites them onto index.html; this
      turns the path back into the hash the router understands, without
      leaving a dead entry in history. */
-  var PATH_ALIASES = { '/docs': '#/docs', '/core': '#/core', '/research': '#/research' };
+  var PATH_ALIASES = { '/docs': '#/docs', '/core': '#/core', '/research': '#/research', '/product': '#/product', '/pricing': '#/pricing' };
 
   function adoptPathAlias() {
     var alias = PATH_ALIASES[location.pathname.replace(/\/+$/, '') || '/'];

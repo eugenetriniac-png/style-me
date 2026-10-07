@@ -85,9 +85,9 @@ window.SM = window.SM || {};
   var FEATURES = [
     { id: 'core', name: 'Style Core', what: 'Free text in, a named style and an outfit out.', tier: 'free', segment: 'person', status: 'built', where: '/core' },
     { id: 'feed', name: 'Outfit feed', what: 'Outfits built from your axes, endlessly.', tier: 'free', segment: 'person', status: 'built', where: '/feed' },
-    { id: 'render', name: 'Layered SVG renderer', what: 'Every garment drawn in the browser; one piece swaps without the rest moving.', tier: 'free', segment: 'person', status: 'built', where: '/outfit' },
+    { id: 'render', name: 'Layered SVG renderer', what: 'Every garment drawn in the browser; one piece swaps without the rest moving.', tier: 'free', segment: 'person', status: 'built', where: '/feed' },
     { id: 'quiz', name: 'Twelve-question style test', what: 'The original way in: ten axes, a named archetype.', tier: 'free', segment: 'person', status: 'built', where: '/quiz' },
-    { id: 'saved', name: 'Saved outfits and bag', what: 'Keep what you liked; local to the browser.', tier: 'free', segment: 'person', status: 'built', where: '/saved' },
+    { id: 'saved', name: 'Saved outfits and bag', what: 'Keep what you liked; local to the browser.', tier: 'free', segment: 'person', status: 'built', where: '/saved', gated: true },
     { id: 'research', name: 'Research desk', what: 'Twelve competitors, five benchmarks, eight risks, every claim sourced.', tier: 'free', segment: 'both', status: 'built', where: '/research' },
     { id: 'pricing', name: 'Pricing simulator', what: 'This page: the model, its assumptions, and what they are worth.', tier: 'free', segment: 'both', status: 'built', where: '/pricing' },
     { id: 'lookbook', name: 'Human lookbook', what: 'A stylist builds a set of looks around your core.', tier: 'styled', segment: 'person', status: 'planned', where: '—' },

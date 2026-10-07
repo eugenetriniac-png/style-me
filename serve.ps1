@@ -52,7 +52,7 @@ while ($listener.IsListening) {
   }
 
   # same rewrites as vercel.json
-  if ($rel -eq '' -or $rel -eq 'docs' -or $rel -eq 'core' -or $rel -eq 'research') { $rel = 'index.html' }
+  if ($rel -eq '' -or $rel -eq 'docs' -or $rel -eq 'core' -or $rel -eq 'research' -or $rel -eq 'product' -or $rel -eq 'pricing') { $rel = 'index.html' }
   $path = Join-Path $root $rel
 
   # never serve anything outside the project folder
