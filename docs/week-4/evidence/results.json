@@ -1,6 +1,6 @@
 ﻿{
     "base":  "https://style-me-five.vercel.app",
-    "ranAt":  "2026-10-20 20:53:20 -06:00",
+    "ranAt":  "2026-10-20 20:56:42 -06:00",
     "tests":  [
                   {
                       "id":  "A1",
@@ -8,13 +8,186 @@
                       "pass":  true,
                       "details":  {
                                       "n":  20000,
-                                      "headlineASplit":  50.3,
-                                      "ctaASplit":  49.7,
-                                      "agreement":  50.2,
+                                      "headlineASplit":  49.5,
+                                      "ctaASplit":  50.2,
+                                      "agreement":  49.8,
                                       "sticky":  true,
                                       "fair":  true,
                                       "independent":  true,
                                       "refusesBelowThreshold":  true
+                                  }
+                  },
+                  {
+                      "id":  "A2",
+                      "name":  "A/B end to end on the live site: a fresh visitor records one impression per experiment, the call to action records a conversion, the stored variants match what was shown, and no winner is named on this sample",
+                      "pass":  false,
+                      "details":  {
+                                      "visitor":  "zbpuw2q8sgx2",
+                                      "shown":  {
+                                                    "headline":  "a",
+                                                    "cta":  "b",
+                                                    "headlineText":  "Know what suits you before you pay for it.",
+                                                    "ctaText":  "See what suits you — free, no account"
+                                                },
+                                      "rowsForThisVisitor":  {
+                                                                 "code":  "PGRST205",
+                                                                 "details":  null,
+                                                                 "hint":  null,
+                                                                 "message":  "Could not find the table \u0027public.ab_events\u0027 in the schema cache"
+                                                             },
+                                      "impressionsOk":  false,
+                                      "conversionsOk":  false,
+                                      "variantsMatch":  true,
+                                      "honestRead":  {
+                                                         "value":  [
+                                                                       {
+                                                                           "experiment":  "headline",
+                                                                           "total":  0,
+                                                                           "smallestArm":  0,
+                                                                           "enough":  false,
+                                                                           "winner":  null,
+                                                                           "verdict":  "Not enough data. 0 impressions in the smaller arm, 100 needed before this page names anything.",
+                                                                           "neededPerArm":  1024
+                                                                       },
+                                                                       {
+                                                                           "experiment":  "cta",
+                                                                           "total":  0,
+                                                                           "smallestArm":  0,
+                                                                           "enough":  false,
+                                                                           "winner":  null,
+                                                                           "verdict":  "Not enough data. 0 impressions in the smaller arm, 100 needed before this page names anything.",
+                                                                           "neededPerArm":  1024
+                                                                       }
+                                                                   ],
+                                                         "Count":  2
+                                                     }
+                                  }
+                  },
+                  {
+                      "id":  "S1",
+                      "name":  "Both surfaces load with a clean console, and every brand swatch equals the live CSS variable it names",
+                      "pass":  true,
+                      "details":  {
+                                      "landingConsole":  "[]",
+                                      "marketingConsole":  "[]",
+                                      "swatches":  9,
+                                      "mismatches":  [
+
+                                                     ]
+                                  }
+                  },
+                  {
+                      "id":  "S2",
+                      "name":  "Content is complete and copyable: 10 posts, 3 scripts, 14 days, and the copy button puts exactly the published text on the clipboard",
+                      "pass":  true,
+                      "details":  {
+                                      "content":  {
+                                                      "posts":  10,
+                                                      "scripts":  3,
+                                                      "days":  14,
+                                                      "copyButtons":  13,
+                                                      "everyPostHasChannelAndLength":  true,
+                                                      "everyDayHasNote":  true,
+                                                      "personaQuoted":  5,
+                                                      "personaInferred":  2
+                                                  },
+                                      "clipboard":  {
+                                                        "id":  "p1",
+                                                        "buttonSays":  "copied",
+                                                        "matches":  true,
+                                                        "clipLength":  336,
+                                                        "expectedLength":  334
+                                                    }
+                                  }
+                  },
+                  {
+                      "id":  "S3",
+                      "name":  "Saving an asset writes one row per double click and reads back field for field, and neither surface overflows at 375, 414, 600, 768, 900 or 1280 px",
+                      "pass":  false,
+                      "details":  {
+                                      "saveMessage":  "Could not save: Could not find the table \u0027public.marketing_assets\u0027 in the schema cache. Nothing was lost — try again.",
+                                      "totalBefore":  0,
+                                      "totalAfter":  0,
+                                      "storedRow":  {
+
+                                                    },
+                                      "storedAsEntered":  false,
+                                      "perWidth":  [
+                                                       {
+                                                           "width":  375,
+                                                           "page":  "/",
+                                                           "overflowPx":  0
+                                                       },
+                                                       {
+                                                           "width":  375,
+                                                           "page":  "/marketing",
+                                                           "overflowPx":  0
+                                                       },
+                                                       {
+                                                           "width":  414,
+                                                           "page":  "/",
+                                                           "overflowPx":  0
+                                                       },
+                                                       {
+                                                           "width":  414,
+                                                           "page":  "/marketing",
+                                                           "overflowPx":  0
+                                                       },
+                                                       {
+                                                           "width":  600,
+                                                           "page":  "/",
+                                                           "overflowPx":  0
+                                                       },
+                                                       {
+                                                           "width":  600,
+                                                           "page":  "/marketing",
+                                                           "overflowPx":  0
+                                                       },
+                                                       {
+                                                           "width":  768,
+                                                           "page":  "/",
+                                                           "overflowPx":  0
+                                                       },
+                                                       {
+                                                           "width":  768,
+                                                           "page":  "/marketing",
+                                                           "overflowPx":  0
+                                                       },
+                                                       {
+                                                           "width":  900,
+                                                           "page":  "/",
+                                                           "overflowPx":  0
+                                                       },
+                                                       {
+                                                           "width":  900,
+                                                           "page":  "/marketing",
+                                                           "overflowPx":  0
+                                                       },
+                                                       {
+                                                           "width":  1280,
+                                                           "page":  "/",
+                                                           "overflowPx":  0
+                                                       },
+                                                       {
+                                                           "width":  1280,
+                                                           "page":  "/marketing",
+                                                           "overflowPx":  0
+                                                       }
+                                                   ],
+                                      "worstOverflowPx":  0
+                                  }
+                  },
+                  {
+                      "id":  "S4",
+                      "name":  "Security: the public key cannot read note, select * or delete from marketing_assets, and cannot delete an event",
+                      "pass":  false,
+                      "details":  {
+                                      "assetsAllowed":  404,
+                                      "assetsNote":  404,
+                                      "assetsStar":  404,
+                                      "assetsDelete":  404,
+                                      "eventsRead":  404,
+                                      "eventsDelete":  404
                                   }
                   }
               ]
