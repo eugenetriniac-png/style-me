@@ -113,6 +113,10 @@ window.SM = window.SM || {};
   function summarise(rows, experimentId) {
     var exp = experiment(experimentId);
     if (!exp) return null;
+    /* PostgREST answers an error as an object, not an array, and a
+       summary that throws on a bad fetch takes the page down with it.
+       No rows is a real state — it is what "no data yet" looks like. */
+    if (!Array.isArray(rows)) rows = [];
     var arms = exp.variants.map(function (v) {
       var mine = rows.filter(function (r) { return r.experiment === experimentId && r.variant === v.id; });
       var impressions = mine.filter(function (r) { return r.event === 'impression'; }).length;

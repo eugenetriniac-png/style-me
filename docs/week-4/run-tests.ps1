@@ -159,7 +159,8 @@ window.__t = {
   async allEvents() {
     const c = SM.config.supabase;
     const r = await fetch(c.url + '/rest/v1/ab_events?select=experiment,variant,event&limit=2000', { headers: { apikey: c.key } });
-    return JSON.stringify(await r.json());
+    const body = await r.json();
+    return JSON.stringify(Array.isArray(body) ? body : []);   // an error object is not rows
   }
 };
 'ok'
@@ -216,6 +217,10 @@ JSON.stringify((() => {
   Record 'A1' 'A/B assignment: a 20,000-visitor draw splits within 2 points of even, the two experiments are independent, a visitor is sticky, and the summary refuses to name a winner below the threshold' $passA1 $a1
 
   # ---------- A2 - the experiment end to end ---------------------------
+  # Each test from here on is wrapped: the first run of this suite died
+  # entirely because one call threw, so four checks that would have
+  # passed never reported at all. A failing test must fail alone.
+  try {
   Go '/'
   Start-Sleep -Milliseconds 900
   $visitor = Js 'SM.ab.visitor()'
@@ -250,6 +255,7 @@ JSON.stringify((() => {
     visitor = $visitor; shown = $seen; rowsForThisVisitor = $mine
     impressionsOk = $hasImpressions; conversionsOk = $hasConversions; variantsMatch = $variantsMatch
     honestRead = $read })
+  } catch { Record 'A2' 'A/B end to end on the live site' $false @{ error = $_.Exception.Message } }
 
   # ---------- S1 - both surfaces, console, brand ------------------------
   $landErrs = Js 'JSON.stringify(window.__errs || ["collector missing"])'
@@ -273,6 +279,7 @@ JSON.stringify((() => {
     content = $content; clipboard = $clip })
 
   # ---------- S3 - saving an asset, and the responsive sweep ------------
+  try {
   [void](Js 'window.__t.waitFor(() => window.__t.savedReady()).then(() => "ok")')
   $before = [int](Js 'String(window.__t.savedTotal())')
   $saved = Js 'window.__t.saveAsset("s1", "Saved by the Week 4 test script.")'
@@ -306,8 +313,10 @@ JSON.stringify((() => {
   Record 'S3' 'Saving an asset writes one row per double click and reads back field for field, and neither surface overflows at 375, 414, 600, 768, 900 or 1280 px' $passS3 ([ordered]@{
     saveMessage = $saved; totalBefore = $before; totalAfter = $after; storedRow = $row; storedAsEntered = $storedRight
     perWidth = $widths; worstOverflowPx = $worst })
+  } catch { Record 'S3' 'Saving an asset, and the responsive sweep' $false @{ error = $_.Exception.Message } }
 
   # ---------- Security on both new tables -------------------------------
+  try {
   $sec = (Js @'
 (async () => {
   const c = SM.config.supabase, h = { apikey: c.key };
@@ -326,6 +335,7 @@ JSON.stringify((() => {
   $passSec = ($sec.assetsAllowed -eq 200) -and ($sec.assetsNote -eq 401) -and ($sec.assetsStar -eq 401) -and
              ($sec.assetsDelete -eq 401) -and ($sec.eventsRead -eq 200) -and ($sec.eventsDelete -eq 401)
   Record 'S4' 'Security: the public key cannot read note, select * or delete from marketing_assets, and cannot delete an event' $passSec $sec
+  } catch { Record 'S4' 'Security on the two new tables' $false @{ error = $_.Exception.Message } }
 }
 finally {
   $results | ConvertTo-Json -Depth 12 | Out-File -Encoding utf8 (Join-Path $out 'results.json')

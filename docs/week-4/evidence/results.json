@@ -1,0 +1,21 @@
+﻿{
+    "base":  "https://style-me-five.vercel.app",
+    "ranAt":  "2026-10-20 20:53:20 -06:00",
+    "tests":  [
+                  {
+                      "id":  "A1",
+                      "name":  "A/B assignment: a 20,000-visitor draw splits within 2 points of even, the two experiments are independent, a visitor is sticky, and the summary refuses to name a winner below the threshold",
+                      "pass":  true,
+                      "details":  {
+                                      "n":  20000,
+                                      "headlineASplit":  50.3,
+                                      "ctaASplit":  49.7,
+                                      "agreement":  50.2,
+                                      "sticky":  true,
+                                      "fair":  true,
+                                      "independent":  true,
+                                      "refusesBelowThreshold":  true
+                                  }
+                  }
+              ]
+}
