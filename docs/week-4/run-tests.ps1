@@ -241,6 +241,18 @@ JSON.stringify((() => {
   $variantsMatch = (@($mine | Where-Object { $_.experiment -eq 'headline' -and $_.variant -ne $seen.headline }).Count -eq 0) -and
                    (@($mine | Where-Object { $_.experiment -eq 'cta' -and $_.variant -ne $seen.cta }).Count -eq 0)
 
+  # The same visitor comes back twice and clicks again. The row count
+  # must not move. This check exists because it did move: the first
+  # version de-duplicated in a variable, which a reload wipes, so one
+  # visitor opening the page six times counted as six impressions and
+  # every rate read low.
+  Go '/'; Start-Sleep -Milliseconds 700
+  Go '/'; Start-Sleep -Milliseconds 700
+  [void](Js 'document.querySelector("#landCta").click(); "clicked"')
+  Start-Sleep -Milliseconds 2000
+  $after = (Js ("window.__t.eventsFor(" + ($visitor | ConvertTo-Json) + ")")) | ConvertFrom-Json
+  $stableAfterReload = (@($after).Count -eq @($mine).Count)
+
   # what the data we have actually supports, rather than what it hints at
   $read = (Js @'
 (async () => {
@@ -256,10 +268,11 @@ JSON.stringify((() => {
 })()
 '@) | ConvertFrom-Json
   $honest = (@($read | Where-Object { $_.enough -eq $false -and $_.winner -ne $null }).Count -eq 0)
-  $passA2 = $hasImpressions -and $hasConversions -and $variantsMatch -and $honest
-  Record 'A2' 'A/B end to end on the live site: a fresh visitor records one impression per experiment, the call to action records a conversion, the stored variants match what was shown, and no winner is named on this sample' $passA2 ([ordered]@{
+  $passA2 = $hasImpressions -and $hasConversions -and $variantsMatch -and $stableAfterReload -and $honest
+  Record 'A2' 'A/B end to end on the live site: a fresh visitor records one impression per experiment, the call to action records a conversion, two reloads and a second click add nothing, the stored variants match what was shown, and no winner is named on this sample' $passA2 ([ordered]@{
     visitor = $visitor; shown = $seen; rowsForThisVisitor = $mine
     impressionsOk = $hasImpressions; conversionsOk = $hasConversions; variantsMatch = $variantsMatch
+    rowsAfterTwoReloadsAndASecondClick = @($after).Count; stableAfterReload = $stableAfterReload
     honestRead = $read })
   } catch { Record 'A2' 'A/B end to end on the live site' $false @{ error = $_.Exception.Message } }
 
