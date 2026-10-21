@@ -27,12 +27,41 @@ function Inline([string]$s) {
   return $s
 }
 
+function Figure([string]$b64, [string]$caption) {
+  return '<figure class="shot"><img src="data:image/png;base64,' + $b64 + '" alt="' + ((Esc $caption) -replace '"', '&quot;') +
+    '"><figcaption>' + (Inline $caption) + '</figcaption></figure>'
+}
+
 function Img([string]$file, [string]$caption) {
   $path = Join-Path $here $file
   if (-not (Test-Path $path)) { return '<p class="missing">Missing image: ' + (Esc $file) + '</p>' }
-  $b64 = [Convert]::ToBase64String([IO.File]::ReadAllBytes($path))
-  return '<figure class="shot"><img src="data:image/png;base64,' + $b64 + '" alt="' + ((Esc $caption) -replace '"', '&quot;') +
-    '"><figcaption>' + (Inline $caption) + '</figcaption></figure>'
+  return Figure ([Convert]::ToBase64String([IO.File]::ReadAllBytes($path))) $caption
+}
+
+# A full-page screenshot is a bad fit for a page. The print stylesheet caps a
+# figure at the height of the page, so a 1280 x 5214 capture was being drawn
+# 159 px wide - every word in it unreadable, while the check that produced it
+# reported PASS. Anything taller than $maxRatio times its width is cropped to
+# its first screenful, and the caption says so and gives the real height.
+Add-Type -AssemblyName System.Drawing
+function ImgTop([string]$file, [double]$maxRatio, [string]$caption) {
+  $path = Join-Path $here $file
+  if (-not (Test-Path $path)) { return '<p class="missing">Missing image: ' + (Esc $file) + '</p>' }
+  $src = [Drawing.Image]::FromFile($path)
+  $w = $src.Width; $h = $src.Height
+  $keep = [int][Math]::Round($w * $maxRatio)
+  if ($h -le $keep) { $src.Dispose(); return Img $file $caption }
+  $bmp = New-Object Drawing.Bitmap($w, $keep)
+  $g = [Drawing.Graphics]::FromImage($bmp)
+  $rect = New-Object Drawing.Rectangle(0, 0, $w, $keep)
+  $g.DrawImage($src, $rect, $rect, [Drawing.GraphicsUnit]::Pixel)
+  $g.Dispose(); $src.Dispose()
+  $ms = New-Object IO.MemoryStream
+  $bmp.Save($ms, [Drawing.Imaging.ImageFormat]::Png)
+  $bmp.Dispose()
+  $b64 = [Convert]::ToBase64String($ms.ToArray()); $ms.Dispose()
+  return Figure $b64 ($caption + ' Cropped to the first ' + $keep + ' px of a ' + $w + ' x ' + $h +
+    ' capture, so that it is readable on a page; the whole file is in the repository.')
 }
 
 # A small markdown reader: enough for these documents. Lines are grouped
@@ -155,6 +184,21 @@ $packet = ConvertFrom-Md 'build-discipline-packet.md'
 $mock = Img 'ux-mockup.png' 'Wireframe of the landing page and `/marketing`, drawn as HTML and rendered to PNG by headless Edge.'
 $packet = $packet -replace '(<h2>[^<]*UX Concept[^<]*</h2>)', ('$1' + $mock.Replace('$', '$$'))
 
+# The test document names its screenshots; a reader holding a PDF cannot
+# open them. They are the evidence, so they go in the page itself, under
+# the heading that lists them.
+$tests = ConvertFrom-Md 'test-evidence.md'
+$shots = (Img 'evidence\landing-desktop-full.png' 'The landing page at 1280 px, as test A2 found it. The headline and the call to action are whichever variant this visitor was assigned.'),
+         (ImgTop 'evidence\landing-mobile-375-full.png' 2.2 'The same page at 375 px. The drawn figure moves above the copy rather than behind it — see defect 2.'),
+         (ImgTop 'evidence\marketing-desktop-full.png' 0.8 'The top of `/marketing`: the brand system, read from the live stylesheet.'),
+         (Img 'evidence\brand-swatches.png' 'The brand swatches. Each one is read from the live stylesheet with `getComputedStyle`; test S1 compares all nine against the CSS variables they name.'),
+         (Img 'evidence\content-cards.png' 'Ten posts and three scripts, each with its channel and a length counted at render time.'),
+         (Img 'evidence\calendar.png' 'The fourteen-day calendar, including the two rest days it declares rather than hides.'),
+         (Img 'evidence\asset-saved.png' 'Saving a script to `marketing_assets`, with the row id the database returned.'),
+         (Img 'evidence\assets-after-reload.png' 'The same page after a reload: the row is read back from Supabase, not from the browser.')
+$shotBlock = '<div class="shots">' + ($shots -join '') + '</div>'
+$tests = $tests -replace '(<h3>Screenshots</h3>)', ('$1' + $shotBlock.Replace('$', '$$'))
+
 $sections = @(
   $packet,
   '<div class="brk"></div><h1>Build evidence — commits and deployments</h1>' +
@@ -163,7 +207,7 @@ $sections = @(
     '<h2>Vercel deployments</h2><p>Recorded on GitHub by the Vercel integration; times are local, like the commits.' + $deployNote + '</p>' +
     '<table><tr><th>Commit</th><th>Created</th><th>Environment</th><th>Status</th><th>By</th></tr>' + $deployRows + '</table>',
   '<div class="brk"></div>' + (ConvertFrom-Md 'supabase-evidence.md'),
-  '<div class="brk"></div>' + (ConvertFrom-Md 'test-evidence.md'),
+  '<div class="brk"></div>' + $tests,
   '<div class="brk"></div>' + (ConvertFrom-Md 'prompt-log.md'),
   '<div class="brk"></div>' + (ConvertFrom-Md 'human-decision-note.md')
 )
@@ -192,7 +236,7 @@ $cover = @"
 <tr><td>Coding-agent prompt log (min. 5)</td><td>Section 5</td></tr>
 <tr><td>Brand system, persona, 10 posts, 3 scripts, 14-day calendar</td><td>Live on <code>/marketing</code></td></tr>
 <tr><td>Upgraded homepage and the live A/B headline test</td><td>Live on <code>/</code></td></tr>
-<tr><td>Human decision note</td><td>Section 7</td></tr>
+<tr><td>Human decision note</td><td>Section 6</td></tr>
 </table>
 </section>
 "@

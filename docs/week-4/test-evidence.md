@@ -173,6 +173,20 @@ the evidence of a counting bug from the table it corrupted would be its own
 kind of dishonesty, and the read on `/marketing` refuses to name a winner at
 this sample size anyway.
 
+
+### 8 — The evidence was in the PDF and unreadable
+
+The screenshots the suite produces were named in this document but not shown
+in it, so a reader holding the PDF could not see any of them. Embedding them
+exposed the second half of the problem: the print stylesheet caps a figure at
+the height of a page, so the full-page capture of `/marketing` — 1280 by 5214
+pixels — was drawn **159 px wide**, and the phone capture 132 px wide. Every
+word in both was illegible, in a document whose whole purpose is to be read.
+
+The builder now crops a capture taller than a set ratio to its first screenful
+and says so in the caption, with the real dimensions. Found the same way as
+defects 2 and 3: by looking at the output instead of at the exit code.
+
 ---
 
 ## Iteration log
@@ -187,6 +201,7 @@ this sample size anyway.
 | 6 | Clipboard comparison normalises line endings | CRLF is not a difference in the text | `ffac951` |
 | 7 | Impression de-duplication moved to localStorage | One visitor was counting as sixteen | `413a084` |
 | 8 | A2 reloads twice and clicks again, asserting the count holds | Defect 7 was found by reading the table, not by a test | `3ca6393` |
+| 9 | Screenshots embedded in the PDF; tall captures cropped to one screenful | They were named but not shown, then shown 159 px wide | *(this commit)* |
 
 ---
 
@@ -198,8 +213,8 @@ odd, and produces a tidy table of numbers that happen to be meaningless. It was
 caught because A1 was written to test the *assignment* rather than the feature
 — twenty thousand draws before a single real visitor.
 
-The second lesson is Week 3's, from the other direction: four of the seven
-defects were in what a person sees — three on the page, one in the table — and
-none of them were caught by arithmetic. Defect 7 is the sharpest. Every check
+The second lesson is Week 3's, from the other direction: five of the eight
+defects were in what a person sees — three on the page, one in the table, one
+in the PDF itself — and none of them were caught by arithmetic. Defect 7 is the sharpest. Every check
 was green and the data underneath was already wrong, because the suite had
 tested that rows appear. Nobody had tested how many.
