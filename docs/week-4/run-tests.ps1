@@ -132,7 +132,13 @@ window.__t = {
     let clip = null;
     try { clip = await navigator.clipboard.readText(); } catch (e) { clip = 'unreadable: ' + e.message; }
     const expected = SM.MARKETING.posts.concat(SM.MARKETING.scripts).filter(a => a.id === id)[0].body;
-    return JSON.stringify({ id, buttonSays: btn.textContent, matches: clip === expected, clipLength: (clip || '').length, expectedLength: expected.length });
+    /* Windows hands every newline back as CRLF, so a post with one blank
+       line comes back two characters longer than it went in. Compare the
+       text, not the platform's line endings. */
+    const norm = s => String(s === null || s === undefined ? '' : s).split('\r\n').join('\n');
+    return JSON.stringify({ id, buttonSays: btn.textContent,
+      matches: norm(clip) === norm(expected),
+      clipLength: (clip || '').length, expectedLength: expected.length });
   },
   savedReady() { const d = document.querySelector('#mkSaved'); return d && !/Loading/.test(d.innerText) && d.innerText.trim().length > 18; },
   savedTotal() { const s = document.querySelector('#mkSaved .core-total strong'); return s ? +s.textContent : 0; },
