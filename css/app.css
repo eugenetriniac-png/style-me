@@ -1840,3 +1840,151 @@ input[type=range]::-moz-range-thumb {
 .ps-figures { grid-template-columns: repeat(auto-fit, minmax(168px, 1fr)); }
 .ps-table { min-width: 520px; }
 .ps-fig-n { font-size: clamp(20px, 2.8vw, 26px); }
+
+/* ============================================================
+   Landing page (the upgraded welcome screen) — Week 4
+   ============================================================ */
+.land-headline {
+  font-family: var(--display);
+  font-size: clamp(30px, 7.2vw, 46px);
+  font-weight: 800;
+  letter-spacing: -.035em;
+  line-height: 1.05;
+  margin: 6px 0 12px;
+  text-wrap: balance;
+}
+.land-proofs { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin: 18px 0 22px; }
+.land-proof { padding: 12px 13px; border: 1px solid var(--line); border-radius: var(--r); background: var(--ink-1); }
+.land-proof b { display: block; font-family: var(--display); font-size: 21px; font-weight: 800; letter-spacing: -.02em; }
+.land-proof span { display: block; margin: 4px 0 6px; font-size: 12px; color: var(--bone-2); line-height: 1.45; }
+.land-src { font-family: var(--mono); font-size: 10.5px; color: var(--klein-2); border-bottom: 1px solid rgba(91, 86, 245, .45); }
+.land-src:hover { color: var(--bone); border-bottom-color: var(--bone); }
+.land-tiers { display: flex; flex-wrap: wrap; gap: 8px; margin: 22px 0 10px; }
+.land-tier {
+  flex: 1 1 110px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--ink-1);
+}
+.land-tier:hover { border-color: var(--klein-2); }
+.land-tier strong { display: block; font-size: 13.5px; }
+.land-tier em { display: block; font-style: normal; font-family: var(--display); font-weight: 800; font-size: 17px; margin: 2px 0; }
+.land-tier span { display: block; font-size: 10.5px; color: var(--ash); line-height: 1.35; }
+.land-secondary { margin-top: 6px; font-size: 13px; color: var(--ash); }
+
+/* ============================================================
+   Marketing — /marketing
+   ============================================================ */
+.mk-swatches { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 20px; }
+.mk-sw { padding: 10px; border: 1px solid var(--line); border-radius: var(--r-sm); background: var(--ink-1); }
+.mk-sw i { display: block; height: 44px; border-radius: var(--r-sm); border: 1px solid var(--line-2); margin-bottom: 8px; }
+.mk-sw-name { display: block; font-size: 13px; font-weight: 600; }
+.mk-sw-var, .mk-sw-val { display: block; font-size: 10.5px; color: var(--ash); }
+.mk-sw em { display: block; margin-top: 5px; font-style: normal; font-size: 11px; color: var(--ash-2); line-height: 1.4; }
+
+.mk-types { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-bottom: 20px; }
+.mk-type { padding: 13px 15px; border: 1px solid var(--line); border-radius: var(--r); background: var(--ink-1); }
+.mk-type-sample { font-size: 19px; line-height: 1.25; margin-bottom: 8px; overflow-wrap: anywhere; }
+.mk-type-meta { font-size: 10.5px; color: var(--ash); }
+.mk-type-use { margin-top: 6px; font-size: 12px; color: var(--bone-2); line-height: 1.45; }
+
+.mk-voice { list-style: none; margin: 0 0 14px; padding: 0; max-width: 70ch; }
+.mk-voice li { padding: 10px 0; border-top: 1px solid var(--line); }
+.mk-voice strong { display: block; font-size: 14px; }
+.mk-voice span { display: block; margin-top: 3px; font-size: 12.5px; color: var(--ash); line-height: 1.5; }
+
+.mk-who { color: var(--bone-2); margin-bottom: 14px; }
+.mk-who span { display: block; font-size: 11px; color: var(--ash-2); margin-top: 3px; }
+.mk-lines { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; }
+.mk-line { padding: 13px 15px; border: 1px solid var(--line); border-radius: var(--r); background: var(--ink-1); }
+.mk-kind { font-family: var(--mono); font-size: 10px; padding: 2px 7px; border-radius: 5px; background: rgba(58, 52, 232, .25); color: var(--bone-2); }
+.mk-inference .mk-kind { background: rgba(242, 239, 233, .1); color: var(--ash); }
+.mk-fr { margin: 10px 0 4px; padding-left: 10px; border-left: 2px solid var(--klein-2); font-size: 13px; color: var(--bone); line-height: 1.5; }
+.mk-en { margin: 0 0 8px; padding-left: 10px; font-size: 12.5px; color: var(--ash); line-height: 1.5; }
+.mk-implies { font-size: 12.5px; color: var(--bone-2); line-height: 1.5; }
+
+.mk-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+.mk-card, .mk-script { position: relative; padding: 14px 15px 42px; border: 1px solid var(--line); border-radius: var(--r); background: var(--ink-1); }
+.mk-meta { display: flex; justify-content: space-between; gap: 10px; font-size: 10.5px; color: var(--ash); margin-bottom: 8px; }
+.mk-body { font-size: 13px; color: var(--bone-2); line-height: 1.55; white-space: pre-line; }
+.mk-copy {
+  position: absolute; right: 12px; bottom: 11px;
+  padding: 4px 10px;
+  border: 1px solid var(--line-2);
+  border-radius: 6px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--bone-2);
+}
+.mk-copy:hover { border-color: var(--klein-2); color: var(--bone); }
+.mk-copy.is-copied { background: var(--klein); border-color: var(--klein); color: #fff; }
+.mk-scripts { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 12px; }
+.mk-script-title { font-family: var(--display); font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+.mk-script .rs-table { min-width: 300px; font-size: 12px; }
+.mk-line-say { color: var(--bone); }
+
+.mk-cal { display: grid; grid-template-columns: repeat(auto-fit, minmax(132px, 1fr)); gap: 8px; }
+.mk-day { padding: 10px; border: 1px solid var(--line); border-radius: var(--r-sm); background: var(--ink-1); }
+.mk-rest { background: transparent; border-style: dashed; }
+.mk-day-n { display: block; font-size: 10px; color: var(--ash-2); }
+.mk-day-ch { display: block; margin-top: 4px; font-size: 12px; font-weight: 600; }
+.mk-day-asset { display: block; margin-top: 3px; font-size: 11px; color: var(--bone-2); line-height: 1.4; }
+.mk-day em { display: block; margin-top: 5px; font-style: normal; font-size: 10.5px; color: var(--ash-2); line-height: 1.4; }
+
+.mk-exp { margin-bottom: 20px; }
+.mk-arms { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.mk-arm { padding: 14px 15px; border: 1px solid var(--line); border-radius: var(--r); background: var(--ink-1); }
+.mk-arm h4 { font-size: 13.5px; font-weight: 600; line-height: 1.4; }
+.mk-angle { margin-top: 4px; font-size: 11.5px; color: var(--ash-2); }
+.mk-arm-n { margin-top: 10px; font-family: var(--display); font-size: 26px; font-weight: 800; letter-spacing: -.02em; }
+.mk-arm-lab { font-size: 11px; color: var(--ash); }
+.mk-verdict { margin-top: 12px; padding: 11px 13px; border-radius: var(--r-sm); background: rgba(255, 92, 66, .14); color: #FF8A75; font-size: 13px; line-height: 1.5; }
+.mk-verdict-ok { background: var(--klein-dim); color: var(--bone-2); }
+
+.mk-form { max-width: 560px; }
+.mk-select {
+  padding: 11px 13px;
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-sm);
+  background: var(--ink-1);
+  font-size: 14px;
+  outline: none;
+}
+.mk-select:focus { border-color: var(--klein-2); }
+.mk-form textarea {
+  padding: 11px 14px;
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-sm);
+  background: var(--ink-1);
+  outline: none;
+  font-size: 14px;
+  resize: vertical;
+}
+
+/* Week 4: the welcome screen became a landing page, and the old layout
+   stopped working. The figure used to sit behind a short block of copy,
+   with a gradient scrim fading it out at the bottom. With a headline,
+   three proof points, two buttons and three tiers, the body fills the
+   viewport and the scrim hid the drawing completely — the one thing on
+   this page no competitor has. The art is now a block of its own:
+   above the copy on a phone, beside it on a desktop. */
+.welcome { justify-content: flex-start; }
+.welcome-art { position: relative; inset: auto; height: 290px; margin-top: 6px; }
+.welcome-body { background: none; }
+
+@media (min-width: 900px) {
+  .welcome {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 400px);
+    align-items: center;
+    column-gap: 40px;
+    padding-inline: 40px;
+  }
+  .welcome-body { order: 1; padding: 44px 0; }
+  .welcome-art { order: 2; height: min(74vh, 620px); margin-top: 0; }
+  /* order defaults to 0, so a footer with no order jumps ahead of the
+     two items that have one - it landed at the top of the page. */
+  .welcome .foot { order: 3; grid-column: 1 / -1; }
+  .land-headline { font-size: clamp(30px, 3.4vw, 40px); }
+}

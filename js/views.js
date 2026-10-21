@@ -50,17 +50,59 @@ window.SM = window.SM || {};
         return '<div class="welcome-fig f' + i + '">' + SM.fit.render(outfit, look) + '</div>';
       }).join('');
 
+      /* Week 4: the welcome screen is the landing page. The headline
+         and the call to action are both under test — whichever
+         variant this visitor was assigned is what they see, every
+         time, and the pair is recorded with the impression. */
+      var m = SM.MARKETING;
+      var headline = SM.ab.assign('headline');
+      var cta = SM.ab.assign('cta');
+
+      var proofs = m.landing.proofs.map(function (p) {
+        var link = p.internal
+          ? '<a class="land-src" href="' + esc(p.source) + '">' + esc(p.sourceName) + '</a>'
+          : '<a class="land-src" href="' + esc(p.source) + '" target="_blank" rel="noopener noreferrer">' +
+            esc(p.sourceName) + ' ↗</a>';
+        return '<div class="land-proof"><b>' + esc(p.figure) + '</b>' +
+          '<span>' + esc(p.claim) + '</span>' + link + '</div>';
+      }).join('');
+
+      var tiers = SM.PRICING.tiers.map(function (t) {
+        return '<a class="land-tier" href="#/pricing"><strong>' + esc(t.name) + '</strong>' +
+          '<em>' + esc(t.price === 0 ? 'Free' : psMoney(t.price)) + '</em>' +
+          '<span>' + esc(t.unit) + '</span></a>';
+      }).join('');
+
       return '<div class="welcome">' +
         '<div class="welcome-art" aria-hidden="true">' + figures + '</div>' +
         '<div class="welcome-body">' +
-          '<p class="kicker">Find what you actually wear</p>' +
-          '<h1 class="wordmark">Style<span></span>Me</h1>' +
-          '<p class="lede">Twelve questions that are barely about clothes. Then a feed of outfits built ' +
-            'for you — and you can take any of them apart, piece by piece.</p>' +
-          '<p class="welcome-meta mono">12 questions · about 3 minutes</p>' +
-          '<button class="btn btn-primary btn-lg" data-nav="#/quiz">Take the style test</button>' +
+          '<p class="kicker">Style Me</p>' +
+          '<h1 class="land-headline" data-variant="' + esc(headline.id) + '">' + esc(headline.text) + '</h1>' +
+          '<p class="lede">' + esc(m.landing.sub) + '</p>' +
+          '<div class="land-proofs">' + proofs + '</div>' +
+          '<button class="btn btn-primary btn-lg" id="landCta" data-variant="' + esc(cta.id) + '" ' +
+            'data-nav="#/core">' + esc(cta.text) + '</button>' +
           '<button class="btn btn-ghost" data-nav="#/feed">Skip and browse</button>' +
+          '<div class="land-tiers">' + tiers + '</div>' +
+          '<p class="land-secondary"><a class="docs-link" href="#/research">' + esc(m.landing.secondary) + '</a></p>' +
         '</div>' + footerHTML() + '</div>';
+    },
+
+    mount: function (root) {
+      /* One impression per visitor per page load, for both
+         experiments; the click on the call to action is the
+         conversion. Both are fire-and-forget: a failed beacon must
+         never break a landing page. */
+      SM.ab.record('headline', 'impression', '/');
+      SM.ab.record('cta', 'impression', '/');
+
+      var cta = root.querySelector('#landCta');
+      if (cta) {
+        cta.addEventListener('click', function () {
+          SM.ab.record('headline', 'conversion', '/');
+          SM.ab.record('cta', 'conversion', '/');
+        });
+      }
     }
   };
 
@@ -1053,6 +1095,7 @@ window.SM = window.SM || {};
           '<a class="menu-row" href="#/research">' + ui.icon('search') + '<span>Research desk — who else does this</span><em class="mono" id="rsWidgetCount"></em></a>' +
           '<a class="menu-row" href="#/product">' + ui.icon('bag') + '<span>Product — tiers and feature map</span><em></em></a>' +
           '<a class="menu-row" href="#/pricing">' + ui.icon('settings') + '<span>Pricing — the revenue simulator</span><em></em></a>' +
+          '<a class="menu-row" href="#/marketing">' + ui.icon('send') + '<span>Marketing — brand, content, experiments</span><em></em></a>' +
           /* Docs lives here because the welcome screen — the only other way in —
              stops being reachable the moment you finish the test. */
           '<a class="menu-row" href="#/docs">' + ui.icon('sparkle') + '<span>Docs — how this works</span><em></em></a>' +
@@ -2352,6 +2395,322 @@ window.SM = window.SM || {};
   };
 
   /* ============================================================
+     Marketing — /marketing
+
+     Week 4. The brand system reads the live CSS variables, the
+     persona is quoted from the Week 2 interview, and the A/B
+     panel reports counts rather than a winner until the numbers
+     earn one.
+     ============================================================ */
+  var mkState = { saving: false, savedId: null, kind: 'post', note: '' };
+
+  function mkBrandHTML() {
+    var swatches = SM.brand.colours().map(function (c) {
+      return '<div class="mk-sw"><i style="background:' + esc(c.value) + '"></i>' +
+        '<span class="mk-sw-name">' + esc(c.name) + '</span>' +
+        '<span class="mono mk-sw-var">' + esc(c.variable) + '</span>' +
+        '<span class="mono mk-sw-val">' + esc(c.value) + '</span>' +
+        '<em>' + esc(c.use) + '</em></div>';
+    }).join('');
+
+    var type = SM.brand.type().map(function (t) {
+      return '<div class="mk-type"><p class="mk-type-sample" style="font-family:' + esc(t.stack) + '">' +
+        esc(t.sample) + '</p>' +
+        '<p class="mono mk-type-meta">' + esc(t.variable) + ' · ' + esc(t.family) + '</p>' +
+        '<p class="mk-type-use">' + esc(t.use) + '</p></div>';
+    }).join('');
+
+    var voice = SM.brand.voice.map(function (v) {
+      return '<li><strong>' + esc(v.rule) + '</strong><span>' + esc(v.why) + '</span></li>';
+    }).join('');
+
+    return '<div class="mk-swatches">' + swatches + '</div>' +
+      '<div class="mk-types">' + type + '</div>' +
+      '<ul class="mk-voice">' + voice + '</ul>' +
+      '<p class="disclaimer">Every swatch above is read from <code>getComputedStyle</code> on the live stylesheet ' +
+      'at render time. No hex code is typed into the brand file, so this page cannot drift from the product.</p>';
+  }
+
+  function mkPersonaHTML() {
+    var p = SM.MARKETING.persona;
+    var lines = p.lines.map(function (l) {
+      return '<div class="mk-line mk-' + esc(l.kind) + '">' +
+        '<span class="mk-kind">' + esc(l.kind) + '</span>' +
+        (l.fr ? '<p class="mk-fr">' + esc(l.fr) + '</p>' : '') +
+        '<p class="mk-en">' + esc(l.en) + '</p>' +
+        '<p class="mk-implies">→ ' + esc(l.implies) + '</p></div>';
+    }).join('');
+    return '<p class="mk-who">' + esc(p.who) + '<span class="mono">' + esc(p.where) + '</span></p>' +
+      '<div class="mk-lines">' + lines + '</div>';
+  }
+
+  function mkPostHTML(post) {
+    return '<article class="mk-card" data-mk-asset="' + esc(post.id) + '">' +
+      '<p class="mk-meta mono"><span>' + esc(post.channel) + ' · ' + esc(post.format) + '</span>' +
+        '<span>' + post.body.length + ' ch · variant ' + esc(post.variant).toUpperCase() + '</span></p>' +
+      '<p class="mk-body">' + esc(post.body) + '</p>' +
+      '<button class="mk-copy" type="button" data-mk-copy="' + esc(post.id) + '">copy</button>' +
+      '</article>';
+  }
+
+  function mkScriptHTML(s) {
+    var beats = s.beats.map(function (b) {
+      return '<tr><th scope="row" class="mono">' + esc(b.at) + '</th>' +
+        '<td>' + esc(b.shot) + '</td><td class="mk-line-say">“' + esc(b.line) + '”</td></tr>';
+    }).join('');
+    return '<article class="mk-script" data-mk-asset="' + esc(s.id) + '">' +
+      '<p class="mk-meta mono"><span>' + esc(s.platform) + ' · ' + s.seconds + 's</span>' +
+        '<span>' + s.beats.length + ' beats</span></p>' +
+      '<h3 class="mk-script-title">' + esc(s.title) + '</h3>' +
+      '<div class="rs-scroll"><table class="rs-table ps-table"><tbody>' + beats + '</tbody></table></div>' +
+      '<button class="mk-copy" type="button" data-mk-copy="' + esc(s.id) + '">copy script</button>' +
+      '</article>';
+  }
+
+  function mkCalendarHTML() {
+    return '<div class="mk-cal">' + SM.MARKETING.calendar.map(function (d) {
+      var asset = mkAssetById(d.asset);
+      return '<div class="mk-day' + (d.channel === 'none' ? ' mk-rest' : '') + '">' +
+        '<span class="mono mk-day-n">D' + d.day + ' · ' + esc(d.weekday) + '</span>' +
+        '<span class="mk-day-ch">' + esc(d.channel === 'none' ? 'rest' : d.channel) + '</span>' +
+        (asset ? '<span class="mk-day-asset">' + esc(asset.title || asset.body.slice(0, 48) + '…') + '</span>' : '') +
+        '<em>' + esc(d.note) + '</em></div>';
+    }).join('') + '</div>';
+  }
+
+  function mkAssetById(id) {
+    if (!id) return null;
+    var m = SM.MARKETING;
+    return m.posts.filter(function (p) { return p.id === id; })[0] ||
+           m.scripts.filter(function (s) { return s.id === id; })[0] || null;
+  }
+
+  /* The text a copy button puts on the clipboard: exactly what would
+     be published, and nothing the page added around it. */
+  function mkAssetText(id) {
+    var a = mkAssetById(id);
+    if (!a) return '';
+    if (a.body) return a.body;
+    return a.title + '\n\n' + a.beats.map(function (b) {
+      return b.at + '  [' + b.shot + ']  ' + b.line;
+    }).join('\n');
+  }
+
+  function mkAbPanelHTML(summaries) {
+    if (!summaries) return '<p class="core-dash-note">Loading the experiment…</p>';
+    if (summaries.error) {
+      return '<p class="core-dash-note">Could not read the experiment: ' + esc(summaries.error) + '</p>' +
+        '<button class="btn sm" type="button" data-mk-retry="1">Try again</button>';
+    }
+    return summaries.map(function (s) {
+      var arms = s.arms.map(function (a) {
+        return '<div class="mk-arm">' +
+          '<h4>' + esc(a.id.toUpperCase()) + ' · “' + esc(a.text) + '”</h4>' +
+          '<p class="mk-angle">' + esc(a.angle) + '</p>' +
+          '<p class="mk-arm-n">' + a.impressions + ' / ' + a.conversions + '</p>' +
+          '<p class="mk-arm-lab mono">impressions / conversions' +
+            (a.rate === null ? '' : ' · ' + a.rate + '%') + '</p></div>';
+      }).join('');
+      return '<section class="mk-exp"><h3 class="sec-title">' + esc(s.experiment) + ' — ' + esc(s.question) + '</h3>' +
+        '<div class="mk-arms">' + arms + '</div>' +
+        '<p class="mk-verdict' + (s.enough ? ' mk-verdict-ok' : '') + '">' + esc(s.verdict) + '</p></section>';
+    }).join('');
+  }
+
+  var MK_COLUMNS = 'id,created_at,kind,channel,title,variant';
+
+  function mkLoadSaved(root) {
+    var el = root.querySelector('#mkSaved');
+    if (!el) return;
+    var head = '<div class="core-dash-head"><h2 class="sec-title">Saved marketing assets</h2>';
+    if (!SM.db.configured()) {
+      el.innerHTML = head + '</div><p class="core-dash-note">Saved assets will appear here once the database is connected.</p>';
+      return;
+    }
+    el.innerHTML = head + '</div><p class="core-dash-note">Loading from Supabase…</p>';
+    SM.db.list('marketing_assets', { select: MK_COLUMNS, limit: 5 }).then(function (res) {
+      if (!el.isConnected) return;
+      if (!res.rows.length) {
+        el.innerHTML = head + '</div><p class="core-dash-note">No asset saved yet.</p>';
+        return;
+      }
+      el.innerHTML = head + '<p class="core-total"><strong>' + res.total + '</strong> <span class="kicker">in marketing_assets</span></p></div>' +
+        '<div class="core-mini-row">' + res.rows.map(function (r) {
+          return '<div class="core-mini' + (r.id === mkState.savedId ? ' is-new' : '') + '">' +
+            '<span class="kicker">' + esc(ui.timeAgo(Date.parse(r.created_at))) + ' · ' + esc(r.kind) + '</span>' +
+            '<strong>' + esc(r.channel) + '</strong>' +
+            '<div class="core-signals"><span class="core-sig">' + esc(r.title || '—') + '</span>' +
+            '<span class="core-sig">variant ' + esc(String(r.variant).toUpperCase()) + '</span></div></div>';
+        }).join('') + '</div>' +
+        '<p class="disclaimer">The five most recent, read live from <code>marketing_assets</code>. The note column is ' +
+        'not among those the public key may read.</p>';
+    }).catch(function (err) {
+      if (!el.isConnected) return;
+      el.innerHTML = head + '</div><p class="core-dash-note">Could not reach the database: ' + esc(err.message) + '</p>' +
+        '<button class="btn sm" type="button" data-mk-retry="1">Try again</button>';
+    });
+  }
+
+  function mkLoadExperiments(root) {
+    var el = root.querySelector('#mkAb');
+    if (!el) return;
+    if (!SM.db.configured()) {
+      el.innerHTML = '<p class="core-dash-note">The experiment needs the database to count anything.</p>';
+      return;
+    }
+    SM.db.list('ab_events', { select: 'experiment,variant,event', limit: 1000, order: 'created_at.desc' })
+      .then(function (res) {
+        if (!el.isConnected) return;
+        el.innerHTML = mkAbPanelHTML(SM.MARKETING.experiments.map(function (e) {
+          return SM.ab.summarise(res.rows, e.id);
+        }));
+      })
+      .catch(function (err) {
+        if (!el.isConnected) return;
+        el.innerHTML = mkAbPanelHTML({ error: err.message });
+      });
+  }
+
+  function mkSave(root) {
+    var btn = root.querySelector('#mkSave');
+    var note = root.querySelector('#mkSaveMsg');
+    if (mkState.saving || mkState.savedId) return;
+    if (!SM.db.configured()) {
+      note.className = 'core-save-msg err';
+      note.textContent = 'Saving is off on this deployment: the database is not configured.';
+      return;
+    }
+    var id = root.querySelector('#mkAsset').value;
+    var asset = mkAssetById(id);
+    if (!asset) { note.className = 'core-save-msg err'; note.textContent = 'Pick an asset first.'; return; }
+
+    mkState.saving = true;
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+
+    SM.db.insert('marketing_assets', {
+      kind: asset.beats ? 'script' : 'post',
+      channel: asset.channel || asset.platform,
+      title: asset.title || (asset.channel + ' · ' + asset.format),
+      body: mkAssetText(id).slice(0, 2000),
+      variant: asset.variant || 'none',
+      note: String(mkState.note || '').trim() || null
+    }).then(function (saved) {
+      mkState.saving = false;
+      mkState.savedId = saved.id;
+      if (!btn.isConnected) return;
+      btn.innerHTML = ui.icon('check') + 'Saved';
+      note.className = 'core-save-msg';
+      note.textContent = 'Saved to Supabase · row ' + saved.id.slice(0, 8);
+      ui.toast('Asset saved');
+      mkLoadSaved(root);
+    }).catch(function (err) {
+      mkState.saving = false;
+      if (!btn.isConnected) return;
+      btn.disabled = false;
+      btn.textContent = 'Save this asset';
+      note.className = 'core-save-msg err';
+      note.textContent = 'Could not save: ' + err.message + '. Nothing was lost — try again.';
+    });
+  }
+
+  V.marketing = {
+    chrome: true,
+    render: function () {
+      var m = SM.MARKETING;
+      var options = m.posts.map(function (p) {
+        return '<option value="' + esc(p.id) + '">' + esc(p.channel + ' · ' + p.body.slice(0, 40) + '…') + '</option>';
+      }).concat(m.scripts.map(function (s) {
+        return '<option value="' + esc(s.id) + '">' + esc(s.platform + ' · ' + s.title) + '</option>';
+      })).join('');
+
+      return '<div class="research">' + ui.header('Marketing', { kicker: 'Week 4 · brand, persona, content, experiment' }) +
+        '<p class="core-intro pad">The engine behind the landing page: the brand read from the stylesheet, the ' +
+          'persona quoted from the person we actually interviewed, fourteen days of content you can copy, and two ' +
+          'live A/B tests that are not allowed to declare a winner until the numbers deserve one.</p>' +
+
+        '<section class="rs-sec pad"><h2 class="sec-title">Brand system</h2>' + mkBrandHTML() + '</section>' +
+
+        '<section class="rs-sec pad"><h2 class="sec-title">Persona — quoted, not invented</h2>' +
+          mkPersonaHTML() + '</section>' +
+
+        '<section class="rs-sec pad"><h2 class="sec-title">The two experiments, live</h2>' +
+          '<div id="mkAb">' + mkAbPanelHTML(null) + '</div>' +
+          '<p class="disclaimer">Recorded from the homepage: one impression per visitor per experiment, and a ' +
+          'conversion when the call to action is clicked. The assignment is sticky, so a reload does not count twice.</p>' +
+        '</section>' +
+
+        '<section class="rs-sec pad"><h2 class="sec-title">Social posts — ' + m.posts.length + '</h2>' +
+          '<div class="mk-cards">' + m.posts.map(mkPostHTML).join('') + '</div></section>' +
+
+        '<section class="rs-sec pad"><h2 class="sec-title">Video scripts — ' + m.scripts.length + '</h2>' +
+          '<div class="mk-scripts">' + m.scripts.map(mkScriptHTML).join('') + '</div></section>' +
+
+        '<section class="rs-sec pad"><h2 class="sec-title">Fourteen-day calendar</h2>' + mkCalendarHTML() + '</section>' +
+
+        '<section class="rs-sec pad"><h2 class="sec-title">Save an asset</h2>' +
+          '<form class="mk-form" id="mkForm" novalidate>' +
+            '<label class="field" for="mkAsset"><span>Asset</span>' +
+              '<select id="mkAsset" class="mk-select">' + options + '</select></label>' +
+            '<label class="field" for="mkNote"><span>Note <em>optional · stored, never shown back</em></span>' +
+              '<textarea id="mkNote" rows="2" maxlength="1200"></textarea></label>' +
+            '<button class="btn btn-primary full" id="mkSave" type="submit">Save this asset</button>' +
+            '<p class="core-save-msg" id="mkSaveMsg"></p>' +
+          '</form></section>' +
+
+        '<section class="rs-sec pad" id="mkSaved" aria-live="polite"></section>' +
+        footerHTML() + '</div>';
+    },
+
+    mount: function (root) {
+      root.querySelector('#mkNote').addEventListener('input', function (e) { mkState.note = e.target.value; });
+
+      root.addEventListener('click', function (e) {
+        var copy = e.target.closest('[data-mk-copy]');
+        if (copy) {
+          var text = mkAssetText(copy.getAttribute('data-mk-copy'));
+          mkCopy(text, copy);
+          return;
+        }
+        if (e.target.closest('[data-mk-retry]')) { mkLoadSaved(root); mkLoadExperiments(root); }
+      });
+
+      root.querySelector('#mkForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        mkSave(root);
+      });
+
+      mkLoadExperiments(root);
+      mkLoadSaved(root);
+    }
+  };
+
+  /* Clipboard with a fallback: the modern API needs a secure context
+     and permission, and this page gets opened on phones. */
+  function mkCopy(text, button) {
+    function done(ok) {
+      button.textContent = ok ? 'copied' : 'press ⌘/Ctrl+C';
+      button.classList.toggle('is-copied', ok);
+      setTimeout(function () { button.textContent = button.getAttribute('data-mk-copy').charAt(0) === 's' ? 'copy script' : 'copy'; button.classList.remove('is-copied'); }, 1800);
+    }
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(function () { done(true); }, function () { done(false); });
+      return;
+    }
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', '');
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    var ok = false;
+    try { ok = document.execCommand('copy'); } catch (err) { ok = false; }
+    document.body.removeChild(ta);
+    done(ok);
+  }
+
+  /* ============================================================
      Docs — what this is, what is real, and what comes next
      ============================================================ */
   var ROADMAP = [
@@ -2450,6 +2809,7 @@ window.SM = window.SM || {};
       '<a href="#/research"><span>Research</span></a>' +
       '<a href="#/product"><span>Product</span></a>' +
       '<a href="#/pricing"><span>Pricing</span></a>' +
+      '<a href="#/marketing"><span>Marketing</span></a>' +
       '<a href="#/feed"><span>Feed</span></a></p>' +
       '<p class="foot-note mono">Demo catalogue — invented prices, no payment taken.</p>' +
       '</footer>';

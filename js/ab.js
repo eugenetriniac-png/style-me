@@ -51,12 +51,20 @@ window.SM = window.SM || {};
     }
   }
 
-  /* FNV-1a over visitor + experiment. Deterministic, so the same
-     visitor always lands in the same arm, and salted by the
-     experiment id, so the two draws do not move together. */
+  /* FNV-1a over visitor + experiment, then an avalanche step.
+     The avalanche is not decoration. FNV's multiplier is odd, so
+     multiplication never changes the lowest bit: `hash(s) % 2` is
+     nothing but the parity of the character codes. Both experiment
+     names happened to share that parity, which made the headline
+     draw and the CTA draw identical for every visitor — two
+     experiments that were secretly one coin. Mixing the high bits
+     down before the modulo fixes it, and test A1 measures it. */
   function hash(s) {
     var h = 2166136261;
     for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
+    h ^= h >>> 16; h = Math.imul(h, 2246822507);
+    h ^= h >>> 13; h = Math.imul(h, 3266489909);
+    h ^= h >>> 16;
     return h >>> 0;
   }
 

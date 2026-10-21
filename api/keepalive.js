@@ -24,7 +24,7 @@ module.exports = async function handler(req, res) {
   const base = process.env.SUPABASE_URL || URL_DEFAULT;
   const key = process.env.SUPABASE_PUBLISHABLE_KEY || KEY_DEFAULT;
 
-  const tables = ['core_outputs', 'research_records'];
+  const tables = ['core_outputs', 'research_records', 'pricing_scenarios', 'marketing_assets', 'ab_events'];
   const checked = {};
   let ok = true;
 
