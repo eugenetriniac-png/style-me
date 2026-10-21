@@ -84,19 +84,43 @@ window.SM = window.SM || {};
   }
 
   /* ---------- recording ------------------------------------------
-     One impression per visitor per experiment per page load is
-     enough; a second one would inflate the denominator and make
-     every rate look worse than it is. */
-  var seen = {};
+     One impression and one conversion per visitor per experiment,
+     **ever** — not per page load.
+
+     The first version de-duplicated in a variable, which survives
+     a click but not a reload, so one visitor opening the homepage
+     six times counted as six. The test run proved it: six
+     impressions, one visitor. With the denominator inflated, every
+     conversion rate reads lower than it is, and the two arms are
+     only comparable if both are inflated equally — which is a
+     coin-flip, not a property.
+
+     The flag lives in localStorage beside the visitor id, so the
+     denominator is "people who saw it" and the rate is "share of
+     people who acted". */
+  var SEEN_KEY = 'style-me/ab-seen';
+
+  function seenMap() {
+    try { return JSON.parse(window.localStorage.getItem(SEEN_KEY) || '{}'); }
+    catch (e) { return {}; }
+  }
+
+  function markSeen(key) {
+    try {
+      var m = seenMap();
+      m[key] = 1;
+      window.localStorage.setItem(SEEN_KEY, JSON.stringify(m));
+    } catch (e) { /* storage blocked: the row is simply recorded again */ }
+  }
+
+  function alreadySeen(key) { return !!seenMap()[key]; }
 
   function record(experimentId, eventName, surface) {
     var variant = assign(experimentId);
     if (!variant) return Promise.resolve(null);
     var key = experimentId + ':' + eventName;
-    if (eventName === 'impression') {
-      if (seen[key]) return Promise.resolve(null);
-      seen[key] = true;
-    }
+    if (alreadySeen(key)) return Promise.resolve(null);
+    markSeen(key);
     if (!SM.db.configured()) return Promise.resolve(null);
     return SM.db.insert('ab_events', {
       experiment: experimentId,
