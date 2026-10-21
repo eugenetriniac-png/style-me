@@ -47,6 +47,21 @@ take a new one.
 | `GET /ab_events?select=experiment,variant,event` | 200 |
 | `DELETE /ab_events?id=eq.00000000-…` | **401** |
 
+Row level security alone would not produce that `401` on `select=note`: a
+policy decides which *rows* you may read, never which *columns*. The column
+grant does, and this is the fifth table where the two are used together.
+
+| Column grants, read back from `information_schema.column_privileges` | `anon` / `authenticated` |
+|---|---|
+| `marketing_assets` — INSERT | `kind`, `channel`, `title`, `body`, `variant`, **`note`** |
+| `marketing_assets` — SELECT | `id`, `created_at`, `kind`, `channel`, `title`, `body`, `variant` — **`note` absent** |
+| `ab_events` — INSERT | `experiment`, `variant`, `event`, `visitor`, `surface` |
+| `ab_events` — SELECT | every column, **deliberately** |
+
+`note` is the free-text field on a saved asset: write it, never read it back.
+Same rule as `input_text` in Week 1 and `notes` in Weeks 2 and 3 — anything a
+person types in their own words is insert-only through the public key.
+
 `ab_events` is the one table in this project where **every column is readable**,
 and that is deliberate. The only field that could identify anyone is `visitor`,
 which is twelve random characters generated in the browser — not a name, not an
@@ -57,4 +72,40 @@ table.
 
 ## What the tables hold
 
-*[filled in after the final test run]*
+Read back through the publishable key on 20 October, after the final test run.
+
+**`ab_events` — 24 rows, 4 visitors.**
+
+| Experiment | Impressions | Conversions |
+|---|---|---|
+| headline, variant A | 8 | 1 |
+| headline, variant B | 2 | 1 |
+| CTA, variant A | 1 | 1 |
+| CTA, variant B | 9 | 1 |
+
+Those eight and nine are not eight and nine people. **Sixteen of the
+twenty-four rows belong to one visitor**, `20q3i58295xe`, recorded before
+defect 7 was fixed: impressions were de-duplicated per page load rather than
+per visitor, and the responsive sweep loads the homepage six times. The visitor
+recorded after the fix, `g9sl9fvv8uex`, holds exactly four — two impressions
+and two conversions — and stayed at four through two reloads and a second
+click.
+
+The rows are kept. They are the clearest statement of what the defect did, and
+the page they feed refuses to name a winner at this sample size regardless:
+**1,024 impressions per arm** would be needed to detect a 5-point move off a
+20 % baseline, and the smaller arm holds 2.
+
+**`marketing_assets` — 2 rows**, both written by test S3 clicking *Save to
+Supabase* on the TikTok script *The ten-minute shirt*:
+
+| id | kind | channel | title | variant |
+|---|---|---|---|---|
+| `d0abd47f…` | script | tiktok | The ten-minute shirt | none |
+| `6437eb95…` | script | tiktok | The ten-minute shirt | none |
+
+Each run saves one row, and S3 asserts the count moves by exactly one — a
+double insert on one click is the failure this table is most likely to have.
+The stored `body` was compared field for field against the text on the page,
+newlines and timing cues included, and matched: the row holds what would be
+published, not a summary of it.

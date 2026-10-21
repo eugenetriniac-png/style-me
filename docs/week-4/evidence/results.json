@@ -1,6 +1,6 @@
 ﻿{
     "base":  "https://style-me-five.vercel.app",
-    "ranAt":  "2026-10-20 20:56:42 -06:00",
+    "ranAt":  "2026-10-20 21:55:52 -06:00",
     "tests":  [
                   {
                       "id":  "A1",
@@ -8,9 +8,9 @@
                       "pass":  true,
                       "details":  {
                                       "n":  20000,
-                                      "headlineASplit":  49.5,
-                                      "ctaASplit":  50.2,
-                                      "agreement":  49.8,
+                                      "headlineASplit":  50.6,
+                                      "ctaASplit":  49.9,
+                                      "agreement":  50.1,
                                       "sticky":  true,
                                       "fair":  true,
                                       "independent":  true,
@@ -19,43 +19,68 @@
                   },
                   {
                       "id":  "A2",
-                      "name":  "A/B end to end on the live site: a fresh visitor records one impression per experiment, the call to action records a conversion, the stored variants match what was shown, and no winner is named on this sample",
-                      "pass":  false,
+                      "name":  "A/B end to end on the live site: a fresh visitor records one impression per experiment, the call to action records a conversion, two reloads and a second click add nothing, the stored variants match what was shown, and no winner is named on this sample",
+                      "pass":  true,
                       "details":  {
-                                      "visitor":  "zbpuw2q8sgx2",
+                                      "visitor":  "g9sl9fvv8uex",
                                       "shown":  {
-                                                    "headline":  "a",
-                                                    "cta":  "b",
-                                                    "headlineText":  "Know what suits you before you pay for it.",
-                                                    "ctaText":  "See what suits you — free, no account"
+                                                    "headline":  "b",
+                                                    "cta":  "a",
+                                                    "headlineText":  "Your style already has a name. Here it is.",
+                                                    "ctaText":  "Describe your style — one sentence"
                                                 },
                                       "rowsForThisVisitor":  {
-                                                                 "code":  "PGRST205",
-                                                                 "details":  null,
-                                                                 "hint":  null,
-                                                                 "message":  "Could not find the table \u0027public.ab_events\u0027 in the schema cache"
+                                                                 "value":  [
+                                                                               {
+                                                                                   "experiment":  "headline",
+                                                                                   "variant":  "b",
+                                                                                   "event":  "impression",
+                                                                                   "surface":  "/"
+                                                                               },
+                                                                               {
+                                                                                   "experiment":  "cta",
+                                                                                   "variant":  "a",
+                                                                                   "event":  "impression",
+                                                                                   "surface":  "/"
+                                                                               },
+                                                                               {
+                                                                                   "experiment":  "headline",
+                                                                                   "variant":  "b",
+                                                                                   "event":  "conversion",
+                                                                                   "surface":  "/"
+                                                                               },
+                                                                               {
+                                                                                   "experiment":  "cta",
+                                                                                   "variant":  "a",
+                                                                                   "event":  "conversion",
+                                                                                   "surface":  "/"
+                                                                               }
+                                                                           ],
+                                                                 "Count":  4
                                                              },
-                                      "impressionsOk":  false,
-                                      "conversionsOk":  false,
+                                      "impressionsOk":  true,
+                                      "conversionsOk":  true,
                                       "variantsMatch":  true,
+                                      "rowsAfterTwoReloadsAndASecondClick":  4,
+                                      "stableAfterReload":  true,
                                       "honestRead":  {
                                                          "value":  [
                                                                        {
                                                                            "experiment":  "headline",
-                                                                           "total":  0,
-                                                                           "smallestArm":  0,
+                                                                           "total":  10,
+                                                                           "smallestArm":  2,
                                                                            "enough":  false,
                                                                            "winner":  null,
-                                                                           "verdict":  "Not enough data. 0 impressions in the smaller arm, 100 needed before this page names anything.",
+                                                                           "verdict":  "Not enough data. 2 impressions in the smaller arm, 100 needed before this page names anything.",
                                                                            "neededPerArm":  1024
                                                                        },
                                                                        {
                                                                            "experiment":  "cta",
-                                                                           "total":  0,
-                                                                           "smallestArm":  0,
+                                                                           "total":  10,
+                                                                           "smallestArm":  1,
                                                                            "enough":  false,
                                                                            "winner":  null,
-                                                                           "verdict":  "Not enough data. 0 impressions in the smaller arm, 100 needed before this page names anything.",
+                                                                           "verdict":  "Not enough data. 1 impressions in the smaller arm, 100 needed before this page names anything.",
                                                                            "neededPerArm":  1024
                                                                        }
                                                                    ],
@@ -103,15 +128,20 @@
                   {
                       "id":  "S3",
                       "name":  "Saving an asset writes one row per double click and reads back field for field, and neither surface overflows at 375, 414, 600, 768, 900 or 1280 px",
-                      "pass":  false,
+                      "pass":  true,
                       "details":  {
-                                      "saveMessage":  "Could not save: Could not find the table \u0027public.marketing_assets\u0027 in the schema cache. Nothing was lost — try again.",
-                                      "totalBefore":  0,
-                                      "totalAfter":  0,
+                                      "saveMessage":  "Saved to Supabase · row 6437eb95",
+                                      "totalBefore":  1,
+                                      "totalAfter":  2,
                                       "storedRow":  {
-
+                                                        "id":  "6437eb95-605c-4d78-811a-ec74054fff82",
+                                                        "kind":  "script",
+                                                        "channel":  "tiktok",
+                                                        "title":  "The ten-minute shirt",
+                                                        "body":  "The ten-minute shirt\n\n0:00  [Hand pulling a shirt out of a wardrobe]  This shirt was worn for ten minutes. Three years ago.\n0:05  [Mirror, half-turn, unconvinced face]  It looked right in the shop and ridiculous at home.\n0:12  [Phone screen: typing one sentence into /core]  So I typed how I actually dress into this. One sentence.\n0:22  [The card appearing: archetype, axes, the signals it read]  It named it, and showed me the words it read to get there.\n0:33  [Three outfits, swapping one garment]  Three outfits from real pieces. Swap one, the rest stays put.\n0:40  [URL on screen]  Free, no account. The link is in the bio.",
+                                                        "variant":  "none"
                                                     },
-                                      "storedAsEntered":  false,
+                                      "storedAsEntered":  true,
                                       "perWidth":  [
                                                        {
                                                            "width":  375,
@@ -180,14 +210,14 @@
                   {
                       "id":  "S4",
                       "name":  "Security: the public key cannot read note, select * or delete from marketing_assets, and cannot delete an event",
-                      "pass":  false,
+                      "pass":  true,
                       "details":  {
-                                      "assetsAllowed":  404,
-                                      "assetsNote":  404,
-                                      "assetsStar":  404,
-                                      "assetsDelete":  404,
-                                      "eventsRead":  404,
-                                      "eventsDelete":  404
+                                      "assetsAllowed":  200,
+                                      "assetsNote":  401,
+                                      "assetsStar":  401,
+                                      "assetsDelete":  401,
+                                      "eventsRead":  200,
+                                      "eventsDelete":  401
                                   }
                   }
               ]
