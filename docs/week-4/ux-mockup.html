@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<title>Marketing engine — wireframe</title>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;background:#0E0F12;color:#F2EFE9;font-family:"Segoe UI",Arial,sans-serif;width:1280px}
+  .wrap{padding:30px 40px 36px}
+  .top{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid rgba(242,239,233,.14);padding-bottom:14px}
+  .kick{font:11px Consolas,monospace;letter-spacing:.16em;text-transform:uppercase;color:#8E909B}
+  h1{margin:5px 0 0;font:800 34px "Segoe UI Black","Segoe UI",sans-serif;letter-spacing:-.03em}
+  .url{font:12.5px Consolas,monospace;color:#8E909B;border:1px dashed rgba(242,239,233,.3);padding:5px 11px;border-radius:99px}
+  .page{border:1.5px dashed rgba(242,239,233,.28);border-radius:16px;padding:20px;position:relative;margin-top:26px}
+  .tag{position:absolute;top:-11px;left:18px;background:#0E0F12;padding:0 8px;font:11px Consolas,monospace;letter-spacing:.12em;color:#5B56F5;text-transform:uppercase}
+  h2{font:700 12px "Segoe UI";letter-spacing:.14em;text-transform:uppercase;color:#CFCBC2;margin:20px 0 10px}
+  .lab{font-size:12px;color:#8E909B;margin:0 0 6px}
+  .hero{display:grid;grid-template-columns:1fr 290px;gap:28px;align-items:center}
+  .headline{font:800 42px "Segoe UI Black","Segoe UI",sans-serif;letter-spacing:-.035em;line-height:1.04;margin:6px 0 10px}
+  .sub{font-size:16px;color:#CFCBC2;line-height:1.5;max-width:46ch}
+  .proofs{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:18px 0}
+  .proof{border:1px solid rgba(242,239,233,.16);border-radius:12px;background:#14161B;padding:12px}
+  .proof b{display:block;font:800 20px "Segoe UI Black","Segoe UI";letter-spacing:-.02em}
+  .proof span{display:block;font-size:11.5px;color:#8E909B;line-height:1.45;margin-top:4px}
+  .src{font:10.5px Consolas,monospace;color:#5B56F5;border-bottom:1px solid rgba(91,86,245,.5)}
+  .cta{display:inline-block;background:#3A34E8;color:#fff;border-radius:99px;padding:13px 26px;font-weight:600;font-size:15px}
+  .figbox{border-radius:16px;background:linear-gradient(170deg,#2C313D,#15171D);height:300px;display:grid;place-items:center;color:#62646E;font:12px Consolas,monospace}
+  .abbadge{display:inline-block;font:10.5px Consolas,monospace;padding:3px 9px;border-radius:5px;background:rgba(255,92,66,.16);color:#FF8A75;margin-bottom:8px}
+  .cols{display:grid;grid-template-columns:300px 1fr;gap:24px;align-items:start}
+  .swatches{display:flex;gap:8px;flex-wrap:wrap}
+  .sw{width:62px}
+  .sw i{display:block;height:40px;border-radius:8px;border:1px solid rgba(242,239,233,.2)}
+  .sw span{display:block;font:9.5px Consolas,monospace;color:#8E909B;margin-top:4px}
+  .type div{margin-bottom:6px}
+  .persona{border:1px solid rgba(242,239,233,.16);border-radius:12px;background:#14161B;padding:14px}
+  .quote{border-left:2px solid #5B56F5;padding-left:10px;font-size:12.5px;color:#CFCBC2;line-height:1.5;margin:8px 0}
+  .inf{font-size:11.5px;color:#8E909B;margin-left:12px}
+  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .card{border:1px solid rgba(242,239,233,.16);border-radius:12px;background:#14161B;padding:13px;position:relative}
+  .meta{font:10px Consolas,monospace;color:#8E909B;display:flex;justify-content:space-between;margin-bottom:6px}
+  .card p{margin:0;font-size:12px;color:#CFCBC2;line-height:1.5}
+  .copy{position:absolute;right:10px;bottom:10px;font:10px Consolas,monospace;border:1px solid rgba(242,239,233,.25);border-radius:6px;padding:3px 8px;color:#CFCBC2}
+  .cal{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+  .day{border:1px solid rgba(242,239,233,.14);border-radius:8px;background:#14161B;padding:8px;min-height:72px}
+  .day b{font:10px Consolas,monospace;color:#62646E;display:block}
+  .day span{font-size:10.5px;color:#CFCBC2;line-height:1.35;display:block;margin-top:4px}
+  .ab{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .arm{border:1px solid rgba(242,239,233,.16);border-radius:12px;background:#14161B;padding:14px}
+  .arm.win{border-color:rgba(242,239,233,.3)}
+  .arm h3{margin:0 0 6px;font:700 14px "Segoe UI"}
+  .arm .n{font:800 24px "Segoe UI Black","Segoe UI"}
+  .verdict{margin-top:10px;padding:10px 12px;border-radius:8px;background:rgba(255,92,66,.14);color:#FF8A75;font-size:12.5px}
+  .saved{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:8px}
+  .mini{border:1px solid rgba(242,239,233,.16);border-radius:12px;background:#14161B;padding:12px}
+  .mini b{display:block;font-size:13px;margin:4px 0 6px}
+  .note{font-size:11px;color:#62646E;margin-top:10px;line-height:1.45}
+</style></head>
+<body><div class="wrap">
+  <div class="top">
+    <div><span class="kick">Style Me · Week 4 · Marketing Engine + Content System</span><h1>Saying it to someone who is not the grader</h1></div>
+    <span class="url">/ &nbsp;·&nbsp; /marketing</span>
+  </div>
+
+  <!-- SURFACE 1 -->
+  <div class="page">
+    <span class="tag">Surface 1 · the homepage, upgraded into a landing page</span>
+    <div class="hero">
+      <div>
+        <span class="abbadge">A/B · headline variant A of 2 — assignment sticks per visitor</span>
+        <p class="kick">Style Me</p>
+        <p class="headline">Know what suits you before you pay for it.</p>
+        <p class="sub">Describe how you dress in one sentence. Get a name for it, and outfits you could actually wear — built from the clothes, not from a mood board.</p>
+        <div class="proofs">
+          <div class="proof"><b>28%</b><span>of Mexican online returns are fashion — the most returned category <span class="src">AMVO ↗</span></span></div>
+          <div class="proof"><b>19.3%</b><span>of online orders come back at all <span class="src">NRF ↗</span></span></div>
+          <div class="proof"><b>Free</b><span>no account, no card, nothing stored about you <span class="src">/docs ↗</span></span></div>
+        </div>
+        <span class="cta">Take the style test — 3 minutes</span>
+        <p class="note">The CTA click is the conversion event. Impression recorded once per visitor.</p>
+      </div>
+      <div class="figbox">[ the drawn model stays ]</div>
+    </div>
+  </div>
+
+  <!-- SURFACE 2 -->
+  <div class="page">
+    <span class="tag">Surface 2 · /marketing</span>
+    <div class="cols">
+      <div>
+        <h2 style="margin-top:4px">Brand system</h2>
+        <p class="lab">Read from the live CSS variables, never retyped</p>
+        <div class="swatches">
+          <div class="sw"><i style="background:#0E0F12"></i><span>--ink</span></div>
+          <div class="sw"><i style="background:#F2EFE9"></i><span>--bone</span></div>
+          <div class="sw"><i style="background:#3A34E8"></i><span>--klein</span></div>
+          <div class="sw"><i style="background:#FF5C42"></i><span>--flame</span></div>
+          <div class="sw"><i style="background:#8E909B"></i><span>--ash</span></div>
+        </div>
+        <div class="type" style="margin-top:14px">
+          <div style="font-family:'Segoe UI Black';font-size:20px">Syne — display</div>
+          <div style="font-size:14px">Familjen Grotesk — interface</div>
+          <div style="font-family:Consolas;font-size:12px">DM Mono — figures and sources</div>
+        </div>
+        <p class="note">Voice: say the number, name the source, never promise a feeling.</p>
+
+        <h2>Persona — quoted, not invented</h2>
+        <div class="persona">
+          <p class="lab">Student on exchange, Mexico City · interviewed 24 Sep 2026</p>
+          <p class="quote">« Relax et ample. Un jean large, un t-shirt basique oversize. »</p>
+          <p class="inf">→ copy never offers to "find your style": he has one.</p>
+          <p class="quote">« Mon vrai problème, c'est pas l'inspiration, c'est mon budget. »</p>
+          <p class="inf">→ price is in the headline, not in the footer.</p>
+          <p class="quote">« J'utilise pas d'appli dédiée au style, j'ai la flemme. »</p>
+          <p class="inf">→ every post leads to one sentence typed, not an install.</p>
+        </div>
+      </div>
+
+      <div>
+        <h2 style="margin-top:4px">Content — 10 posts, 3 scripts, landing copy</h2>
+        <div class="cards">
+          <div class="card"><div class="meta"><span>instagram</span><span>168 ch</span></div><p>"I never wear colour." Typed that into Style Me and it dressed me in black, grey and the boots I already own. Free, no account.</p><span class="copy">copy</span></div>
+          <div class="card"><div class="meta"><span>tiktok · script</span><span>45 s</span></div><p>HOOK: the shirt I wore for ten minutes. BEAT 2: why it was never going to work. BEAT 3: one sentence, three outfits…</p><span class="copy">copy</span></div>
+          <div class="card"><div class="meta"><span>whatsapp</span><span>96 ch</span></div><p>te acuerdas de la camisa que nunca te pusiste? esto te dice antes de pagar. 3 min, gratis →</p><span class="copy">copy</span></div>
+        </div>
+        <p class="note">… 10 posts and 3 scripts in total. Every card: channel, length, and a copy button that copies exactly what gets published.</p>
+
+        <h2>14-day campaign calendar</h2>
+        <div class="cal">
+          <div class="day"><b>D1 · mon</b><span>IG: the ten-minute shirt</span></div>
+          <div class="day"><b>D2</b><span>WA: ask 3 friends</span></div>
+          <div class="day"><b>D3</b><span>TikTok 45s</span></div>
+          <div class="day"><b>D4</b><span>IG story: axes</span></div>
+          <div class="day"><b>D5</b><span>X: returns stat</span></div>
+          <div class="day"><b>D6</b><span>—</span></div>
+          <div class="day"><b>D7</b><span>recap</span></div>
+          <div class="day"><b>D8</b><span>IG: second-hand</span></div>
+          <div class="day"><b>D9</b><span>WA: campus</span></div>
+          <div class="day"><b>D10</b><span>TikTok 30s</span></div>
+          <div class="day"><b>D11</b><span>IG: price</span></div>
+          <div class="day"><b>D12</b><span>X: /research</span></div>
+          <div class="day"><b>D13</b><span>—</span></div>
+          <div class="day"><b>D14</b><span>read the A/B</span></div>
+        </div>
+
+        <h2>A/B headline test — what the data actually says</h2>
+        <div class="ab">
+          <div class="arm"><h3>A · "Know what suits you before you pay for it."</h3><p class="n">6 / 2</p><p class="lab">impressions / conversions · 33.3%</p></div>
+          <div class="arm"><h3>B · "Your style already has a name. Here it is."</h3><p class="n">5 / 1</p><p class="lab">impressions / conversions · 20.0%</p></div>
+        </div>
+        <div class="verdict">Not enough data. 11 impressions; to detect a 5-point difference at 95% confidence this needs roughly 1,500 per arm. No winner is printed.</div>
+      </div>
+    </div>
+
+    <h2>Saved marketing assets — read from Supabase</h2>
+    <div class="saved">
+      <div class="mini"><span class="kick">just now · post</span><b>instagram · variant A</b><span class="lab">"I never wear colour."…</span></div>
+      <div class="mini"><span class="kick">2h · script</span><b>tiktok · 45 s</b><span class="lab">the ten-minute shirt</span></div>
+      <div class="mini"><span class="kick">1d · landing</span><b>headline B</b><span class="lab">"Your style already has…"</span></div>
+      <div class="mini"><span class="kick">1d · calendar</span><b>14 days</b><span class="lab">exported as text</span></div>
+    </div>
+  </div>
+</div></body></html>

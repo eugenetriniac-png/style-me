@@ -1,0 +1,40 @@
+﻿{
+    "readAt":  "2026-10-06 21:16",
+    "deployments":  [
+                        {
+                            "sha":  "211f720",
+                            "createdAt":  "2026-10-07T02:44:19Z",
+                            "environment":  "Production",
+                            "state":  "success",
+                            "by":  "vercel[bot]"
+                        },
+                        {
+                            "sha":  "082951a",
+                            "createdAt":  "2026-10-07T02:57:41Z",
+                            "environment":  "Production",
+                            "state":  "success",
+                            "by":  "vercel[bot]"
+                        },
+                        {
+                            "sha":  "8813f9a",
+                            "createdAt":  "2026-10-07T03:04:32Z",
+                            "environment":  "Production",
+                            "state":  "success",
+                            "by":  "vercel[bot]"
+                        },
+                        {
+                            "sha":  "90f7694",
+                            "createdAt":  "2026-10-07T03:06:13Z",
+                            "environment":  "Production",
+                            "state":  "success",
+                            "by":  "vercel[bot]"
+                        },
+                        {
+                            "sha":  "14e46c6",
+                            "createdAt":  "2026-10-07T03:09:11Z",
+                            "environment":  "Production",
+                            "state":  "success",
+                            "by":  "vercel[bot]"
+                        }
+                    ]
+}
